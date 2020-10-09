@@ -1,6 +1,8 @@
 #include "PairHMM.h"
 
-PairHMM::PairHMM() {}
+PairHMM::PairHMM() {
+    initialize();
+}
 
 void PairHMM::forward(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option=0) {
     switch(option) {
@@ -25,6 +27,7 @@ void PairHMM::naiveForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq)
     int M = dnaSeq.ori.size(); // M = size of dna + 1
     int n = N - 1;
     int m = M - 1;
+    std::cout << N << " " << M << " " << n << " " << m << std::endl;
     //psi: insertion, phi: deletion
     startFwd = NumType(1.0);
     for (int i = 0; i <= n; i ++) {
@@ -50,9 +53,11 @@ void PairHMM::naiveForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq)
             H_4.f[i][j] = H_3.f[i][j]*(NumType(1)-alpha_i-alpha_d-gamma) + D_3.f[i][j];
             H_5.f[i][j] = H_4.f[i][j]*(NumType(1) - omega_d) + I_7.f[i][j];
             finish.f[i][j] = H_5.f[i][j]*(NumType(1)-omega_i);
+            //std::cout << i << " " << j << ": " << H_1.f[i][j]<<" "<<H_2.f[i][j]<<" "<<H_3.f[i][j]<<" "<<H_4.f[i][j]<<" "<<H_5.f[i][j]<<std::endl;
         }
     }
     finishFwd = finish.f[n][m];
+    reversep = NumType(1.0)/finishFwd;
 }
 
 void PairHMM::naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
@@ -101,7 +106,7 @@ void PairHMM::naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq
             H_3.b[i][j] = Match.b[i][j]*gamma + H_4.b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
                         + D_2.b[i][j]*alpha_d + I_4.b[i][j]*alpha_i;
             H_6.b[i][j] = H_3.b[i][j]*(NumType(1)-beta_d) + D_2.b[i][j]*beta_d;
-            I_3.b[i][j] = H_3.b[i][j];
+            I_3.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_3.b[i][j+1];
             H_7.b[i][j] = H_6.b[i][j]*epsilon_d + I_3.b[i][j]*(NumType(1)-epsilon_d);
             I_5.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3.b[i][j+1]*(NumType(1)-epsilon_i)+I_6.b[i][j+1]*epsilon_i);
             I_1.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_2.b[i][j+1];
@@ -110,6 +115,7 @@ void PairHMM::naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq
             D_1.b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_1.b[i+1][j];
             H_1.b[i][j] = D_1.b[i][j]*omega_d + H_2.b[i][j]*(NumType(1)-omega_d);
             start.b[i][j] = H_1.b[i][j];
+            //std::cout << i << " " << j << ": " << I_1.b[i][j]<<" "<<I_2.b[i][j]<<" "<<I_3.b[i][j]<<" "<<I_4.b[i][j]<<" "<<I_5.b[i][j]<<" "<<I_6.b[i][j]<<" "<<I_7.b[i][j]<<std::endl;
         }
     }
     startBwd = start.b[0][0];
@@ -121,8 +127,9 @@ void PairHMM::BaumWelchSingleStep(const proSeqType & proSeq, const dnaSeqType & 
     BaumWelchSingleStepInitialize(n, m);
     forward(proSeq, dnaSeq, option);
     backward(proSeq, dnaSeq, option);
-    updateTransitions();
-    updateEmissions(proSeq, dnaSeq);
+    std::cout << finishFwd << " " << startBwd << std::endl;
+    //updateTransitions();
+    //updateEmissions(proSeq, dnaSeq);
 }
 
 void PairHMM::updateTransitions() {
@@ -138,8 +145,8 @@ void PairHMM::updateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaS
     int m = start.f[0].size() - 1; 
     //psi: insertion phi: deletion
     std::vector<NumType> curr_psi_cnt (4, NumType(0));
-    std::vector<NumType> curr_phi_cnt (26, NumType(0));
-    std::vector<std::vector<NumType> > curr_pi_cnt (4, std::vector<NumType> (26, NumType(0)));
+    std::vector<NumType> curr_phi_cnt (20, NumType(0));
+    std::vector<std::vector<NumType> > curr_pi_cnt (20, std::vector<NumType> (64, NumType(0)));
     for (int i = 0; i <= n; i ++) {
         for (int j = 0; j <= m; j ++) {
             for (int k = 0; k < 4; k ++) {
@@ -151,12 +158,12 @@ void PairHMM::updateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaS
                 curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_6.f[i][j]*I_6.b[i][j-1]*psi[k] : NumType(0);
                 curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_7.f[i][j]*I_7.b[i][j-1]*psi[k] : NumType(0);
             } 
-            for (int k = 0; k < 26; k ++) {
+            for (int k = 0; k < 20; k ++) {
                 curr_phi_cnt[k] += proSeq[i] == k && i ? D_1.f[i][j]*D_1.b[i-1][j]*phi[k] : NumType(0);
                 curr_phi_cnt[k] += proSeq[i] == k && i ? D_2.f[i][j]*D_2.b[i-1][j]*phi[k] : NumType(0);
                 curr_phi_cnt[k] += proSeq[i] == k && i ? D_3.f[i][j]*D_3.b[i-1][j]*phi[k] : NumType(0);
             }
-            for (int s = 0; s < 26; s ++) {
+            for (int s = 0; s < 20; s ++) {
                 for (int t = 0; t < 64; t ++) {
                     curr_pi_cnt[s][t] += proSeq[i] == s && dnaSeq.triplet[j] == t && i && j > 2 ? 
                                         Match.f[i][j] * Match.b[i-1][j-3] * pi[s][t] : NumType(0);
@@ -167,10 +174,10 @@ void PairHMM::updateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaS
     for (int k = 0; k < 4; k ++) {
         psi[k] += curr_psi_cnt[k]*reversep;
     }
-    for (int k = 0; k < 26; k ++) {
+    for (int k = 0; k < 20; k ++) {
         phi[k] += curr_phi_cnt[k]*reversep;
     }
-    for (int s = 0; s < 26; s ++) {
+    for (int s = 0; s < 20; s ++) {
         for (int t = 0; t < 64; t ++) {
             pi[s][t] += curr_pi_cnt[s][t]*reversep;
         }
@@ -206,16 +213,16 @@ void PairHMM::naiveUpdatePossibilities() {
     NumType total_psi(0);
     NumType total_phi(0);
     NumType total_match(0);
-    for (int i = 0; i < 26; i ++) { total_phi += phi_cnt[i]; }
-    for (int i = 0; i < 4 ; i ++) { total_psi += psi_cnt[i]; }
-    for (int i = 0; i < 26; i ++) { phi[i] = phi_cnt[i] / total_phi; }
-    for (int i = 0; i < 4 ; i ++) { psi[i] = psi_cnt[i] / total_psi; }
-    for (int i = 0; i < 26; i ++) {
-        for (int j = 0; j < 64; j ++) {
+    for (int i = 0; i < phi_cnt.size(); i ++) { total_phi += phi_cnt[i]; }
+    for (int i = 0; i < psi_cnt.size() ; i ++) { total_psi += psi_cnt[i]; }
+    for (int i = 0; i < phi_cnt.size(); i ++) { phi[i] = phi_cnt[i] / total_phi; }
+    for (int i = 0; i < psi_cnt.size() ; i ++) { psi[i] = psi_cnt[i] / total_psi; }
+    for (int i = 0; i < pi_cnt.size(); i ++) {
+        for (int j = 0; j < pi_cnt[0].size(); j ++) {
             total_match += pi_cnt[i][j];
         }
     }
-    for (int i = 0; i < 26; i ++) {
+    for (int i = 0; i < 20; i ++) {
         for (int j = 0; j < 64; j ++) {
             pi[i][j] = pi_cnt[i][j] / total_match;
         }
@@ -231,14 +238,10 @@ void PairHMM::initialize() {
 
 void PairHMM::emissionInitialize() {
     std::fill(psi.begin(), psi.end(), NumType(0.25));
-    for (int i = 0; i < 26; i ++) {
-        if (i == ('B' - 'A') || i == ('J' - 'A') || i == ('O' - 'A') 
-         || i == ('U' - 'A') || i == ('X' - 'A') || i == ('Z' - 'A')) continue;
+    for (int i = 0; i < 20; i ++) {
         phi[i] = NumType(1.0/20);
     }
-    for (int i = 0; i < 26; i ++) {
-        if (i == ('B' - 'A') || i == ('J' - 'A') || i == ('O' - 'A') 
-         || i == ('U' - 'A') || i == ('X' - 'A') || i == ('Z' - 'A')) continue;
+    for (int i = 0; i < 20; i ++) {
         for (int j = 0; j < 64; j ++) {
             pi[i][j] = NumType(1.0 / 20 / 64);
         }
@@ -273,8 +276,8 @@ void PairHMM::transitionInitialize() {
 }
 
 void PairHMM::parameterInitialize() {
-    omega_i = NumType(0.99);
-    omega_d = NumType(0.99);
+    omega_i = NumType(0.9);
+    omega_d = NumType(0.9);
     gamma = NumType(0.25);
     //deletion
     alpha_d = NumType(0.25);
@@ -286,15 +289,21 @@ void PairHMM::parameterInitialize() {
     delta_i = NumType(0.5);
     beta_i = NumType(0.5);
     epsilon_i = NumType(0.5);
+    //phi, psi
+    for (int i = 0; i < phi.size(); i ++) phi[i] = NumType(1.0/phi.size());
+    for (int i = 0; i < psi.size(); i ++) psi[i] = NumType(1.0/psi.size());
+    for (int i = 0; i < pi.size() ; i ++) {
+        for (int j = 0; j < pi[0].size(); j ++) pi[i][j] = NumType(1.0/20/64);
+    }
 }
 
 void PairHMM::shapeInitialize() {
-    phi = std::vector<NumType> (26, NumType(0));
-    phi_cnt = std::vector<NumType> (26, NumType(0));
+    phi = std::vector<NumType> (20, NumType(0));
+    phi_cnt = std::vector<NumType> (20, NumType(0));
     psi = std::vector<NumType> (4, NumType(0));
     psi_cnt = std::vector<NumType> (4, NumType(0));
-    pi = std::vector<std::vector<NumType> > (26, std::vector<NumType>(64, NumType(0)));
-    pi_cnt = std::vector<std::vector<NumType> > (26, std::vector<NumType>(64, NumType(0)));
+    pi = std::vector<std::vector<NumType> > (20, std::vector<NumType>(64, NumType(0)));
+    pi_cnt = std::vector<std::vector<NumType> > (20, std::vector<NumType>(64, NumType(0)));
 }
 
 void PairHMM::BaumWelchSingleStepInitialize(int n, int m) {
@@ -305,3 +314,7 @@ void PairHMM::BaumWelchSingleStepInitialize(int n, int m) {
         ptr->b = std::vector<std::vector<NumType> >(n, std::vector<NumType> (m, NumType(0)));
     }
 }
+
+void PairHMM::displayParameters(){}
+
+void PairHMM::updatePossibilities(){}

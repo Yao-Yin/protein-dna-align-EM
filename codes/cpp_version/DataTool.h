@@ -4,6 +4,7 @@
 #define triplet second
 #include <vector>
 #include <string>
+#include <iostream>
 
 typedef double NumType; // To represent Probability numerically;
 typedef std::vector<int8_t> proSeqType; //Encoding the ProSeqType, index start from 1
@@ -20,6 +21,7 @@ dnaSeqType encodeDNA(const std::string & dna);
 int8_t encodeBase(const char & base);
 int8_t encodeTriplet(const std::string & dnaTriplet);
 int8_t encodeAA(const char & aa);
+std::vector<int8_t> check;
 };
 
 #endif

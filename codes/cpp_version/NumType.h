@@ -1,4 +1,4 @@
-#ifndef NUMTYPE_H
+/*#ifndef NUMTYPE_H
 #define NUMTYPE_H
 struct NumType {
 NumType(double num);
@@ -11,4 +11,4 @@ void operator=(const NumType & other);
 NumType operator*(const NumType & other);
 NumType operator+(const NumType & other);
 };
-#endif
+#endif*/

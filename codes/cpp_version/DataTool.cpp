@@ -1,7 +1,15 @@
 #include "DataTool.h"
 #define ori first
 #define tripletSeq second
-DataTool::DataTool() {}
+DataTool::DataTool() {
+    check = std::vector<int8_t> (26, 0);
+    int curr = 0;
+    for (int i = 0; i < 26; i ++) {
+        if (i == ('B' - 'A') || i == ('J' - 'A') || i == ('O' - 'A') 
+         || i == ('U' - 'A') || i == ('X' - 'A') || i == ('Z' - 'A')) check[i] = -1;
+        else check[i] = curr ++;
+    }
+}
 
 int8_t DataTool::encodeBase(const char & base) {
     /* 
@@ -18,7 +26,7 @@ int8_t DataTool::encodeAA(const char & AA) {
     /* 
     Encode the amino acid, might be better to do sth to control invalid inputs.
     */
-    return AA - 'A';
+    return check[AA - 'A'];
 }
 
 int8_t DataTool::encodeTriplet(const std::string & dnaTriplet) {
@@ -40,12 +48,14 @@ dnaSeqType DataTool::encodeDNA(const std::string & dna) {
     dnaSeqType res;
     res.ori.push_back(-1);
     res.tripletSeq.push_back(-1);
-    for (int i = 0; i < 3; i ++) {
+    for (int i = 0; i < dna.size(); i ++) {
         res.ori.push_back(encodeBase(dna[i]));
-        res.tripletSeq.push_back(-1);
     }
-    for (int i = 3; i < dna.size(); i ++) {
-        res.ori.push_back(encodeBase(dna[i]));
+    for (int i = 0; i < dna.size(); i ++) {
+        if (i < 2) {
+            res.triplet.push_back(-1);
+            continue;
+        }
         std::string curr_triplet;
         for (int j = i - 2; j <= i; j ++) {
             curr_triplet.push_back(dna[j]);

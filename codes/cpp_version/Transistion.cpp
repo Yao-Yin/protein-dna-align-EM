@@ -1,4 +1,5 @@
 #include "Transition.h"
+Transition::Transition(){}
 
 void Transition::add_cnt(NumType reverseP) {
     NumType curr(0);
