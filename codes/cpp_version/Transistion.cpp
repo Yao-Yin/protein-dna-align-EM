@@ -1,5 +1,7 @@
 #include "Transition.h"
-Transition::Transition(){}
+Transition::Transition(){
+    cnt = NumType(0.0);
+}
 
 void Transition::add_cnt(NumType reverseP) {
     NumType curr(0);

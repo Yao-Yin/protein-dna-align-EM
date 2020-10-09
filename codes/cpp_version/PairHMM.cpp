@@ -27,7 +27,7 @@ void PairHMM::naiveForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq)
     int M = dnaSeq.ori.size(); // M = size of dna + 1
     int n = N - 1;
     int m = M - 1;
-    std::cout << N << " " << M << " " << n << " " << m << std::endl;
+    //std::cout << N << " " << M << " " << n << " " << m << std::endl;
     //psi: insertion, phi: deletion
     startFwd = NumType(1.0);
     for (int i = 0; i <= n; i ++) {
@@ -127,15 +127,20 @@ void PairHMM::BaumWelchSingleStep(const proSeqType & proSeq, const dnaSeqType & 
     BaumWelchSingleStepInitialize(n, m);
     forward(proSeq, dnaSeq, option);
     backward(proSeq, dnaSeq, option);
-    std::cout << finishFwd << " " << startBwd << std::endl;
-    //updateTransitions();
-    //updateEmissions(proSeq, dnaSeq);
+    //std::cout << finishFwd << " " << startBwd << std::endl;
+    updateTransitions();
+    updateEmissions(proSeq, dnaSeq);
 }
 
 void PairHMM::updateTransitions() {
-    std::vector<Transition*> vt {&B_i, &C_i, &D_i, &E_i, &F_i, &G_i, &H_i, &X_i, &J_i, &K_i, 
-    &B_d, &D_d, &E_d, &F_d, &G_d, &F_d, &H_d, &X_d, &J_d, &K_d, &M, &A};
+    std::vector<Transition*> vt {
+        &J_d, &J_i, &M, &A, &K_d, &K_i, 
+        &F_d, &X_d, &B_d, &D_d, &E_d, &G_d, &H_d,
+        &B_i, &E_i, &D_i, &F_i, &G_i, &H_i, &X_i
+    };
+    int idx = 0;
     for (auto & i: vt) {
+        std::cout << idx ++ << std::endl;
         i->add_cnt(reversep);
     }
 }
