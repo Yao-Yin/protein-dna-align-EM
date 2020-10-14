@@ -32,7 +32,7 @@ public:
     void updateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
     void naiveUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
     void logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
-    void logUpdatePossibilities();
+    void optimizedUpdatePossibilities();
     void displayParameters(int option);
     NumType startFwd, startBwd, finishFwd, finishBwd, reversep;
     LogNumType logStartFwd, logStartBwd, logFinishFwd, logFinishBwd, logReversep;

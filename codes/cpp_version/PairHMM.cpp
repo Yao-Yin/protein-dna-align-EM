@@ -370,11 +370,8 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
     int n = start.f.size() - 1;
     int m = start.f[0].size() - 1; 
     //psi: insertion phi: deletion
-    std::vector<NumType> curr_psi_cnt (4, NumType(0));
     std::vector<std::vector<LogNumType> > curr_log_psi_cnt (4, std::vector<LogNumType> ());
-    std::vector<NumType> curr_phi_cnt (20, NumType(0));
     std::vector<std::vector<LogNumType> > curr_log_phi_cnt (4, std::vector<LogNumType> ());
-    std::vector<std::vector<NumType> > curr_pi_cnt (20, std::vector<NumType> (64, NumType(0)));
     std::vector<std::vector<std::vector<LogNumType>>> curr_log_pi_cnt (4, std::vector<std::vector<LogNumType>> (64, std::vector<LogNumType> ()));
     for (int k = 0; k < 4; k ++) {
         for (int j = 1; j <= m; j ++) {
@@ -479,7 +476,7 @@ void PairHMM::emissionInitialize() {
     }
     for (int i = 0; i < 20; i ++) {
         for (int j = 0; j < 64; j ++) {
-            pi[i][j] = NumType(1.0 / 20 / 64);
+            pi[i][j] = NumType(1.0/20/64);
         }
     }
 }
@@ -565,6 +562,17 @@ void PairHMM::BaumWelchSingleStepInitialize(int n, int m, int option) {
 
 void PairHMM::displayParameters(int option){}
 
-void PairHMM::updatePossibilities(int option){}
+void PairHMM::updatePossibilities(int option){
+    switch (option)
+    {
+    case 0:
+        naiveUpdatePossibilities();
+        break;
+    
+    case 1:
+        optimizedUpdatePossibilities();
+        break;
+    }
+}
 
-void PairHMM::logUpdatePossibilities(){}
+void PairHMM::optimizedUpdatePossibilities(){}
