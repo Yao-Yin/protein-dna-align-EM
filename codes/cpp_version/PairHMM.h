@@ -61,6 +61,8 @@ public:
     void parameterInitialize();
     void shapeInitialize();
     void BaumWelchSingleStepInitialize(int n, int m, int option);
+    void naiveTolog();
+    void logToNaive();
 private:
 
 };

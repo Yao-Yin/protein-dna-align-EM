@@ -3,11 +3,11 @@
 #include <vector>
 #include "State.h"
 #include "NumType.h"
-
+#include <iostream>
 class Transition {
 public:
     Transition();
-    Transition::Transition(State* f, State* t);
+    Transition(State* f, State* t);
     NumType cnt;
     LogNumType logCnt;    
     State* from;

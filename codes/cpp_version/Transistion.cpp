@@ -32,12 +32,13 @@ void Transition::add_log_cnt(LogNumType LogProb) {
     int N = from->f.size();
     int M = from->f[0].size();
     std::vector<LogNumType> curr_list;
+    std::cout << "hey" << std::endl;
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < M; j ++) {
             curr_list.emplace_back((from->logf[i][j])+(to->logb[i][j])-LogProb);
         }
     }
-    logCnt += log_sum_exp(curr_list.begin(), curr_list.end());
+    cnt += exp(log_sum_exp(curr_list.begin(), curr_list.end()));
 }
 
 void Transition::set(State* f, State* t) {

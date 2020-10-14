@@ -7,6 +7,8 @@
 #include "DataTool.h"
 #include "State.h"
 #include "Transition.h"
+#include "NumType.h"
+
 #define ori first
 #define triplet second
 typedef double ProbType; // To represent Probability numerically;
@@ -17,13 +19,16 @@ int main()
 {
     PairHMM tiny;
     DataTool dt;
-    std::string dna = "ATCGCTCG";
-    std::string pro = "ACNDSVNSD";
+    std::string dna = "A";
+    std::string pro = "";
     proSeqType p = dt.encodePro(pro);
     dnaSeqType d = dt.encodeDNA(dna);
+    //std::cout << LogSumExp(log(0), log(0)) << std::endl;
     //std::cout << p.size() << " " << d.ori.size() << " " << std::endl;
-    tiny.BaumWelchSingleStep(p, d, 0);
-    std::cout << tiny.finishFwd << std::endl;
+    //tiny.BaumWelchSingleStep(p, d, 0);
+    //std::cout << tiny.finishFwd << std::endl;
+    tiny.BaumWelchSingleStep(p, d, 1);
+    std::cout << tiny.logFinishFwd << std::endl;
     return 0;
 }
 

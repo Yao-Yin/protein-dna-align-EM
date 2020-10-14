@@ -1,0 +1,3 @@
+    std::string dna = "ATCGCTCG";
+    std::string pro = "ACNDSVNSD";
+    2.74242e-20
