@@ -4,11 +4,17 @@
 DataTool::DataTool() {
     check = std::vector<int8_t> (26, 0);
     int curr = 0;
+    aas = std::vector<char> (20);
     for (int i = 0; i < 26; i ++) {
         if (i == ('B' - 'A') || i == ('J' - 'A') || i == ('O' - 'A') 
          || i == ('U' - 'A') || i == ('X' - 'A') || i == ('Z' - 'A')) check[i] = -1;
-        else check[i] = curr ++;
+        else {
+            aas[curr] = ('A' + i);
+            check[i] = curr ++;
+        }
     }
+    bases = std::vector<char> {'T', 'C', 'A', 'G'};
+    
 }
 
 int8_t DataTool::encodeBase(const char & base) {
@@ -63,5 +69,13 @@ dnaSeqType DataTool::encodeDNA(const std::string & dna) {
         res.tripletSeq.push_back(encodeTriplet(curr_triplet));
     }
     return res;
+}
+
+char DataTool::decodeAA (int8_t aa) {
+    return aas[aa];
+}
+
+char DataTool::decodeBase (int8_t base) {
+    return bases[base];
 }
 

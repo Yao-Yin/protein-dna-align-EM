@@ -34,6 +34,8 @@ public:
     void logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
     void optimizedUpdatePossibilities();
     void displayParameters(int option);
+    void checkback(int i, int j, int n, int m);
+    void checkforward(int i, int j);
     NumType startFwd, startBwd, finishFwd, finishBwd, reversep;
     LogNumType logStartFwd, logStartBwd, logFinishFwd, logFinishBwd, logReversep;
     NumType Prob; // To measure the converge of BW algorithm
@@ -63,6 +65,10 @@ public:
     void BaumWelchSingleStepInitialize(int n, int m, int option);
     void naiveTolog();
     void logToNaive();
+    void displayEmission();
+    void displayEmissionCnts();
+    void displayTransition();
+    void displayTransitionCnts();
 private:
 
 };
