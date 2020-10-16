@@ -1,9 +1,4 @@
 #include "NumType.h"
-#include <math.h>
-#include <numeric>
-#include <iostream>
-
-
 
 /*
 template <typename Iter>
