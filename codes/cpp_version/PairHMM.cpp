@@ -396,49 +396,29 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
             }
     }
     for (int k = 0; k < 4; k ++) psi_cnt[k] += 4*exp(log_sum_exp(curr_log_psi_cnt[k].begin(), curr_log_psi_cnt[k].end())-logProb);
-
-    /*for (int k = 0; k < 4; k ++) {
-        for (int j = 1; j <= m; j ++) {
-            if (dnaSeq.ori[j] == k) {
-                for (int i = 0; i <= n; i ++) {
-                    curr_log_psi_cnt[k].push_back(I_1->logf[i][j]+I_1->logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_2->logf[i][j]+I_2->logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_3->logf[i][j]+I_3->logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_4->logf[i][j]+I_4->logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_5->logf[i][j]+I_5->logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_6->logf[i][j]+I_6->logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_7->logf[i][j]+I_7->logb[i][j-1]+log_psi[k]);
-                }
-            }
-        }
-        psi_cnt[k] += exp(log_sum_exp(curr_log_psi_cnt[k].begin(), curr_log_psi_cnt[k].end())-logProb);
-    }*/
-
-
     
-    for (int k = 0; k < 20; k ++) {
+
         //std::cout << k << std::endl;
-        for (int i = 1; i <= n; i ++) {
-            if ( proSeq[i] == k ) {
-                for (int j = 0; j <= m; j ++) {
-                    curr_log_phi_cnt[k].push_back(D_1->logf[i][j]+D_1->logb[i-1][j]+log_phi[k]);
-                    curr_log_phi_cnt[k].push_back(D_2->logf[i][j]+D_2->logb[i-1][j]+log_phi[k]);
-                    curr_log_phi_cnt[k].push_back(D_3->logf[i][j]+D_3->logb[i-1][j]+log_phi[k]);
-                }
-            }
+    for (int i = 1; i <= n; i ++) {
+        int k = proSeq[i] == k;
+        for (int j = 0; j <= m; j ++) {
+            curr_log_phi_cnt[k].push_back(D_1->logf[i][j]+D_1->logb[i-1][j]+log_phi[k]);
+            curr_log_phi_cnt[k].push_back(D_2->logf[i][j]+D_2->logb[i-1][j]+log_phi[k]);
+            curr_log_phi_cnt[k].push_back(D_3->logf[i][j]+D_3->logb[i-1][j]+log_phi[k]);
         }
-        phi_cnt[k] += exp(log_sum_exp(curr_log_phi_cnt[k].begin(), curr_log_phi_cnt[k].end())-logProb);
     }
+    for (int k = 0; k < 20; k ++) phi_cnt[k] += exp(log_sum_exp(curr_log_phi_cnt[k].begin(), curr_log_phi_cnt[k].end())-logProb);
     
+
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 3; j <= m; j ++) {
+            int s = proSeq[i];
+            int t = dnaSeq.triplet[j];
+            curr_log_pi_cnt[s][t].push_back(Match->logf[i][j] + Match->logb[i-1][j-3] + log_pi[s][t]);
+        }
+    }
     for (int s = 0; s < 20; s ++) {
         for (int t = 0; t < 64; t ++) {
-            for (int i = 1; i <= n; i ++) {
-                for (int j = 3; j <= m; j ++) {
-                    if (proSeq[i] == s && dnaSeq.triplet[j] == t) {
-                        curr_log_pi_cnt[s][t].push_back(Match->logf[i][j] + Match->logb[i-1][j-3] + log_pi[s][t]);
-                    }
-                }
-            }
             pi_cnt[s][t] += exp(log_sum_exp(curr_log_pi_cnt[s][t].begin(), curr_log_pi_cnt[s][t].end())-logProb);
         }
     }
@@ -492,6 +472,7 @@ void PairHMM::naiveUpdatePossibilities() {
 
 void PairHMM::initialize() {
     shapeInitialize();
+    statesBuild();
     transitionInitialize();
     emissionInitialize();
     parameterInitialize();

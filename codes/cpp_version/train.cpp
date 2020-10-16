@@ -54,8 +54,8 @@ int main()
     std::cout << "hello" << std::endl;
     PairHMM tiny;
     DataTool dt;
-    std::string dna = genDNA(7000);
-    std::string pro = genPro(2000);
+    std::string dna = genDNA(4000);
+    std::string pro = genPro(1000);
     proSeqType p = dt.encodePro(pro);
     dnaSeqType d = dt.encodeDNA(dna);
     //std::cout << LogSumExp(log(0), log(0)) << std::endl;
