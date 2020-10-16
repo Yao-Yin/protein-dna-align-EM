@@ -5,6 +5,22 @@ PairHMM::PairHMM() {
     initialize();
 }
 
+PairHMM::~PairHMM() {
+    std::vector<State*> list {start, finish, D_1, D_2, D_3, I_1, I_2, I_3, I_4, I_5, I_6, I_7,
+                        H_1, H_2, H_3, H_4, H_5, H_6, H_7, Match};
+    for (auto & ptr: list) {
+        delete ptr;
+    }
+}
+
+void PairHMM::statesBuild() {
+    std::vector<State**> list {&start, &finish, &D_1, &D_2, &D_3, &I_1, &I_2, &I_3, &I_4, &I_5, &I_6, &I_7,
+                          &H_1, &H_2, &H_3, &H_4, &H_5, &H_6, &H_7, &Match};
+    for (auto & pptr: list) {
+        *pptr = new State; 
+    }
+}
+
 void PairHMM::forward(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option) {
     switch(option) {
         case 0:
@@ -39,32 +55,32 @@ void PairHMM::naiveForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq)
     startFwd = NumType(1.0);
     for (int i = 0; i <= n; i ++) {
         for (int j = 0; j <= m; j ++) {
-            start.f[i][j] = (i || j) ? NumType(0) : NumType(1);
-            D_1.f[i][j] = i ? phi[proSeq[i]]*H_1.f[i-1][j]*omega_d : NumType(0); 
-            H_1.f[i][j] = start.f[i][j] + D_1.f[i][j];
-            I_1.f[i][j] = j ? psi[dnaSeq.ori[j]]*H_2.f[i][j-1]*omega_i : NumType(0);
-            H_2.f[i][j] = H_1.f[i][j]*(NumType(1)-omega_d) + I_1.f[i][j];
-            Match.f[i][j] = (i > 0 && j > 2) ? pi[proSeq[i]][dnaSeq.triplet[j]]*H_3.f[i-1][j-3]*gamma : NumType(0); 
-            D_3.f[i][j] = i ? phi[proSeq[i]]*H_4.f[i-1][j]*omega_d : NumType(0);
-            D_2.f[i][j] =  i ? phi[proSeq[i]]*(H_3.f[i-1][j]*alpha_d + H_6.f[i-1][j]*beta_d) : NumType(0);
-            I_2.f[i][j] = j ? psi[dnaSeq.ori[j]]*(D_2.f[i][j-1]*(NumType(1)-delta_d)) : NumType(0);
-            I_3.f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_2.f[i][j-1] + H_7.f[i][j-1]*(NumType(1)-epsilon_d)) : NumType(0);
-            H_7.f[i][j] = D_2.f[i][j]*delta_d;
-            H_6.f[i][j] = H_7.f[i][j]*epsilon_d;
-            I_5.f[i][j] = j ? psi[dnaSeq.ori[j]]*I_4.f[i][j-1]*delta_i : NumType(0);
-            I_4.f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_6.f[i][j-1]*beta_i + H_3.f[i][j-1]*alpha_i): NumType(0);
-            I_6.f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_5.f[i][j-1]*epsilon_i) : NumType(0);
-            I_7.f[i][j] = j ? psi[dnaSeq.ori[j]]*H_5.f[i][j-1]*omega_i : NumType(0);
-            H_3.f[i][j] = Match.f[i][j] + H_2.f[i][j]*(NumType(1)-omega_i) + H_6.f[i][j]*(NumType(1)-beta_d)
-                        + I_3.f[i][j] + I_4.f[i][j]*(NumType(1)-delta_i) + I_5.f[i][j]*(1-epsilon_i) + I_6.f[i][j]*(NumType(1)-beta_i);
-            H_4.f[i][j] = H_3.f[i][j]*(NumType(1)-alpha_i-alpha_d-gamma) + D_3.f[i][j];
-            H_5.f[i][j] = H_4.f[i][j]*(NumType(1) - omega_d) + I_7.f[i][j];
-            finish.f[i][j] = H_5.f[i][j]*(NumType(1)-omega_i);
-            //std::cout << i << " " << j << " (naiveForward): " << I_1.f[i][j]<<" "<<I_2.f[i][j]<<" "<<I_3.f[i][j]<<" "<<I_4.f[i][j]<<" "<<I_5.f[i][j]<<" "<<I_6.f[i][j]<<" "<<I_7.f[i][j]<<std::endl;
-            //std::cout << i << " " << j << " (naiveForward): " << H_1.f[i][j]<<" "<<H_2.f[i][j]<<" "<<H_3.f[i][j]<<" "<<H_4.f[i][j]<<" "<<H_5.f[i][j]<<" "<<H_6.f[i][j]<<" "<<H_7.f[i][j]<<std::endl;
+            start->f[i][j] = (i || j) ? NumType(0) : NumType(1);
+            D_1->f[i][j] = i ? phi[proSeq[i]]*H_1->f[i-1][j]*omega_d : NumType(0); 
+            H_1->f[i][j] = start->f[i][j] + D_1->f[i][j];
+            I_1->f[i][j] = j ? psi[dnaSeq.ori[j]]*H_2->f[i][j-1]*omega_i : NumType(0);
+            H_2->f[i][j] = H_1->f[i][j]*(NumType(1)-omega_d) + I_1->f[i][j];
+            Match->f[i][j] = (i > 0 && j > 2) ? pi[proSeq[i]][dnaSeq.triplet[j]]*H_3->f[i-1][j-3]*gamma : NumType(0); 
+            D_3->f[i][j] = i ? phi[proSeq[i]]*H_4->f[i-1][j]*omega_d : NumType(0);
+            D_2->f[i][j] =  i ? phi[proSeq[i]]*(H_3->f[i-1][j]*alpha_d + H_6->f[i-1][j]*beta_d) : NumType(0);
+            I_2->f[i][j] = j ? psi[dnaSeq.ori[j]]*(D_2->f[i][j-1]*(NumType(1)-delta_d)) : NumType(0);
+            I_3->f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_2->f[i][j-1] + H_7->f[i][j-1]*(NumType(1)-epsilon_d)) : NumType(0);
+            H_7->f[i][j] = D_2->f[i][j]*delta_d;
+            H_6->f[i][j] = H_7->f[i][j]*epsilon_d;
+            I_5->f[i][j] = j ? psi[dnaSeq.ori[j]]*I_4->f[i][j-1]*delta_i : NumType(0);
+            I_4->f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_6->f[i][j-1]*beta_i + H_3->f[i][j-1]*alpha_i): NumType(0);
+            I_6->f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_5->f[i][j-1]*epsilon_i) : NumType(0);
+            I_7->f[i][j] = j ? psi[dnaSeq.ori[j]]*H_5->f[i][j-1]*omega_i : NumType(0);
+            H_3->f[i][j] = Match->f[i][j] + H_2->f[i][j]*(NumType(1)-omega_i) + H_6->f[i][j]*(NumType(1)-beta_d)
+                        + I_3->f[i][j] + I_4->f[i][j]*(NumType(1)-delta_i) + I_5->f[i][j]*(1-epsilon_i) + I_6->f[i][j]*(NumType(1)-beta_i);
+            H_4->f[i][j] = H_3->f[i][j]*(NumType(1)-alpha_i-alpha_d-gamma) + D_3->f[i][j];
+            H_5->f[i][j] = H_4->f[i][j]*(NumType(1) - omega_d) + I_7->f[i][j];
+            finish->f[i][j] = H_5->f[i][j]*(NumType(1)-omega_i);
+            //std::cout << i << " " << j << " (naiveForward): " << I_1->f[i][j]<<" "<<I_2->f[i][j]<<" "<<I_3->f[i][j]<<" "<<I_4->f[i][j]<<" "<<I_5->f[i][j]<<" "<<I_6->f[i][j]<<" "<<I_7->f[i][j]<<std::endl;
+            //std::cout << i << " " << j << " (naiveForward): " << H_1->f[i][j]<<" "<<H_2->f[i][j]<<" "<<H_3->f[i][j]<<" "<<H_4->f[i][j]<<" "<<H_5->f[i][j]<<" "<<H_6->f[i][j]<<" "<<H_7->f[i][j]<<std::endl;
             }
     }
-    finishFwd = finish.f[n][m];
+    finishFwd = finish->f[n][m];
     reversep = NumType(1.0)/finishFwd;
 }
 
@@ -80,55 +96,55 @@ void PairHMM::logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
     logStartFwd = lone;
     for (int i = 0; i <= n; i ++) {
         for (int j = 0; j <= m; j ++) {
-            //start.f[i][j] = (i || j) ? NumType(0) : NumType(1);
-            start.logf[i][j] = (i || j) ? lzero : lone;
-            //D_1.f[i][j] = i ? phi[proSeq[i]]*H_1.f[i-1][j]*omega_d : NumType(0); 
-            D_1.logf[i][j] = i ? H_1.logf[i-1][j]+log_omega_d : lzero; 
-            //H_1.f[i][j] = start.f[i][j] + D_1.f[i][j];
-            //std::cout << i << " " << j << ":: " <<start.logf[i][j]<<" "<<D_1.logf[i][j] << std::endl;
-            H_1.logf[i][j] = LogSumExp(start.logf[i][j], D_1.logf[i][j]);
-            //std::cout << i << " " << j << ":: " <<H_1.logf[i][j]<<" "<<D_1.logf[i][j] << std::endl;
-            //I_1.f[i][j] = j ? psi[dnaSeq.ori[j]]*H_2.f[i][j-1]*omega_i : NumType(0);
-            I_1.logf[i][j] = j ? H_2.logf[i][j-1] + log_omega_i : lzero;
-            //H_2.f[i][j] = H_1.f[i][j]*(NumType(1)-omega_d) + I_1.f[i][j];
-            H_2.logf[i][j] = LogSumExp(H_1.logf[i][j] + Log1m(log_omega_d), I_1.logf[i][j]);
-            //Match.f[i][j] = (i > 0 && j > 2) ? pi[proSeq[i]][dnaSeq.triplet[j]]*H_3.f[i-1][j-3]*gamma : NumType(0); 
-            Match.logf[i][j] = (i > 0 && j > 2) ? log_pi[proSeq[i]][dnaSeq.triplet[j]]+H_3.logf[i-1][j-3]+log_gamma
+            //start->f[i][j] = (i || j) ? NumType(0) : NumType(1);
+            start->logf[i][j] = (i || j) ? lzero : lone;
+            //D_1->f[i][j] = i ? phi[proSeq[i]]*H_1->f[i-1][j]*omega_d : NumType(0); 
+            D_1->logf[i][j] = i ? H_1->logf[i-1][j]+log_omega_d : lzero; 
+            //H_1->f[i][j] = start->f[i][j] + D_1->f[i][j];
+            //std::cout << i << " " << j << ":: " <<start->logf[i][j]<<" "<<D_1->logf[i][j] << std::endl;
+            H_1->logf[i][j] = LogSumExp(start->logf[i][j], D_1->logf[i][j]);
+            //std::cout << i << " " << j << ":: " <<H_1->logf[i][j]<<" "<<D_1->logf[i][j] << std::endl;
+            //I_1->f[i][j] = j ? psi[dnaSeq.ori[j]]*H_2->f[i][j-1]*omega_i : NumType(0);
+            I_1->logf[i][j] = j ? H_2->logf[i][j-1] + log_omega_i : lzero;
+            //H_2->f[i][j] = H_1->f[i][j]*(NumType(1)-omega_d) + I_1->f[i][j];
+            H_2->logf[i][j] = LogSumExp(H_1->logf[i][j] + Log1m(log_omega_d), I_1->logf[i][j]);
+            //Match->f[i][j] = (i > 0 && j > 2) ? pi[proSeq[i]][dnaSeq.triplet[j]]*H_3->f[i-1][j-3]*gamma : NumType(0); 
+            Match->logf[i][j] = (i > 0 && j > 2) ? log_pi[proSeq[i]][dnaSeq.triplet[j]]+H_3->logf[i-1][j-3]+log_gamma
                                                   -log_phi[proSeq[i]]-log_psi[dnaSeq.ori[j-2]]-log_psi[dnaSeq.ori[j-1]]-log_psi[dnaSeq.ori[j]]:lzero;
-            //D_3.f[i][j] = i ? phi[proSeq[i]]*H_4.f[i-1][j]*omega_d : NumType(0);
-            D_3.logf[i][j] = i ? H_4.logf[i-1][j] + log_omega_d : lzero;//2020/10/10
-            //D_2.f[i][j] =  i ? phi[proSeq[i]]*(H_3.f[i-1][j]*alpha_d + H_6.f[i-1][j]*beta_d) : NumType(0);
-            D_2.logf[i][j] = i ? LogSumExp(H_3.logf[i-1][j]+log_alpha_d, H_6.logf[i-1][j] + log_beta_d) : lzero;
-            //I_2.f[i][j] = j ? psi[dnaSeq.ori[j]]*(D_2.f[i][j-1]*(NumType(1)-delta_d)) : NumType(0);
-            I_2.logf[i][j] = j ? D_2.logf[i][j-1] + Log1m(log_delta_d) : lzero; 
-            //I_3.f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_2.f[i][j-1] + H_7.f[i][j-1]*(NumType(1)-epsilon_d)) : NumType(0);
-            I_3.logf[i][j] = j ? LogSumExp(I_2.logf[i][j-1], H_7.logf[i][j-1]+Log1m(log_epsilon_d)) : lzero;
-            //H_7.f[i][j] = D_2.f[i][j]*delta_d;
-            H_7.logf[i][j] = D_2.logf[i][j] + log_delta_d;
-            //H_6.f[i][j] = H_7.f[i][j]*epsilon_d;
-            H_6.logf[i][j] = H_7.logf[i][j] + log_epsilon_d;
-            //I_5.f[i][j] = j ? psi[dnaSeq.ori[j]]*I_4.f[i][j-1]*delta_i : NumType(0);
-            I_5.logf[i][j] = j ? I_4.logf[i][j-1] + log_delta_i : lzero;
-            //I_4.f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_6.f[i][j-1]*beta_i + H_3.f[i][j-1]*alpha_i): NumType(0);
-            I_4.logf[i][j] = j ? LogSumExp(I_6.logf[i][j-1]+log_beta_i, H_3.logf[i][j-1]+log_alpha_i) : lzero;
-            //I_6.f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_5.f[i][j-1]*epsilon_i) : NumType(0);
-            I_6.logf[i][j] = j ? I_5.logf[i][j-1]+log_epsilon_i : lzero;
-            //I_7.f[i][j] = j ? psi[dnaSeq.ori[j]]*H_5.f[i][j-1]*omega_i : NumType(0);
-            I_7.logf[i][j] = j ? H_5.logf[i][j-1]+log_omega_i : lzero;
-            //H_3.f[i][j] = Match.f[i][j] + H_2.f[i][j]*(NumType(1)-omega_i) + H_6.f[i][j]*(NumType(1)-beta_d)
-            //            + I_3.f[i][j] + I_4.f[i][j]*(NumType(1)-delta_i) + I_5.f[i][j]*(1-epsilon_i) + I_6.f[i][j]*(NumType(1)-beta_i);
-            H_3.logf[i][j] = LogSumExp(Match.logf[i][j], H_2.logf[i][j]+Log1m(log_omega_i), H_6.logf[i][j]+Log1m(log_beta_d), I_3.logf[i][j],
-                                    I_4.logf[i][j]+Log1m(log_delta_i), I_5.logf[i][j]+Log1m(log_epsilon_i), I_6.logf[i][j]+Log1m(log_beta_i));
-            //H_4.f[i][j] = H_3.f[i][j]*(NumType(1)-alpha_i-alpha_d-gamma) + D_3.f[i][j];
-            H_4.logf[i][j] = LogSumExp(H_3.logf[i][j]+Log1m(LogSumExp(log_alpha_i, log_alpha_d, log_gamma)), D_3.logf[i][j]);
-            //H_5.f[i][j] = H_4.f[i][j]*(NumType(1) - omega_d) + I_7.f[i][j];
-            H_5.logf[i][j] = LogSumExp(H_4.logf[i][j]+Log1m(log_omega_d),I_7.logf[i][j]);
-            //finish.f[i][j] = H_5.f[i][j]*(NumType(1)-omega_i);
-            finish.logf[i][j] = H_5.logf[i][j]+Log1m(log_omega_i);
+            //D_3->f[i][j] = i ? phi[proSeq[i]]*H_4->f[i-1][j]*omega_d : NumType(0);
+            D_3->logf[i][j] = i ? H_4->logf[i-1][j] + log_omega_d : lzero;//2020/10/10
+            //D_2->f[i][j] =  i ? phi[proSeq[i]]*(H_3->f[i-1][j]*alpha_d + H_6->f[i-1][j]*beta_d) : NumType(0);
+            D_2->logf[i][j] = i ? LogSumExp(H_3->logf[i-1][j]+log_alpha_d, H_6->logf[i-1][j] + log_beta_d) : lzero;
+            //I_2->f[i][j] = j ? psi[dnaSeq.ori[j]]*(D_2->f[i][j-1]*(NumType(1)-delta_d)) : NumType(0);
+            I_2->logf[i][j] = j ? D_2->logf[i][j-1] + Log1m(log_delta_d) : lzero; 
+            //I_3->f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_2->f[i][j-1] + H_7->f[i][j-1]*(NumType(1)-epsilon_d)) : NumType(0);
+            I_3->logf[i][j] = j ? LogSumExp(I_2->logf[i][j-1], H_7->logf[i][j-1]+Log1m(log_epsilon_d)) : lzero;
+            //H_7->f[i][j] = D_2->f[i][j]*delta_d;
+            H_7->logf[i][j] = D_2->logf[i][j] + log_delta_d;
+            //H_6->f[i][j] = H_7->f[i][j]*epsilon_d;
+            H_6->logf[i][j] = H_7->logf[i][j] + log_epsilon_d;
+            //I_5->f[i][j] = j ? psi[dnaSeq.ori[j]]*I_4->f[i][j-1]*delta_i : NumType(0);
+            I_5->logf[i][j] = j ? I_4->logf[i][j-1] + log_delta_i : lzero;
+            //I_4->f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_6->f[i][j-1]*beta_i + H_3->f[i][j-1]*alpha_i): NumType(0);
+            I_4->logf[i][j] = j ? LogSumExp(I_6->logf[i][j-1]+log_beta_i, H_3->logf[i][j-1]+log_alpha_i) : lzero;
+            //I_6->f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_5->f[i][j-1]*epsilon_i) : NumType(0);
+            I_6->logf[i][j] = j ? I_5->logf[i][j-1]+log_epsilon_i : lzero;
+            //I_7->f[i][j] = j ? psi[dnaSeq.ori[j]]*H_5->f[i][j-1]*omega_i : NumType(0);
+            I_7->logf[i][j] = j ? H_5->logf[i][j-1]+log_omega_i : lzero;
+            //H_3->f[i][j] = Match->f[i][j] + H_2->f[i][j]*(NumType(1)-omega_i) + H_6->f[i][j]*(NumType(1)-beta_d)
+            //            + I_3->f[i][j] + I_4->f[i][j]*(NumType(1)-delta_i) + I_5->f[i][j]*(1-epsilon_i) + I_6->f[i][j]*(NumType(1)-beta_i);
+            H_3->logf[i][j] = LogSumExp(Match->logf[i][j], H_2->logf[i][j]+Log1m(log_omega_i), H_6->logf[i][j]+Log1m(log_beta_d), I_3->logf[i][j],
+                                    I_4->logf[i][j]+Log1m(log_delta_i), I_5->logf[i][j]+Log1m(log_epsilon_i), I_6->logf[i][j]+Log1m(log_beta_i));
+            //H_4->f[i][j] = H_3->f[i][j]*(NumType(1)-alpha_i-alpha_d-gamma) + D_3->f[i][j];
+            H_4->logf[i][j] = LogSumExp(H_3->logf[i][j]+Log1m(LogSumExp(log_alpha_i, log_alpha_d, log_gamma)), D_3->logf[i][j]);
+            //H_5->f[i][j] = H_4->f[i][j]*(NumType(1) - omega_d) + I_7->f[i][j];
+            H_5->logf[i][j] = LogSumExp(H_4->logf[i][j]+Log1m(log_omega_d),I_7->logf[i][j]);
+            //finish->f[i][j] = H_5->f[i][j]*(NumType(1)-omega_i);
+            finish->logf[i][j] = H_5->logf[i][j]+Log1m(log_omega_i);
             //checkforward(i, j);
         }
     }
-    logFinishFwd = finish.logf[n][m];
+    logFinishFwd = finish->logf[n][m];
     logProb = logFinishFwd;
     //std::cout << logProb <<std::endl;
 }
@@ -143,57 +159,57 @@ void PairHMM::naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq
     for (int i = n; i >= 0; i --) {
         for (int j = m; j >= 0; j --) {
             /* def: just leave
-            finish.b[i][j] = (i == n && j == m) ? NumType(1) : NumType(0);
-            H_5.b[i][j] = ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_7.b[i][j+1]*omega_i) + finish.b[i][j]*(NumType(1)-omega_i);
-            I_7.b[i][j] = H_5.b[i][j];
-            H_4.b[i][j] = H_5.b[i][j]*(NumType(1)-omega_d) + (i == n ? NumType(0) : phi[proSeq[i+1]]*D_3.b[i+1][j]*omega_d);
-            D_3.b[i][j] = H_4.b[i][j];
-            H_3.b[i][j] = ((i == n || j >= m - 2) ? NumType(0) : pi[proSeq[i+1]][dnaSeq.triplet[j+3]]*Match.b[i+1][j+3]*gamma) + H_4.b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
-                        + ((i == n) ? NumType(0) : phi[proSeq[i+1]]*D_2.b[i+1][j]*alpha_d) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_4.b[i][j+1]*alpha_i);
-            Match.b[i][j] = H_3.b[i][j];
-            H_6.b[i][j] = H_3.b[i][j]*(NumType(1)-beta_d) + ((i == n) ? NumType(0) : phi[proSeq[i+1]]*D_2.b[i+1][j]*beta_d);
-            H_7.b[i][j] = H_6.b[i][j]*epsilon_d + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3.b[i][j+1]*(NumType(1)-epsilon_d));
-            D_2.b[i][j] = H_7.b[i][j]*delta_d + ((j == m) ? NumType(0) : I_2.b[i][j]*(NumType(1)-delta_d));
-            I_2.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3.b[i][j+1];
-            I_3.b[i][j] = H_3.b[i][j];
-            I_5.b[i][j] = H_3.b[i][j]*(NumType(1)-epsilon_i) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_6.b[i][j+1]*epsilon_i);
-            I_4.b[i][j] = H_3.b[i][j]*(NumType(1)-delta_i) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_5.b[i][j+1]*epsilon_i);
-            I_6.b[i][j] = H_3.b[i][j]*(NumType(1)-beta_i) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_4.b[i][j+1]*epsilon_i);
-            H_2.b[i][j] = ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_1.b[i][j+1]*omega_i) + H_3.b[i][j]*(NumType(1)-omega_i);
-            I_1.b[i][j] = H_2.b[i][j];
-            H_1.b[i][j] = H_2.b[i][j]*(NumType(1)-omega_d) + (i == n ? NumType(0) : phi[proSeq[i+1]]*D_1.b[i+1][j]*omega_d);
-            D_1.b[i][j] = H_1.b[i][j];
-            start.b[i][j] = H_1.b[i][j];
+            finish->b[i][j] = (i == n && j == m) ? NumType(1) : NumType(0);
+            H_5->b[i][j] = ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_7->b[i][j+1]*omega_i) + finish->b[i][j]*(NumType(1)-omega_i);
+            I_7->b[i][j] = H_5->b[i][j];
+            H_4->b[i][j] = H_5->b[i][j]*(NumType(1)-omega_d) + (i == n ? NumType(0) : phi[proSeq[i+1]]*D_3->b[i+1][j]*omega_d);
+            D_3->b[i][j] = H_4->b[i][j];
+            H_3->b[i][j] = ((i == n || j >= m - 2) ? NumType(0) : pi[proSeq[i+1]][dnaSeq.triplet[j+3]]*Match->b[i+1][j+3]*gamma) + H_4->b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
+                        + ((i == n) ? NumType(0) : phi[proSeq[i+1]]*D_2->b[i+1][j]*alpha_d) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_4->b[i][j+1]*alpha_i);
+            Match->b[i][j] = H_3->b[i][j];
+            H_6->b[i][j] = H_3->b[i][j]*(NumType(1)-beta_d) + ((i == n) ? NumType(0) : phi[proSeq[i+1]]*D_2->b[i+1][j]*beta_d);
+            H_7->b[i][j] = H_6->b[i][j]*epsilon_d + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3->b[i][j+1]*(NumType(1)-epsilon_d));
+            D_2->b[i][j] = H_7->b[i][j]*delta_d + ((j == m) ? NumType(0) : I_2->b[i][j]*(NumType(1)-delta_d));
+            I_2->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3->b[i][j+1];
+            I_3->b[i][j] = H_3->b[i][j];
+            I_5->b[i][j] = H_3->b[i][j]*(NumType(1)-epsilon_i) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_6->b[i][j+1]*epsilon_i);
+            I_4->b[i][j] = H_3->b[i][j]*(NumType(1)-delta_i) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_5->b[i][j+1]*epsilon_i);
+            I_6->b[i][j] = H_3->b[i][j]*(NumType(1)-beta_i) + ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_4->b[i][j+1]*epsilon_i);
+            H_2->b[i][j] = ((j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_1->b[i][j+1]*omega_i) + H_3->b[i][j]*(NumType(1)-omega_i);
+            I_1->b[i][j] = H_2->b[i][j];
+            H_1->b[i][j] = H_2->b[i][j]*(NumType(1)-omega_d) + (i == n ? NumType(0) : phi[proSeq[i+1]]*D_1->b[i+1][j]*omega_d);
+            D_1->b[i][j] = H_1->b[i][j];
+            start->b[i][j] = H_1->b[i][j];
             */
            // def: just arrive
            //psi: insertion, phi: deletion
-            finish.b[i][j] = (i == n && j == m) ? NumType(1) : NumType(0);
-            I_7.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_5.b[i][j+1];
-            H_5.b[i][j] = I_7.b[i][j]*omega_i + finish.b[i][j]*(NumType(1)-omega_i);
-            D_3.b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_4.b[i+1][j];
-            H_4.b[i][j] = H_5.b[i][j]*(NumType(1)-omega_d) + D_3.b[i][j]*omega_d;
-            I_2.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3.b[i][j+1];
-            Match.b[i][j] = (i == n || j >= m - 2) ? NumType(0) : pi[proSeq[i+1]][dnaSeq.triplet[j+3]]*H_3.b[i+1][j+3];
-            D_2.b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*(I_2.b[i+1][j]*(NumType(1)-delta_d) + H_7.b[i+1][j]*delta_d);
-            I_4.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3.b[i][j+1]*(NumType(1)-delta_i)+I_5.b[i][j+1]*epsilon_i);
-            H_3.b[i][j] = Match.b[i][j]*gamma + H_4.b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
-                        + D_2.b[i][j]*alpha_d + I_4.b[i][j]*alpha_i;
-            H_6.b[i][j] = H_3.b[i][j]*(NumType(1)-beta_d) + D_2.b[i][j]*beta_d;
-            I_3.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_3.b[i][j+1];
-            H_7.b[i][j] = H_6.b[i][j]*epsilon_d + I_3.b[i][j]*(NumType(1)-epsilon_d);
-            I_5.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3.b[i][j+1]*(NumType(1)-epsilon_i)+I_6.b[i][j+1]*epsilon_i);
-            I_1.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_2.b[i][j+1];
-            I_6.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3.b[i][j+1]*(NumType(1)-beta_i)+I_4.b[i][j+1]*epsilon_i);
-            H_2.b[i][j] = I_1.b[i][j]*omega_i + H_3.b[i][j]*(NumType(1)-omega_i);
-            D_1.b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_1.b[i+1][j];
-            H_1.b[i][j] = D_1.b[i][j]*omega_d + H_2.b[i][j]*(NumType(1)-omega_d);
-            start.b[i][j] = H_1.b[i][j];
-            //std::cout << i << " " << j << " (naiveBack): " << I_1.b[i][j]<<" "<<I_2.b[i][j]<<" "<<I_3.b[i][j]<<" "<<I_4.b[i][j]<<" "<<I_5.b[i][j]<<" "<<I_6.b[i][j]<<" "<<I_7.b[i][j]<<std::endl;
-            //std::cout << i << " " << j << " (naiveBack): " << H_1.b[i][j]<<" "<<H_2.b[i][j]<<" "<<H_3.b[i][j]<<" "<<H_4.b[i][j]<<" "<<H_5.b[i][j]<<" "<<H_6.b[i][j]<<" "<<H_7.b[i][j]<<std::endl;
-            //std::cout << i << " " << j << ": " << I_1.b[i][j]<<" "<<I_2.b[i][j]<<" "<<I_3.b[i][j]<<" "<<I_4.b[i][j]<<" "<<I_5.b[i][j]<<" "<<I_6.b[i][j]<<" "<<I_7.b[i][j]<<std::endl;
+            finish->b[i][j] = (i == n && j == m) ? NumType(1) : NumType(0);
+            I_7->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_5->b[i][j+1];
+            H_5->b[i][j] = I_7->b[i][j]*omega_i + finish->b[i][j]*(NumType(1)-omega_i);
+            D_3->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_4->b[i+1][j];
+            H_4->b[i][j] = H_5->b[i][j]*(NumType(1)-omega_d) + D_3->b[i][j]*omega_d;
+            I_2->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3->b[i][j+1];
+            Match->b[i][j] = (i == n || j >= m - 2) ? NumType(0) : pi[proSeq[i+1]][dnaSeq.triplet[j+3]]*H_3->b[i+1][j+3];
+            D_2->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*(I_2->b[i+1][j]*(NumType(1)-delta_d) + H_7->b[i+1][j]*delta_d);
+            I_4->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-delta_i)+I_5->b[i][j+1]*epsilon_i);
+            H_3->b[i][j] = Match->b[i][j]*gamma + H_4->b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
+                        + D_2->b[i][j]*alpha_d + I_4->b[i][j]*alpha_i;
+            H_6->b[i][j] = H_3->b[i][j]*(NumType(1)-beta_d) + D_2->b[i][j]*beta_d;
+            I_3->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_3->b[i][j+1];
+            H_7->b[i][j] = H_6->b[i][j]*epsilon_d + I_3->b[i][j]*(NumType(1)-epsilon_d);
+            I_5->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-epsilon_i)+I_6->b[i][j+1]*epsilon_i);
+            I_1->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_2->b[i][j+1];
+            I_6->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-beta_i)+I_4->b[i][j+1]*epsilon_i);
+            H_2->b[i][j] = I_1->b[i][j]*omega_i + H_3->b[i][j]*(NumType(1)-omega_i);
+            D_1->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_1->b[i+1][j];
+            H_1->b[i][j] = D_1->b[i][j]*omega_d + H_2->b[i][j]*(NumType(1)-omega_d);
+            start->b[i][j] = H_1->b[i][j];
+            //std::cout << i << " " << j << " (naiveBack): " << I_1->b[i][j]<<" "<<I_2->b[i][j]<<" "<<I_3->b[i][j]<<" "<<I_4->b[i][j]<<" "<<I_5->b[i][j]<<" "<<I_6->b[i][j]<<" "<<I_7->b[i][j]<<std::endl;
+            //std::cout << i << " " << j << " (naiveBack): " << H_1->b[i][j]<<" "<<H_2->b[i][j]<<" "<<H_3->b[i][j]<<" "<<H_4->b[i][j]<<" "<<H_5->b[i][j]<<" "<<H_6->b[i][j]<<" "<<H_7->b[i][j]<<std::endl;
+            //std::cout << i << " " << j << ": " << I_1->b[i][j]<<" "<<I_2->b[i][j]<<" "<<I_3->b[i][j]<<" "<<I_4->b[i][j]<<" "<<I_5->b[i][j]<<" "<<I_6->b[i][j]<<" "<<I_7->b[i][j]<<std::endl;
         }
     }
-    startBwd = start.b[0][0];
+    startBwd = start->b[0][0];
 }
 
 void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
@@ -211,55 +227,55 @@ void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) 
         for (int j = m; j >= 0; j --) {
             // def: just arrive
             //psi: insertion, phi: deletion
-            //finish.b[i][j] = (i == n && j == m) ? NumType(1) : NumType(0);
-            finish.logb[i][j] = (i == n && j == m) ? lone : lzero;
-            //I_7.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_5.b[i][j+1];
-            I_7.logb[i][j] = (j == m) ? lzero : H_5.logb[i][j+1];
-            //H_5.b[i][j] = I_7.b[i][j]*omega_i + finish.b[i][j]*(NumType(1)-omega_i);
-            H_5.logb[i][j] = LogSumExp(I_7.logb[i][j]+log_omega_i, finish.logb[i][j]+Log1m(log_omega_i));
-            //D_3.b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_4.b[i+1][j];
-            D_3.logb[i][j] = (i == n) ? lzero : H_4.logb[i+1][j];
-            //H_4.b[i][j] = H_5.b[i][j]*(NumType(1)-omega_d) + D_3.b[i][j]*omega_d;
-            H_4.logb[i][j] = LogSumExp(H_5.logb[i][j]+Log1m(log_omega_d), D_3.logb[i][j]+log_omega_d);
-            //I_2.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3.b[i][j+1];
-            I_2.logb[i][j] = (j == m) ? lzero : I_3.logb[i][j+1];
-            //Match.b[i][j] = (i == n || j >= m - 2) ? NumType(0) : pi[proSeq[i+1]][dnaSeq.triplet[j+3]]*H_3.b[i+1][j+3];
-            Match.logb[i][j] = (i == n || j >= m - 2) ? lzero : log_pi[proSeq[i+1]][dnaSeq.triplet[j+3]]+H_3.logb[i+1][j+3]
+            //finish->b[i][j] = (i == n && j == m) ? NumType(1) : NumType(0);
+            finish->logb[i][j] = (i == n && j == m) ? lone : lzero;
+            //I_7->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_5->b[i][j+1];
+            I_7->logb[i][j] = (j == m) ? lzero : H_5->logb[i][j+1];
+            //H_5->b[i][j] = I_7->b[i][j]*omega_i + finish->b[i][j]*(NumType(1)-omega_i);
+            H_5->logb[i][j] = LogSumExp(I_7->logb[i][j]+log_omega_i, finish->logb[i][j]+Log1m(log_omega_i));
+            //D_3->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_4->b[i+1][j];
+            D_3->logb[i][j] = (i == n) ? lzero : H_4->logb[i+1][j];
+            //H_4->b[i][j] = H_5->b[i][j]*(NumType(1)-omega_d) + D_3->b[i][j]*omega_d;
+            H_4->logb[i][j] = LogSumExp(H_5->logb[i][j]+Log1m(log_omega_d), D_3->logb[i][j]+log_omega_d);
+            //I_2->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*I_3->b[i][j+1];
+            I_2->logb[i][j] = (j == m) ? lzero : I_3->logb[i][j+1];
+            //Match->b[i][j] = (i == n || j >= m - 2) ? NumType(0) : pi[proSeq[i+1]][dnaSeq.triplet[j+3]]*H_3->b[i+1][j+3];
+            Match->logb[i][j] = (i == n || j >= m - 2) ? lzero : log_pi[proSeq[i+1]][dnaSeq.triplet[j+3]]+H_3->logb[i+1][j+3]
                                                                 - log_phi[proSeq[i+1]] - log_psi[dnaSeq.ori[j+1]] - log_psi[dnaSeq.ori[j+2]] - log_psi[dnaSeq.ori[j+3]];
-            //D_2.b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*(I_2.b[i+1][j]*(NumType(1)-delta_d) + H_7.b[i+1][j]*delta_d);
-            D_2.logb[i][j] = (i == n) ? lzero : LogSumExp(I_2.logb[i+1][j]+Log1m(log_delta_d), H_7.logb[i+1][j]+log_delta_d);
-            //I_4.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3.b[i][j+1]*(NumType(1)-delta_i)+I_5.b[i][j+1]*epsilon_i);
-            I_4.logb[i][j] = (j == m) ? lzero : LogSumExp(H_3.logb[i][j+1]+Log1m(log_delta_i), I_5.logb[i][j+1]+log_epsilon_i);
-            //H_3.b[i][j] = Match.b[i][j]*gamma + H_4.b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
-            //            + D_2.b[i][j]*alpha_d + I_4.b[i][j]*alpha_i;
-            H_3.logb[i][j] = LogSumExp(Match.logb[i][j]+log_gamma, H_4.logb[i][j]+log(1.0-gamma-alpha_d-alpha_i),/*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i))*/
-                                       D_2.logb[i][j]+log_alpha_d, I_4.logb[i][j]+log_alpha_i);
-            //H_6.b[i][j] = H_3.b[i][j]*(NumType(1)-beta_d) + D_2.b[i][j]*beta_d;
-            H_6.logb[i][j] = LogSumExp(H_3.logb[i][j]+Log1m(log_beta_d), D_2.logb[i][j]+log_beta_d);
-            //I_3.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_3.b[i][j+1];
-            I_3.logb[i][j] = (j == m) ? lzero : H_3.logb[i][j+1];
-            //H_7.b[i][j] = H_6.b[i][j]*epsilon_d + I_3.b[i][j]*(NumType(1)-epsilon_d);
-            H_7.logb[i][j] = LogSumExp(H_6.logb[i][j]+log_epsilon_d, I_3.logb[i][j]+Log1m(log_epsilon_d));
-            //I_5.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3.b[i][j+1]*(NumType(1)-epsilon_i)+I_6.b[i][j+1]*epsilon_i);
-            I_5.logb[i][j] = (j == m) ? lzero : LogSumExp(H_3.logb[i][j+1]+Log1m(log_epsilon_i), I_6.logb[i][j+1]+log_epsilon_i);
-            //I_1.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_2.b[i][j+1];
-            I_1.logb[i][j] = (j == m) ? lzero : H_2.logb[i][j+1];
-            //I_6.b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3.b[i][j+1]*(NumType(1)-beta_i)+I_4.b[i][j+1]*epsilon_i);
-            I_6.logb[i][j] = (j == m) ? lzero : LogSumExp(H_3.logb[i][j+1]+Log1m(log_beta_i), I_4.logb[i][j+1]+log_epsilon_i);
-            //H_2.b[i][j] = I_1.b[i][j]*omega_i + H_3.b[i][j]*(NumType(1)-omega_i);
-            H_2.logb[i][j] = LogSumExp(I_1.logb[i][j]+log_omega_i, H_3.logb[i][j]+Log1m(log_omega_i));
-            //D_1.b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_1.b[i+1][j];
-            D_1.logb[i][j] = (i == n) ? lzero : H_1.logb[i+1][j];
-            //H_1.b[i][j] = D_1.b[i][j]*omega_d + H_2.b[i][j]*(NumType(1)-omega_d);
-            H_1.logb[i][j] = LogSumExp(D_1.logb[i][j]+log_omega_d, H_2.logb[i][j]+Log1m(log_omega_d));
-            //start.b[i][j] = H_1.b[i][j];
-            start.logb[i][j] = H_1.logb[i][j];
-            //std::cout << i << " " << j << " (logBack): " << I_1.logb[i][j]<<" "<<I_2.logb[i][j]<<" "<<I_3.logb[i][j]<<" "<<I_4.logb[i][j]<<" "<<I_5.logb[i][j]<<" "<<I_6.logb[i][j]<<" "<<I_7.logb[i][j]<<std::endl;
-            //std::cout << i << " " << j << " (logBack): " << H_1.logb[i][j]<<" "<<H_2.logb[i][j]<<" "<<H_3.logb[i][j]<<" "<<H_4.logb[i][j]<<" "<<H_5.logb[i][j]<<" "<<H_6.logb[i][j]<<" "<<H_7.logb[i][j]<<std::endl;
+            //D_2->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*(I_2->b[i+1][j]*(NumType(1)-delta_d) + H_7->b[i+1][j]*delta_d);
+            D_2->logb[i][j] = (i == n) ? lzero : LogSumExp(I_2->logb[i+1][j]+Log1m(log_delta_d), H_7->logb[i+1][j]+log_delta_d);
+            //I_4->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-delta_i)+I_5->b[i][j+1]*epsilon_i);
+            I_4->logb[i][j] = (j == m) ? lzero : LogSumExp(H_3->logb[i][j+1]+Log1m(log_delta_i), I_5->logb[i][j+1]+log_epsilon_i);
+            //H_3->b[i][j] = Match->b[i][j]*gamma + H_4->b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
+            //            + D_2->b[i][j]*alpha_d + I_4->b[i][j]*alpha_i;
+            H_3->logb[i][j] = LogSumExp(Match->logb[i][j]+log_gamma, H_4->logb[i][j]+log(1.0-gamma-alpha_d-alpha_i),/*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i))*/
+                                       D_2->logb[i][j]+log_alpha_d, I_4->logb[i][j]+log_alpha_i);
+            //H_6->b[i][j] = H_3->b[i][j]*(NumType(1)-beta_d) + D_2->b[i][j]*beta_d;
+            H_6->logb[i][j] = LogSumExp(H_3->logb[i][j]+Log1m(log_beta_d), D_2->logb[i][j]+log_beta_d);
+            //I_3->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_3->b[i][j+1];
+            I_3->logb[i][j] = (j == m) ? lzero : H_3->logb[i][j+1];
+            //H_7->b[i][j] = H_6->b[i][j]*epsilon_d + I_3->b[i][j]*(NumType(1)-epsilon_d);
+            H_7->logb[i][j] = LogSumExp(H_6->logb[i][j]+log_epsilon_d, I_3->logb[i][j]+Log1m(log_epsilon_d));
+            //I_5->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-epsilon_i)+I_6->b[i][j+1]*epsilon_i);
+            I_5->logb[i][j] = (j == m) ? lzero : LogSumExp(H_3->logb[i][j+1]+Log1m(log_epsilon_i), I_6->logb[i][j+1]+log_epsilon_i);
+            //I_1->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_2->b[i][j+1];
+            I_1->logb[i][j] = (j == m) ? lzero : H_2->logb[i][j+1];
+            //I_6->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-beta_i)+I_4->b[i][j+1]*epsilon_i);
+            I_6->logb[i][j] = (j == m) ? lzero : LogSumExp(H_3->logb[i][j+1]+Log1m(log_beta_i), I_4->logb[i][j+1]+log_epsilon_i);
+            //H_2->b[i][j] = I_1->b[i][j]*omega_i + H_3->b[i][j]*(NumType(1)-omega_i);
+            H_2->logb[i][j] = LogSumExp(I_1->logb[i][j]+log_omega_i, H_3->logb[i][j]+Log1m(log_omega_i));
+            //D_1->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_1->b[i+1][j];
+            D_1->logb[i][j] = (i == n) ? lzero : H_1->logb[i+1][j];
+            //H_1->b[i][j] = D_1->b[i][j]*omega_d + H_2->b[i][j]*(NumType(1)-omega_d);
+            H_1->logb[i][j] = LogSumExp(D_1->logb[i][j]+log_omega_d, H_2->logb[i][j]+Log1m(log_omega_d));
+            //start->b[i][j] = H_1->b[i][j];
+            start->logb[i][j] = H_1->logb[i][j];
+            //std::cout << i << " " << j << " (logBack): " << I_1->logb[i][j]<<" "<<I_2->logb[i][j]<<" "<<I_3->logb[i][j]<<" "<<I_4->logb[i][j]<<" "<<I_5->logb[i][j]<<" "<<I_6->logb[i][j]<<" "<<I_7->logb[i][j]<<std::endl;
+            //std::cout << i << " " << j << " (logBack): " << H_1->logb[i][j]<<" "<<H_2->logb[i][j]<<" "<<H_3->logb[i][j]<<" "<<H_4->logb[i][j]<<" "<<H_5->logb[i][j]<<" "<<H_6->logb[i][j]<<" "<<H_7->logb[i][j]<<std::endl;
             //checkback(i, j, n, m);
         }
     }
-    logStartBwd = start.logb[0][0];
+    logStartBwd = start->logb[0][0];
 }
 
 void PairHMM::BaumWelchSingleStep(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option) {
@@ -315,8 +331,8 @@ void PairHMM::updateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaS
 }
 
 void PairHMM::naiveUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
-    int n = start.f.size() - 1;
-    int m = start.f[0].size() - 1; 
+    int n = start->f.size() - 1;
+    int m = start->f[0].size() - 1; 
     //psi: insertion phi: deletion
     std::vector<NumType> curr_psi_cnt (4, NumType(0));
     std::vector<NumType> curr_phi_cnt (20, NumType(0));
@@ -324,23 +340,23 @@ void PairHMM::naiveUpdateEmissions(const proSeqType & proSeq, const dnaSeqType &
     for (int i = 0; i <= n; i ++) {
         for (int j = 0; j <= m; j ++) {
             for (int k = 0; k < 4; k ++) {
-                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_1.f[i][j]*I_1.b[i][j-1]*psi[k] : NumType(0);
-                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_2.f[i][j]*I_2.b[i][j-1]*psi[k] : NumType(0);
-                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_3.f[i][j]*I_3.b[i][j-1]*psi[k] : NumType(0);
-                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_4.f[i][j]*I_4.b[i][j-1]*psi[k] : NumType(0);
-                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_5.f[i][j]*I_5.b[i][j-1]*psi[k] : NumType(0);
-                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_6.f[i][j]*I_6.b[i][j-1]*psi[k] : NumType(0);
-                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_7.f[i][j]*I_7.b[i][j-1]*psi[k] : NumType(0);
+                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_1->f[i][j]*I_1->b[i][j-1]*psi[k] : NumType(0);
+                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_2->f[i][j]*I_2->b[i][j-1]*psi[k] : NumType(0);
+                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_3->f[i][j]*I_3->b[i][j-1]*psi[k] : NumType(0);
+                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_4->f[i][j]*I_4->b[i][j-1]*psi[k] : NumType(0);
+                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_5->f[i][j]*I_5->b[i][j-1]*psi[k] : NumType(0);
+                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_6->f[i][j]*I_6->b[i][j-1]*psi[k] : NumType(0);
+                curr_psi_cnt[k] += dnaSeq.ori[j] == k && j ? I_7->f[i][j]*I_7->b[i][j-1]*psi[k] : NumType(0);
             } 
             for (int k = 0; k < 20; k ++) {
-                curr_phi_cnt[k] += proSeq[i] == k && i ? D_1.f[i][j]*D_1.b[i-1][j]*phi[k] : NumType(0);
-                curr_phi_cnt[k] += proSeq[i] == k && i ? D_2.f[i][j]*D_2.b[i-1][j]*phi[k] : NumType(0);
-                curr_phi_cnt[k] += proSeq[i] == k && i ? D_3.f[i][j]*D_3.b[i-1][j]*phi[k] : NumType(0);
+                curr_phi_cnt[k] += proSeq[i] == k && i ? D_1->f[i][j]*D_1->b[i-1][j]*phi[k] : NumType(0);
+                curr_phi_cnt[k] += proSeq[i] == k && i ? D_2->f[i][j]*D_2->b[i-1][j]*phi[k] : NumType(0);
+                curr_phi_cnt[k] += proSeq[i] == k && i ? D_3->f[i][j]*D_3->b[i-1][j]*phi[k] : NumType(0);
             }
             for (int s = 0; s < 20; s ++) {
                 for (int t = 0; t < 64; t ++) {
                     curr_pi_cnt[s][t] += proSeq[i] == s && dnaSeq.triplet[j] == t && i && j > 2 ? 
-                                        Match.f[i][j] * Match.b[i-1][j-3] * pi[s][t] : NumType(0);
+                                        Match->f[i][j] * Match->b[i-1][j-3] * pi[s][t] : NumType(0);
                 }
             }
         }
@@ -360,8 +376,8 @@ void PairHMM::naiveUpdateEmissions(const proSeqType & proSeq, const dnaSeqType &
 
 void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
 
-    int n = start.logf.size() - 1;
-    int m = start.logf[0].size() - 1; 
+    int n = start->logf.size() - 1;
+    int m = start->logf[0].size() - 1; 
     //psi: insertion phi: deletion
     std::vector<std::vector<LogNumType> > curr_log_psi_cnt (4, std::vector<LogNumType> ());
     std::vector<std::vector<LogNumType> > curr_log_phi_cnt (20, std::vector<LogNumType> ());
@@ -370,13 +386,13 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
     for (int i = 0; i <= n; i ++) {
             for (int j = 1; j <= m; j ++) {
                 int k = dnaSeq.ori[j];
-                curr_log_psi_cnt[k].push_back(I_1.logf[i][j]+I_1.logb[i][j-1]+log_psi[k]);
-                curr_log_psi_cnt[k].push_back(I_2.logf[i][j]+I_2.logb[i][j-1]+log_psi[k]);
-                curr_log_psi_cnt[k].push_back(I_3.logf[i][j]+I_3.logb[i][j-1]+log_psi[k]);
-                curr_log_psi_cnt[k].push_back(I_4.logf[i][j]+I_4.logb[i][j-1]+log_psi[k]);
-                curr_log_psi_cnt[k].push_back(I_5.logf[i][j]+I_5.logb[i][j-1]+log_psi[k]);
-                curr_log_psi_cnt[k].push_back(I_6.logf[i][j]+I_6.logb[i][j-1]+log_psi[k]);
-                curr_log_psi_cnt[k].push_back(I_7.logf[i][j]+I_7.logb[i][j-1]+log_psi[k]);
+                curr_log_psi_cnt[k].push_back(I_1->logf[i][j]+I_1->logb[i][j-1]+log_psi[k]);
+                curr_log_psi_cnt[k].push_back(I_2->logf[i][j]+I_2->logb[i][j-1]+log_psi[k]);
+                curr_log_psi_cnt[k].push_back(I_3->logf[i][j]+I_3->logb[i][j-1]+log_psi[k]);
+                curr_log_psi_cnt[k].push_back(I_4->logf[i][j]+I_4->logb[i][j-1]+log_psi[k]);
+                curr_log_psi_cnt[k].push_back(I_5->logf[i][j]+I_5->logb[i][j-1]+log_psi[k]);
+                curr_log_psi_cnt[k].push_back(I_6->logf[i][j]+I_6->logb[i][j-1]+log_psi[k]);
+                curr_log_psi_cnt[k].push_back(I_7->logf[i][j]+I_7->logb[i][j-1]+log_psi[k]);
             }
     }
     for (int k = 0; k < 4; k ++) psi_cnt[k] += 4*exp(log_sum_exp(curr_log_psi_cnt[k].begin(), curr_log_psi_cnt[k].end())-logProb);
@@ -385,13 +401,13 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
         for (int j = 1; j <= m; j ++) {
             if (dnaSeq.ori[j] == k) {
                 for (int i = 0; i <= n; i ++) {
-                    curr_log_psi_cnt[k].push_back(I_1.logf[i][j]+I_1.logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_2.logf[i][j]+I_2.logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_3.logf[i][j]+I_3.logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_4.logf[i][j]+I_4.logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_5.logf[i][j]+I_5.logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_6.logf[i][j]+I_6.logb[i][j-1]+log_psi[k]);
-                    curr_log_psi_cnt[k].push_back(I_7.logf[i][j]+I_7.logb[i][j-1]+log_psi[k]);
+                    curr_log_psi_cnt[k].push_back(I_1->logf[i][j]+I_1->logb[i][j-1]+log_psi[k]);
+                    curr_log_psi_cnt[k].push_back(I_2->logf[i][j]+I_2->logb[i][j-1]+log_psi[k]);
+                    curr_log_psi_cnt[k].push_back(I_3->logf[i][j]+I_3->logb[i][j-1]+log_psi[k]);
+                    curr_log_psi_cnt[k].push_back(I_4->logf[i][j]+I_4->logb[i][j-1]+log_psi[k]);
+                    curr_log_psi_cnt[k].push_back(I_5->logf[i][j]+I_5->logb[i][j-1]+log_psi[k]);
+                    curr_log_psi_cnt[k].push_back(I_6->logf[i][j]+I_6->logb[i][j-1]+log_psi[k]);
+                    curr_log_psi_cnt[k].push_back(I_7->logf[i][j]+I_7->logb[i][j-1]+log_psi[k]);
                 }
             }
         }
@@ -405,9 +421,9 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
         for (int i = 1; i <= n; i ++) {
             if ( proSeq[i] == k ) {
                 for (int j = 0; j <= m; j ++) {
-                    curr_log_phi_cnt[k].push_back(D_1.logf[i][j]+D_1.logb[i-1][j]+log_phi[k]);
-                    curr_log_phi_cnt[k].push_back(D_2.logf[i][j]+D_2.logb[i-1][j]+log_phi[k]);
-                    curr_log_phi_cnt[k].push_back(D_3.logf[i][j]+D_3.logb[i-1][j]+log_phi[k]);
+                    curr_log_phi_cnt[k].push_back(D_1->logf[i][j]+D_1->logb[i-1][j]+log_phi[k]);
+                    curr_log_phi_cnt[k].push_back(D_2->logf[i][j]+D_2->logb[i-1][j]+log_phi[k]);
+                    curr_log_phi_cnt[k].push_back(D_3->logf[i][j]+D_3->logb[i-1][j]+log_phi[k]);
                 }
             }
         }
@@ -419,7 +435,7 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
             for (int i = 1; i <= n; i ++) {
                 for (int j = 3; j <= m; j ++) {
                     if (proSeq[i] == s && dnaSeq.triplet[j] == t) {
-                        curr_log_pi_cnt[s][t].push_back(Match.logf[i][j] + Match.logb[i-1][j-3] + log_pi[s][t]);
+                        curr_log_pi_cnt[s][t].push_back(Match->logf[i][j] + Match->logb[i-1][j-3] + log_pi[s][t]);
                     }
                 }
             }
@@ -499,26 +515,26 @@ void PairHMM::transitionInitialize() {
     &B_i, &C_i, &D_i, &E_i, &F_i, &G_i, &H_i, &X_i, &J_i, &K_i, 
     &B_d, &D_d, &E_d, &F_d, &G_d, &F_d, &H_d, &X_d, &J_d, &K_d, &M, &A
     */
-    J_d.set(&H_1, &D_1);
-    J_i.set(&H_2, &I_1);
-    M.set(&H_3, &Match);
-    A.set(&H_3, &H_4);
-    K_d.set(&H_4, &D_3);
-    K_i.set(&H_5, &I_7);
-    F_d.set(&H_3, &D_2);
-    X_d.set(&H_6, &D_2);
-    B_d.set(&H_6, &H_3);
-    D_d.set(&D_2, &I_2);
-    E_d.set(&H_7, &I_3);
-    G_d.set(&D_2, &H_7);
-    H_d.set(&H_7, &H_6);
-    B_i.set(&I_6, &H_3);
-    E_i.set(&I_5, &H_3);
-    D_i.set(&I_4, &H_3);
-    F_i.set(&H_3, &I_4);
-    G_i.set(&I_4, &I_5);
-    H_i.set(&I_5, &I_6);
-    X_i.set(&I_6, &I_4);
+    J_d.set(H_1, D_1);
+    J_i.set(H_2, I_1);
+    M.set(H_3, Match);
+    A.set(H_3, H_4);
+    K_d.set(H_4, D_3);
+    K_i.set(H_5, I_7);
+    F_d.set(H_3, D_2);
+    X_d.set(H_6, D_2);
+    B_d.set(H_6, H_3);
+    D_d.set(D_2, I_2);
+    E_d.set(H_7, I_3);
+    G_d.set(D_2, H_7);
+    H_d.set(H_7, H_6);
+    B_i.set(I_6, H_3);
+    E_i.set(I_5, H_3);
+    D_i.set(I_4, H_3);
+    F_i.set(H_3, I_4);
+    G_i.set(I_4, I_5);
+    H_i.set(I_5, I_6);
+    X_i.set(I_6, I_4);
 }
 
 void PairHMM::parameterInitialize() {
@@ -560,8 +576,8 @@ void PairHMM::shapeInitialize() {
 }
 
 void PairHMM::BaumWelchSingleStepInitialize(int n, int m, int option) {
-    std::vector<State*> list { &start, &finish, &D_1, &D_2, &D_3, &I_1, &I_2, &I_3, &I_4, &I_5, &I_6, &I_7,
-                          &H_1, &H_2, &H_3, &H_4, &H_5, &H_6, &H_7, &Match};
+    std::vector<State*> list { start, finish, D_1, D_2, D_3, I_1, I_2, I_3, I_4, I_5, I_6, I_7,
+                          H_1, H_2, H_3, H_4, H_5, H_6, H_7, Match};
     switch (option) {
         case (0):
             for(auto & ptr: list) {
@@ -652,9 +668,9 @@ void PairHMM::logToNaive() {
 
 void PairHMM::checkback(int i, int j, int n, int m) {
     double suffix = (n-i) *log_phi[0] + (m-j)*log_psi[0];
-    std::vector<State*> veci {&I_1, &I_2, &I_3, &I_4, &I_5, &I_6, &I_7};
-    std::vector<State*> vech {&H_1, &H_2, &H_3, &H_4, &H_5, &H_6, &H_7};
-    std::vector<State*> vecd {&D_1, &D_2, &D_3};
+    std::vector<State*> veci {I_1, I_2, I_3, I_4, I_5, I_6, I_7};
+    std::vector<State*> vech {H_1, H_2, H_3, H_4, H_5, H_6, H_7};
+    std::vector<State*> vecd {D_1, D_2, D_3};
     std::cout << "Backward check: "<<i<<" & "<< j << ": " << std::endl;
     for(auto & ptr: veci) {
         std::cout << "ori: " << ptr->b[i][j] <<" log: "<<ptr->logb[i][i]<<", error: " <<exp(ptr->logb[i][j] + suffix) - ptr->b[i][j] << std::endl; 
@@ -672,9 +688,9 @@ void PairHMM::checkback(int i, int j, int n, int m) {
 
 void PairHMM::checkforward(int i, int j) {
     double prefix = (i) *log_phi[0] + (j)*log_psi[0];
-    std::vector<State*> veci {&I_1, &I_2, &I_3, &I_4, &I_5, &I_6, &I_7};
-    std::vector<State*> vech {&H_1, &H_2, &H_3, &H_4, &H_5, &H_6, &H_7};
-    std::vector<State*> vecd {&D_1, &D_2, &D_3};
+    std::vector<State*> veci {I_1, I_2, I_3, I_4, I_5, I_6, I_7};
+    std::vector<State*> vech {H_1, H_2, H_3, H_4, H_5, H_6, H_7};
+    std::vector<State*> vecd {D_1, D_2, D_3};
     std::cout << "Forward check: "<<i<<" & "<< j << ": " << std::endl;
     for(auto & ptr: veci) {
         std::cout << "ori: " << ptr->f[i][j] <<" log: "<<ptr->logf[i][i]<<", error: " <<exp(ptr->logf[i][j] + prefix) - ptr->f[i][j] << std::endl; 

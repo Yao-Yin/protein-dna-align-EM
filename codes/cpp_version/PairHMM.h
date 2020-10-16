@@ -16,6 +16,7 @@ typedef std::pair<std::vector<int8_t>, std::vector<int8_t> > dnaSeqType;
 class PairHMM {
 public:
     PairHMM();
+    ~PairHMM();
     void naiveForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
     void logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
     void naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
@@ -40,11 +41,11 @@ public:
     LogNumType logStartFwd, logStartBwd, logFinishFwd, logFinishBwd, logReversep;
     NumType Prob; // To measure the converge of BW algorithm
     LogNumType logProb;
-    State start, finish; 
-    State D_1, D_2, D_3;
-    State I_1, I_2, I_3, I_4, I_5, I_6, I_7;
-    State H_1, H_2, H_3, H_4, H_5, H_6, H_7; // H for central hidden node
-    State Match;
+    State *start, *finish; 
+    State *D_1, *D_2, *D_3;
+    State *I_1, *I_2, *I_3, *I_4, *I_5, *I_6, *I_7;
+    State *H_1, *H_2, *H_3, *H_4, *H_5, *H_6, *H_7; // H for central hidden node
+    State *Match;
     NumType omega_d, omega_i, gamma, alpha_d, beta_d, epsilon_d, delta_d, alpha_i, beta_i, epsilon_i, delta_i;
     LogNumType log_omega_d, log_omega_i, log_gamma, log_alpha_d, log_beta_d, log_epsilon_d, log_delta_d, log_alpha_i, log_beta_i, log_epsilon_i, log_delta_i;
     Transition M, A;
@@ -69,6 +70,7 @@ public:
     void displayEmissionCnts();
     void displayTransition();
     void displayTransitionCnts();
+    void statesBuild();
 private:
 
 };
