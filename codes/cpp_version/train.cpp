@@ -43,9 +43,14 @@ std::string genDNA(int n) {
 std::string genPro(int n) {
     DataTool dt;
     std::string res;
+    std::vector<int> cnts(20, 0);
     for (int i = 0; i < n; i ++) {
-        res.push_back(dt.decodeAA(rand()%20));
+        int curr = rand() % 20;
+        res.push_back(dt.decodeAA(curr));
+        cnts[curr] ++;
     }
+    for (auto c:cnts) std::cout << c << " ";
+    std::cout << std::endl;
     return res;
 }
 
@@ -54,19 +59,21 @@ int main()
     std::cout << "hello" << std::endl;
     PairHMM tiny;
     DataTool dt;
-    std::string dna = genDNA(4000);
-    std::string pro = genPro(1000);
+    std::string dna = genDNA(300);
+    std::string pro = genPro(100);
     proSeqType p = dt.encodePro(pro);
     dnaSeqType d = dt.encodeDNA(dna);
     //std::cout << LogSumExp(log(0), log(0)) << std::endl;
     //std::cout << p.size() << " " << d.ori.size() << " " << std::endl;
     //tiny.BaumWelchSingleStep(p, d, 0);
     //std::cout << tiny.finishFwd << std::endl;
-    tiny.displayEmissionCnts();
+    //tiny.displayEmissionCnts();
+    //tiny.displayTransitionCnts();
     tiny.BaumWelchSingleStep(p, d, 1);
     std::cout << tiny.logFinishFwd <<" "<<tiny.logStartBwd<< std::endl;
     //std::cout << tiny.finishFwd <<" "<<tiny.startBwd<< std::endl;
     tiny.displayEmissionCnts();
+    tiny.displayTransitionCnts();
     std::cout << dna.size() << std::endl;
     return 0;
 }

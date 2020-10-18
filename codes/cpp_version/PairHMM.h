@@ -8,7 +8,9 @@
 #include "DataTool.h"
 #include "State.h"
 #include "Transition.h"
+#include "quartic.h"
 
+#include <time.h>
 //typedef double NumType; // To represent Probability numerically;
 //typedef double LogNumType;
 typedef std::vector<int8_t> proSeqType; //Encoding the ProSeqType, index start from 1
@@ -40,7 +42,7 @@ public:
     NumType startFwd, startBwd, finishFwd, finishBwd, reversep;
     LogNumType logStartFwd, logStartBwd, logFinishFwd, logFinishBwd, logReversep;
     NumType Prob; // To measure the converge of BW algorithm
-    LogNumType logProb;
+    LogNumType logProb, objectLogProb;
     State *start, *finish; 
     State *D_1, *D_2, *D_3;
     State *I_1, *I_2, *I_3, *I_4, *I_5, *I_6, *I_7;
@@ -59,6 +61,7 @@ public:
     void resetBackward(int n, int m);
     void updatePossibilities(int option);
     void naiveUpdatePossibilities();
+    void updateEmissionPossibilities();
     void emissionInitialize();
     void transitionInitialize();
     void parameterInitialize();
@@ -71,6 +74,11 @@ public:
     void displayTransition();
     void displayTransitionCnts();
     void statesBuild();
+    LogNumType calculateOverallLogProb(const std::vector<LogNumType> & parameters) const ;
+    std::vector<LogNumType> deltaItoParameters(const LogNumType & deltai) const;
+    std::vector<LogNumType> insertionSolver();
+    LogNumType deltaItoObject(LogNumType DeltaI);
+    void setInsertionParameters(NumType DeltaI);
 private:
 
 };

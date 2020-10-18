@@ -13,7 +13,7 @@ public:
     State* from;
     State* to;
     void add_cnt(NumType Prob);
-    void add_log_cnt(LogNumType LogProb);
+    void add_log_cnt(LogNumType LogProb, LogNumType logTransProb);
     void set(State* f, State* t);
 };
 

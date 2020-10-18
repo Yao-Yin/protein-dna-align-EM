@@ -23,6 +23,7 @@ int8_t encodeTriplet(const std::string & dnaTriplet);
 int8_t encodeAA(const char & aa);
 char decodeAA(int8_t num);
 char decodeBase(int8_t num);
+std::string decodeTriplet(int num);
 std::vector<int8_t> check;
 std::vector<char> bases;
 std::vector<char> aas;

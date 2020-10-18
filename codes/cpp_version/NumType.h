@@ -4,6 +4,7 @@
 #include <math.h>
 #include <algorithm>
 #include <vector>
+#include <iostream>
 
 typedef double NumType; // To represent Probability numerically;
 typedef double LogNumType;
@@ -22,14 +23,15 @@ LogNumType Log1m(const LogNumType & a);
 
 inline LogNumType log_sum_exp(std::vector<LogNumType>::iterator begin, std::vector<LogNumType>::iterator end)
 {
-  using VT = LogNumType;
-  if (begin==end) return log(0.0);
-  //using std::exp;
-  //using std::log;
-  auto max_elem = *std::max_element(begin, end);
-  auto sum = std::accumulate(begin, end, VT{}, 
+    using VT = LogNumType;
+    if (begin==end) return log(0.0);
+    //using std::exp;
+    //using std::log;
+    auto max_elem = *std::max_element(begin, end);
+    if(max_elem == log(0.0)) return log(0.0);
+    auto sum = std::accumulate(begin, end, VT{}, 
      [max_elem](VT a, VT b) { return a + exp(b - max_elem); });
-  return max_elem + log(sum);
+    return max_elem + log(sum);
 }
 
 inline LogNumType LogSumExp(const LogNumType & a, const LogNumType & b) {

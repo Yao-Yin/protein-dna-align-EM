@@ -42,6 +42,14 @@ int8_t DataTool::encodeTriplet(const std::string & dnaTriplet) {
     return (encodeBase(dnaTriplet[0]) << 4) & (encodeBase(dnaTriplet[1]) << 2) & (encodeBase(dnaTriplet[2]));
 }
 
+std::string DataTool::decodeTriplet(int num) {
+    std::string res;
+    res.push_back(decodeAA((num << 4) & 3));
+    res.push_back(decodeAA((num << 2) & 3));
+    res.push_back(decodeAA((num) & 3));
+    return res;
+}
+
 proSeqType DataTool::encodePro(const std::string & proSeq) {
     proSeqType res;
     res.push_back(-1);

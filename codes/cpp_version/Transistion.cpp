@@ -27,14 +27,14 @@ void Transition::add_cnt(NumType reverseP) {
     cnt += curr*reverseP;
 }
 
-void Transition::add_log_cnt(LogNumType LogProb) {
+void Transition::add_log_cnt(LogNumType LogProb, LogNumType logTransProb) {
     NumType curr(0);
     int N = from->logf.size();
     int M = from->logf[0].size();
     std::vector<LogNumType> curr_list;
     for (int i = 0; i < N; i ++) {
         for (int j = 0; j < M; j ++) {
-            curr_list.emplace_back((from->logf[i][j])+(to->logb[i][j])-LogProb);
+            curr_list.push_back((from->logf[i][j])+(to->logb[i][j]) + logTransProb - LogProb);
         }
     }
     cnt += exp(log_sum_exp(curr_list.begin(), curr_list.end()));
