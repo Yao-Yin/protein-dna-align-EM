@@ -96,7 +96,7 @@ void PairHMM::parameterInitialize() {
     beta_d = NumType(0.5);
     //insertion
     alpha_i = NumType(0.4);
-    delta_i = NumType(0.5);
+    delta_i = NumType(0.3);
     beta_i = NumType(0.5);
     epsilon_i = NumType(0.5);
     //phi, psi
@@ -699,30 +699,37 @@ std::vector<LogNumType> PairHMM::deltaItoParameters(const LogNumType & deltai) c
     return parameters;
 }
 
-std::vector<LogNumType> PairHMM::insertionSolver() {
-    long double a = (2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt);
+int PairHMM::insertionSolver() {
+    double a = (2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt);
     a *= a;
-    long double b = E_i.cnt + 3*X_i.cnt + B_i.cnt;
-    long double c = D_i.cnt + E_i.cnt + B_i.cnt;
-    long double d = 3*D_i.cnt + 4*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
-    long double e = E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
+    double b = E_i.cnt + 3*X_i.cnt + B_i.cnt;
+    double c = D_i.cnt + E_i.cnt + B_i.cnt;
+    double d = 3*D_i.cnt + 4*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
+    double e = E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
     DComplex* roots = solve_quartic((-a*b - 3*a*c - d)/(a*c), (3*a*b + 3*a*c +3*e*d)/(a*c), (-3*a*b-3*e*e*d-a*c)/(a*c), (a*b + e*e*e)/(a*c));
-    std::vector<LogNumType> objects (4, -1);
+    std::vector<NumType> objects (4, -1);
     for (int i = 0; i < 4; i ++) {
+        std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
         if(roots[i].imag() || roots[i].real() > 1.0 || roots[i].real() < 0) continue;
         objects[i] = deltaItoObject(roots[i].real());
+        std::cout << i << ": " << objects[i] << std::endl;
     }
     auto max_elem = max_element(objects.begin(), objects.end());
+    if(*max_elem == -1) return -1;
     setInsertionParameters(roots[max_elem-objects.begin()].real());
     delete roots;
-}
-
-LogNumType PairHMM::deltaItoObject(LogNumType DeltaI) {
     return 0;
 }
 
-void PairHMM::setInsertionParameters(NumType DeltaI) {
+NumType PairHMM::deltaItoObject(LogNumType DeltaI) {    
+    NumType EpsilonI = ((E_i.cnt + 3*X_i.cnt + 3*B_i.cnt))/((2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt)*DeltaI) - (D_i.cnt + E_i.cnt)/(2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt);
+    std::cout << EpsilonI << " " << DeltaI << std::endl;
+    return B_i.cnt * (log(EpsilonI*pow((1-DeltaI), 3)-DeltaI*DeltaI*pow(1-EpsilonI, 3))) + (E_i.cnt + 3*X_i.cnt + B_i.cnt)*log(DeltaI) 
+        + (D_i.cnt - 3*X_i.cnt - 3*B_i.cnt)*log(1-DeltaI) + (E_i.cnt + 3*X_i.cnt)*log(1-EpsilonI);
+}
 
+void PairHMM::setInsertionParameters(NumType DeltaI) {
+    std::cout << DeltaI << std::endl;
 }
 
 void PairHMM::updatePossibilities(int option){

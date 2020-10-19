@@ -19,29 +19,69 @@ class PairHMM {
 public:
     PairHMM();
     ~PairHMM();
-    void naiveForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
-    void logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
-    void naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
-    void logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
-    void forward(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
-    void backward(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
-    void BaumWelchSingleStep(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
-    void BaumWelch(const std::vector<std::string> & rawProSeq, const std::vector<std::string> & rawdnaSeq, int iterTimes, int option);
-    void naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std::vector<dnaSeqType> & dnaSeqs, int iterTimes, int option);
     void initialize();
+    // initialization for the whole class.
+
+    void BaumWelch(const std::vector<std::string> & rawProSeq, const std::vector<std::string> & rawdnaSeq, int iterTimes, int option); 
+    // This is an wrapper function of naiveBaumWelch function.
+
+    void naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std::vector<dnaSeqType> & dnaSeqs, int iterTimes, int option);
+    // BaumWelch algorithm.
+    
+    void BaumWelchSingleStep(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
+    // single step in Baum-Welch algorithm, including initialization, forward, backward, accumulation of counts.
+
+    void forward(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
+    // wrapper function for forward algorithm.
+    
+    void backward(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
+    // wrapper function for backward algorithm.
+
+    void naiveForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
+    // naive forward algorithm, calculate probablities directly, mainly used for debugging
+
+    void logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
+    // logarithm space forward algorithm, calculate relevant logrithm probabilities
+
+    void naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
+    // naive backward algorithm, calculate probablities directly, mainly used for debugging
+
+    void logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
+    // logarithm space forward algorithm, calculate relevant logrithm probabilities.
+    
     void updateTransitions(int option);
-    void logUpdateTransitions();
+    // function for updating transition counts, never use option 0.
+
     void naiveUpdateTransitions();
+    // never use it. naive updating transition counts algorithm, calculate probablities directly, mainly used for debugging
+    
+    void logUpdateTransitions();
+    // no use.
+
     void updateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option);
+    // function for updating emission counts
+
     void naiveUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
+    // never use it. naive updating emission counts algorithm, calculate probablities directly, mainly used for debugging
+    
     void logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
+    // function for updating emission counts in logarithm space.
+
     void optimizedUpdatePossibilities();
+    // TODO, update possibilities with equal frameshift cost
+
     void displayParameters(int option);
+    // TODO, show the parameters
+
     void checkback(int i, int j, int n, int m);
+    // used for debugging backward algorithm
+
     void checkforward(int i, int j);
+    // used for debugging backward algorithm
+
     NumType startFwd, startBwd, finishFwd, finishBwd, reversep;
     LogNumType logStartFwd, logStartBwd, logFinishFwd, logFinishBwd, logReversep;
-    NumType Prob; // To measure the converge of BW algorithm
+    NumType Prob; // To measure the convergence of BW algorithm
     LogNumType logProb, objectLogProb;
     State *start, *finish; 
     State *D_1, *D_2, *D_3;
@@ -57,6 +97,7 @@ public:
     std::vector<std::vector<NumType> > pi, pi_cnt;
     std::vector<LogNumType> log_psi, log_phi, log_psi_cnt, log_phi_cnt;  //psi: insertion, phi: deletion
     std::vector<std::vector<LogNumType> > log_pi, log_pi_cnt;
+    
     void resetForward(int n, int m);
     void resetBackward(int n, int m);
     void updatePossibilities(int option);
@@ -76,7 +117,7 @@ public:
     void statesBuild();
     LogNumType calculateOverallLogProb(const std::vector<LogNumType> & parameters) const ;
     std::vector<LogNumType> deltaItoParameters(const LogNumType & deltai) const;
-    std::vector<LogNumType> insertionSolver();
+    int insertionSolver();
     LogNumType deltaItoObject(LogNumType DeltaI);
     void setInsertionParameters(NumType DeltaI);
 private:

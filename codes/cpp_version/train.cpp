@@ -74,7 +74,11 @@ int main()
     //std::cout << tiny.finishFwd <<" "<<tiny.startBwd<< std::endl;
     tiny.displayEmissionCnts();
     tiny.displayTransitionCnts();
-    std::cout << dna.size() << std::endl;
+    tiny.insertionSolver();
+    /*for(double i = 0.1; i < 1.0; i += 0.1) {
+        tiny.deltaItoObject(i);
+    }*/
+    //std::cout << dna.size() << std::endl;
     return 0;
 }
 
