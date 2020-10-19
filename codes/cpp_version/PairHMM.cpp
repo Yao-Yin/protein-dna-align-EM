@@ -86,8 +86,8 @@ void PairHMM::emissionInitialize() {
 }
 
 void PairHMM::parameterInitialize() {
-    omega_i = NumType(0.9);
-    omega_d = NumType(0.9);
+    omega_i = NumType(0.999);
+    omega_d = NumType(0.999);
     gamma = NumType(0.0);
     //deletion
     alpha_d = NumType(0.4);
