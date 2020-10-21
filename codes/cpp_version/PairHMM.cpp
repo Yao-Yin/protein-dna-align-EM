@@ -1,7 +1,6 @@
 #include "PairHMM.h"
 
 PairHMM::PairHMM() {
-    std::cout << "hello" << std::endl;
     initialize();
 }
 
@@ -372,7 +371,6 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
         }
         updatePossibilities(option);
     }
-    displayParameters(option);
 }
 
 void PairHMM::BaumWelchSingleStep(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option) {
@@ -403,15 +401,19 @@ void PairHMM::BaumWelchSingleStepInitialize(int n, int m, int option) {
     switch (option) {
         case (0):
             for(auto & ptr: list) {
-                ptr->f = std::vector<std::vector<NumType> >(n, std::vector<NumType> (m, NumType(0)));
-                ptr->b = std::vector<std::vector<NumType> >(n, std::vector<NumType> (m, NumType(0)));
+                ptr->f.resize(n, std::vector<NumType> (m, NumType(0)));
+                //= std::vector<std::vector<NumType> >(n, std::vector<NumType> (m, NumType(0)));
+                ptr->f.resize(n, std::vector<NumType> (m, NumType(0)));
+                //ptr->b = std::vector<std::vector<NumType> >(n, std::vector<NumType> (m, NumType(0)));
             }
             break;
         case (1):
                 LogNumType lzero (log(0.0));
                 for(auto & ptr: list) {
-                    ptr->logf = std::vector<std::vector<LogNumType> >(n, std::vector<LogNumType> (m, lzero));
-                    ptr->logb = std::vector<std::vector<LogNumType> >(n, std::vector<LogNumType> (m, lzero));
+                    ptr->logf.resize(n, std::vector<LogNumType> (m, LogNumType(0)));
+                    ptr->logb.resize(n, std::vector<LogNumType> (m, LogNumType(0)));
+                    //ptr->logf = std::vector<std::vector<LogNumType> >(n, std::vector<LogNumType> (m, lzero));
+                    //ptr->logb = std::vector<std::vector<LogNumType> >(n, std::vector<LogNumType> (m, lzero));
                 }
             break;
     }
@@ -434,52 +436,50 @@ void PairHMM::updateTransitions(int option) {
         break;
     
     case 1:
-    /*
-    J_d.set(H_1, D_1);
-    J_i.set(H_2, I_1);
-    M.set(H_3, Match);
-    A.set(H_3, H_4);
-    K_d.set(H_4, D_3);
-    K_i.set(H_5, I_7);
-    F_d.set(H_3, D_2);
-    X_d.set(H_6, D_2);
-    B_d.set(H_6, H_3);
-    D_d.set(D_2, I_2);
-    E_d.set(H_7, I_3);
-    G_d.set(D_2, H_7);
-    H_d.set(H_7, H_6);
-    B_i.set(I_6, H_3);
-    E_i.set(I_5, H_3);
-    D_i.set(I_4, H_3);
-    F_i.set(H_3, I_4);
-    G_i.set(I_4, I_5);
-    H_i.set(I_5, I_6);
-    X_i.set(I_6, I_4);
+        /*
+        J_d.set(H_1, D_1);
+        J_i.set(H_2, I_1);
+        M.set(H_3, Match);
+        A.set(H_3, H_4);
+        K_d.set(H_4, D_3);
+        K_i.set(H_5, I_7);
+        F_d.set(H_3, D_2);
+        X_d.set(H_6, D_2);
+        B_d.set(H_6, H_3);
+        D_d.set(D_2, I_2);
+        E_d.set(H_7, I_3);
+        G_d.set(D_2, H_7);
+        H_d.set(H_7, H_6);
+        B_i.set(I_6, H_3);
+        E_i.set(I_5, H_3);
+        D_i.set(I_4, H_3);
+        F_i.set(H_3, I_4);
+        G_i.set(I_4, I_5);
+        H_i.set(I_5, I_6);
+        X_i.set(I_6, I_4);
+            break;
+        }*/
+        J_d.add_log_cnt(logProb, log_omega_d);
+        J_i.add_log_cnt(logProb, log_omega_i);
+        M.add_log_cnt(logProb, log_gamma);
+        A.add_log_cnt(logProb, Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i)));
+        K_d.add_log_cnt(logProb, log_omega_d);
+        K_i.add_log_cnt(logProb, log_omega_i);
+        F_d.add_log_cnt(logProb, log_alpha_d);
+        X_d.add_log_cnt(logProb, log_beta_d);
+        B_d.add_log_cnt(logProb, Log1m(log_beta_d));
+        D_d.add_log_cnt(logProb, Log1m(log_delta_d));
+        E_d.add_log_cnt(logProb, Log1m(log_epsilon_d));
+        G_d.add_log_cnt(logProb, Log1m(log_delta_d));
+        H_d.add_log_cnt(logProb, log_epsilon_d);
+        F_i.add_log_cnt(logProb, log_alpha_i);
+        X_i.add_log_cnt(logProb, log_beta_i);
+        B_i.add_log_cnt(logProb, Log1m(log_beta_i));
+        D_i.add_log_cnt(logProb, Log1m(log_delta_i));
+        E_i.add_log_cnt(logProb, Log1m(log_epsilon_i));
+        G_i.add_log_cnt(logProb, log_delta_i);
+        H_i.add_log_cnt(logProb, log_epsilon_i);
         break;
-    }*/
-    J_d.add_log_cnt(logProb, log_omega_d);
-    J_i.add_log_cnt(logProb, log_omega_i);
-    M.add_log_cnt(logProb, log_gamma);
-    A.add_log_cnt(logProb, Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i)));
-    K_d.add_log_cnt(logProb, log_omega_d);
-    K_i.add_log_cnt(logProb, log_omega_i);
-
-    F_d.add_log_cnt(logProb, log_alpha_d);
-    X_d.add_log_cnt(logProb, log_beta_d);
-    B_d.add_log_cnt(logProb, Log1m(log_beta_d));
-    D_d.add_log_cnt(logProb, Log1m(log_delta_d));
-    E_d.add_log_cnt(logProb, Log1m(log_epsilon_d));
-    G_d.add_log_cnt(logProb, Log1m(log_delta_d));
-    H_d.add_log_cnt(logProb, log_epsilon_d);
-
-    F_i.add_log_cnt(logProb, log_alpha_i);
-    X_i.add_log_cnt(logProb, log_beta_i);
-    B_i.add_log_cnt(logProb, Log1m(log_beta_i));
-    D_i.add_log_cnt(logProb, Log1m(log_delta_i));
-    E_i.add_log_cnt(logProb, Log1m(log_epsilon_i));
-    G_i.add_log_cnt(logProb, log_delta_i);
-    H_i.add_log_cnt(logProb, log_epsilon_i);
-    break;
     }
 }
 
@@ -707,18 +707,40 @@ int PairHMM::insertionSolver() {
     double d = 3*D_i.cnt + 4*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
     double e = E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
     DComplex* roots = solve_quartic((-a*b - 3*a*c - d)/(a*c), (3*a*b + 3*a*c +3*e*d)/(a*c), (-3*a*b-3*e*e*d-a*c)/(a*c), (a*b + e*e*e)/(a*c));
-    std::vector<NumType> objects (4, -1);
+    /*
+    1. check real number in [0, 1]
+    2. check other parameters in [0, 1]
+    3. check objects
+    4. check max
+    5. update parameters
+    6. what if failed => set error
+    */
+    std::vector<NumType> validDeltaI;
+    std::vector<std::pair<NumType,NumType>> objects ;
     for (int i = 0; i < 4; i ++) {
-        std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
-        if(roots[i].imag() || roots[i].real() > 1.0 || roots[i].real() < 0) continue;
-        objects[i] = deltaItoObject(roots[i].real());
-        std::cout << i << ": " << objects[i] << std::endl;
+        //std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
+        if(roots[i].imag() || roots[i].real() >= 1.0 || roots[i].real() <= 0) continue;
+        //validDeltaI.push_back(roots[i].real());
+        if(checkValidInsertionParameters(roots[i].real())){
+            objects.push_back({deltaItoObject(roots[i].real()), roots[i].real()});
+        }
+    }
+    delete roots;
+    if(objects.size() == 0) {
+        displayParameters("can not find optimal insertion parameters: ", default_filepath);
+        exit(1);
     }
     auto max_elem = max_element(objects.begin(), objects.end());
-    if(*max_elem == -1) return -1;
-    setInsertionParameters(roots[max_elem-objects.begin()].real());
-    delete roots;
+    setInsertionParameters(max_elem->second);
     return 0;
+}
+
+bool PairHMM::checkValidInsertionParameters(NumType DeltaI) const {
+    // use deltaI to calculate beta_i, epsilon_i, check them in range [0, 1]
+    if(DeltaI < 0 || DeltaI >= 1) return false;
+    NumType EpsilonI = ((E_i.cnt + 3*X_i.cnt + 3*B_i.cnt))/((2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt)*DeltaI) - (D_i.cnt + E_i.cnt)/(2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt);
+    NumType BetaI = pow(DeltaI, 2) * pow(1-EpsilonI, 3) / (EpsilonI*pow(1-DeltaI, 3));
+    return EpsilonI > 0 && EpsilonI < 1 && BetaI > 0 && BetaI < 1;
 }
 
 NumType PairHMM::deltaItoObject(LogNumType DeltaI) {    
@@ -729,7 +751,98 @@ NumType PairHMM::deltaItoObject(LogNumType DeltaI) {
 }
 
 void PairHMM::setInsertionParameters(NumType DeltaI) {
-    std::cout << DeltaI << std::endl;
+    NumType EpsilonI = ((E_i.cnt + 3*X_i.cnt + 3*B_i.cnt))/((2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt)*DeltaI) - (D_i.cnt + E_i.cnt)/(2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt);
+    NumType BetaI = pow(DeltaI, 2) * pow(1-EpsilonI, 3) / (EpsilonI*pow(1-DeltaI, 3));
+    setInsertion(BetaI, EpsilonI, DeltaI);
+}
+
+int PairHMM::deletionSolver() {
+    double a = (2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    a *= a;
+    double b = E_d.cnt + 3*X_d.cnt + B_d.cnt;
+    double c = D_d.cnt + E_d.cnt + B_d.cnt;
+    double d = 3*D_d.cnt + 4*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt;
+    double e = E_d.cnt + 3*X_d.cnt + 3*B_d.cnt;
+    DComplex* roots = solve_quartic((-a*b - 3*a*c - d)/(a*c), (3*a*b + 3*a*c +3*e*d)/(a*c), (-3*a*b-3*e*e*d-a*c)/(a*c), (a*b + e*e*e)/(a*c));
+    /*
+    1. check real number in [0, 1]
+    2. check other parameters in [0, 1]
+    3. check objects
+    4. check max
+    5. update parameters
+    6. what if failed => set error
+    */
+    std::vector<NumType> validDeltaD;
+    std::vector<std::pair<NumType,NumType>> objects ;
+    for (int i = 0; i < 4; i ++) {
+        //std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
+        if(roots[i].imag() || roots[i].real() >= 1.0 || roots[i].real() <= 0) continue;
+        //validDeltaD.push_back(roots[i].real());
+        if(checkValidDeletionParameters(roots[i].real())){
+            objects.push_back({deltaDtoObject(roots[i].real()), roots[i].real()});
+        }
+    }
+    delete roots;
+    if(objects.size() == 0) {
+        displayParameters("can not find optimal deletion parameters: ", default_filepath);
+        exit(1);
+    }
+    auto max_elem = max_element(objects.begin(), objects.end());
+    setDeletionParameters(max_elem->second);
+    return 0;
+}
+
+bool PairHMM::checkValidDeletionParameters(NumType DeltaD) const {
+    // use deltaD to calculate beta_d, epsilon_d, check them in range [0, 1]
+    if(DeltaD < 0 || DeltaD >= 1) return false;
+    NumType EpsilonD = ((E_d.cnt + 3*X_d.cnt + 3*B_d.cnt))/((2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt)*DeltaD) - (D_d.cnt + E_d.cnt)/(2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    NumType BetaD = pow(DeltaD, 2) * pow(1-EpsilonD, 3) / (EpsilonD*pow(1-DeltaD, 3));
+    return EpsilonD > 0 && EpsilonD < 1 && BetaD > 0 && BetaD < 1;
+}
+
+NumType PairHMM::deltaDtoObject(LogNumType DeltaD) {    
+    NumType EpsilonD = ((E_d.cnt + 3*X_d.cnt + 3*B_d.cnt))/((2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt)*DeltaD) - (D_d.cnt + E_d.cnt)/(2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    std::cout << EpsilonD << " " << DeltaD << std::endl;
+    return B_d.cnt * (log(EpsilonD*pow((1-DeltaD), 3)-DeltaD*DeltaD*pow(1-EpsilonD, 3))) + (E_d.cnt + 3*X_d.cnt + B_d.cnt)*log(DeltaD) 
+        + (D_d.cnt - 3*X_d.cnt - 3*B_d.cnt)*log(1-DeltaD) + (E_d.cnt + 3*X_d.cnt)*log(1-EpsilonD);
+}
+
+void PairHMM::setDeletionParameters(NumType DeltaD) {
+    NumType EpsilonD = ((E_d.cnt + 3*X_d.cnt + 3*B_d.cnt))/((2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt)*DeltaD) - (D_d.cnt + E_d.cnt)/(2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    NumType BetaD = pow(DeltaD, 2) * pow(1-EpsilonD, 3) / (EpsilonD*pow(1-DeltaD, 3));
+    setDeletion(BetaD, EpsilonD, DeltaD);
+}
+
+void PairHMM::setPsi(std::vector<NumType> & Psi) {
+    for (int i = 0; i < Psi.size(); i ++) {
+        psi[i] = Psi[i];
+    }
+}
+
+void PairHMM::setPhi(std::vector<NumType> & Phi) {
+    for (int i = 0; i < Phi.size(); i ++) {
+        phi[i] = Phi[i];
+    }
+}
+
+void PairHMM::setInsertion(NumType betaI, NumType epsilonI, NumType deltaI) {
+    beta_i = betaI;
+    epsilon_i = epsilonI;
+    delta_i = deltaI;
+} 
+
+void PairHMM::setDeletion(NumType betaD, NumType epsilonD, NumType deltaD) {
+    beta_d = betaD;
+    epsilon_d = epsilonD;
+    delta_d = deltaD;
+}
+
+void PairHMM::setAlign(NumType omegaI, NumType omegaD, NumType Gamma, NumType alphaI, NumType alphaD) {
+    omega_i = omegaI;
+    omega_d = omegaD;
+    gamma = Gamma;
+    alpha_i = alphaI;
+    alpha_d = alphaD;
 }
 
 void PairHMM::updatePossibilities(int option){
@@ -749,8 +862,35 @@ void PairHMM::optimizedUpdatePossibilities(){
     naiveUpdatePossibilities();
 }
 
-void PairHMM::displayParameters(int option){
-
+void PairHMM::displayParameters(const std::string msg, const std::string & filename) const{
+    std::ofstream out;
+    out.open(filename, std::ios::out|std::ios::app);
+    std::vector<NumType> vt {
+        J_d.cnt, J_i.cnt, M.cnt, A.cnt, K_d.cnt, K_i.cnt, 
+        F_d.cnt, X_d.cnt, B_d.cnt, D_d.cnt, E_d.cnt, G_d.cnt, H_d.cnt,
+        B_i.cnt, E_i.cnt, D_i.cnt, F_i.cnt, G_i.cnt, H_i.cnt, X_i.cnt,
+    };
+    if(msg.size()) {
+        out << msg << std::endl;
+    }
+    for (int i = 0; i < vt.size(); i ++) {
+        if(i) out << '\t';
+        out << vt[i];
+    }
+    for (int i = 0; i < phi_cnt.size(); i ++) {
+        //if(i) out << '\t';
+        out <<'\t' << phi_cnt[i];
+    }
+    for (int i = 0; i < psi_cnt.size(); i ++) {
+        //if(i) out << '\t';
+        out << '\t'<<psi_cnt[i];
+    }
+    for (int i = 0; i < pi_cnt.size(); i ++) {
+        for (int j = 0; j < pi_cnt[0].size(); j ++) {
+            out << '\t' << pi_cnt[i][j];
+        }
+    } 
+    out << std::endl;
 }
 
 void PairHMM::displayEmissionCnts() {

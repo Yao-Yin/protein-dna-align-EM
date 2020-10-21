@@ -9,7 +9,7 @@
 #include "State.h"
 #include "Transition.h"
 #include "quartic.h"
-
+#include <fstream>
 #include <time.h>
 //typedef double NumType; // To represent Probability numerically;
 //typedef double LogNumType;
@@ -70,7 +70,7 @@ public:
     void optimizedUpdatePossibilities();
     // TODO, update possibilities with equal frameshift cost
 
-    void displayParameters(int option);
+    void displayParameters(const std::string msg, const std::string & filename) const;
     // TODO, show the parameters
 
     void checkback(int i, int j, int n, int m);
@@ -97,7 +97,7 @@ public:
     std::vector<std::vector<NumType> > pi, pi_cnt;
     std::vector<LogNumType> log_psi, log_phi, log_psi_cnt, log_phi_cnt;  //psi: insertion, phi: deletion
     std::vector<std::vector<LogNumType> > log_pi, log_pi_cnt;
-    
+    std::string default_filepath;
     void resetForward(int n, int m);
     void resetBackward(int n, int m);
     void updatePossibilities(int option);
@@ -115,11 +115,21 @@ public:
     void displayTransition();
     void displayTransitionCnts();
     void statesBuild();
+    void setPsi(std::vector<NumType> & Psi);
+    void setPhi(std::vector<NumType> & Phi);
+    void setInsertion(NumType betaI, NumType epsilonI, NumType deltaI); 
+    void setDeletion(NumType betaD, NumType epsilonD, NumType deltaD);
+    void setAlign(NumType omegaI, NumType omegaD, NumType Gamma, NumType alphaI, NumType alphaD);
+    bool checkValidInsertionParameters(NumType DeltaI) const;
+    bool checkValidDeletionParameters(NumType DeltaD) const;
     LogNumType calculateOverallLogProb(const std::vector<LogNumType> & parameters) const ;
     std::vector<LogNumType> deltaItoParameters(const LogNumType & deltai) const;
     int insertionSolver();
-    LogNumType deltaItoObject(LogNumType DeltaI);
+    int deletionSolver();
+    NumType deltaItoObject(LogNumType DeltaI);
+    NumType deltaDtoObject(LogNumType DeltaD);
     void setInsertionParameters(NumType DeltaI);
+    void setDeletionParameters(NumType DeltaD);
 private:
 
 };

@@ -1,3 +1,56 @@
-    std::string dna = "ATCGCTCG";
-    std::string pro = "ACNDSVNSD";
-    2.74242e-20
+int PairHMM::deletionSolver() {
+    double a = (2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    a *= a;
+    double b = E_d.cnt + 3*X_d.cnt + B_d.cnt;
+    double c = D_d.cnt + E_d.cnt + B_d.cnt;
+    double d = 3*D_d.cnt + 4*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt;
+    double e = E_d.cnt + 3*X_d.cnt + 3*B_d.cnt;
+    DComplex* roots = solve_quartic((-a*b - 3*a*c - d)/(a*c), (3*a*b + 3*a*c +3*e*d)/(a*c), (-3*a*b-3*e*e*d-a*c)/(a*c), (a*b + e*e*e)/(a*c));
+    /*
+    1. check real number in [0, 1]
+    2. check other parameters in [0, 1]
+    3. check objects
+    4. check max
+    5. update parameters
+    6. what if failed => set error
+    */
+    std::vector<NumType> validDeltaD;
+    std::vector<std::pair<NumType,NumType>> objects ;
+    for (int i = 0; i < 4; i ++) {
+        //std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
+        if(roots[i].imag() || roots[i].real() >= 1.0 || roots[i].real() <= 0) continue;
+        //validDeltaD.push_back(roots[i].real());
+        if(checkValidDeletionParameters(roots[i].real())){
+            objects.push_back({deltaDtoObject(roots[i].real()), roots[i].real()});
+        }
+    }
+    delete roots;
+    if(objects.size() == 0) {
+        displayParameters("can not find optimal deletion parameters: ", default_filepath);
+        exit(1);
+    }
+    auto max_elem = max_element(objects.begin(), objects.end());
+    setDeletionParameters(max_elem->second);
+    return 0;
+}
+
+bool PairHMM::checkValidDeletionParameters(NumType DeltaD) const {
+    // use deltaD to calculate beta_d, epsilon_d, check them in range [0, 1]
+    if(DeltaD < 0 || DeltaD >= 1) return false;
+    NumType EpsilonD = ((E_d.cnt + 3*X_d.cnt + 3*B_d.cnt))/((2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt)*DeltaD) - (D_d.cnt + E_d.cnt)/(2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    NumType BetaD = pow(DeltaD, 2) * pow(1-EpsilonD, 3) / (EpsilonD*pow(1-DeltaD, 3));
+    return EpsilonD > 0 && EpsilonD < 1 && BetaD > 0 && BetaD < 1;
+}
+
+NumType PairHMM::deltaDtoObject(LogNumType DeltaD) {    
+    NumType EpsilonD = ((E_d.cnt + 3*X_d.cnt + 3*B_d.cnt))/((2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt)*DeltaD) - (D_d.cnt + E_d.cnt)/(2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    std::cout << EpsilonD << " " << DeltaD << std::endl;
+    return B_d.cnt * (log(EpsilonD*pow((1-DeltaD), 3)-DeltaD*DeltaD*pow(1-EpsilonD, 3))) + (E_d.cnt + 3*X_d.cnt + B_d.cnt)*log(DeltaD) 
+        + (D_d.cnt - 3*X_d.cnt - 3*B_d.cnt)*log(1-DeltaD) + (E_d.cnt + 3*X_d.cnt)*log(1-EpsilonD);
+}
+
+void PairHMM::setDeletionParameters(NumType DeltaD) {
+    NumType EpsilonD = ((E_d.cnt + 3*X_d.cnt + 3*B_d.cnt))/((2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt)*DeltaD) - (D_d.cnt + E_d.cnt)/(2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    NumType BetaD = pow(DeltaD, 2) * pow(1-EpsilonD, 3) / (EpsilonD*pow(1-DeltaD, 3));
+    setDeletion(BetaD, EpsilonD, DeltaD);
+}
