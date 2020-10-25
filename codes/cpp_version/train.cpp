@@ -36,8 +36,8 @@ std::string genDNA(int n) {
         res.push_back(dt.decodeBase(curr));
         cnts[curr] ++;
     }
-    for (auto c:cnts) std::cout << c << " ";
-    std::cout << std::endl;
+    //for (auto c:cnts) std::cout << c << " ";
+    //std::cout << std::endl;
     return res;
 }
 
@@ -50,36 +50,69 @@ std::string genPro(int n) {
         res.push_back(dt.decodeAA(curr));
         cnts[curr] ++;
     }
-    for (auto c:cnts) std::cout << c << " ";
-    std::cout << std::endl;
+    //for (auto c:cnts) std::cout << c << " ";
+    //std::cout << std::endl;
     return res;
+}
+
+std::vector<std::vector<NumType>> readPi(const std::string & filePath) {
+    std::ifstream in(filePath, std::ios::in);
+    std::vector<std::vector<NumType>> curr(20, std::vector<NumType>(64, 0));
+    std::vector<std::vector<NumType>> prob(20, std::vector<NumType>(64, 0));
+    for(int i = 0; i < 20; i ++) {
+        for (int j = 0; j < 64; j ++) {
+            in >> curr[i][j];
+        }
+    }
+    NumType total = 0.0;
+    for (auto i: curr) {
+        for (auto j : i) total += exp(j);
+    }
+    for(int i = 0; i < 20; i ++) {
+        for (int j = 0; j < 64; j ++) {
+            prob[i][j] = exp(curr[i][j]) / total;
+        }
+    }
+    in.close();
+    return prob;
 }
 
 int main() 
 {
-    std::cout << "hello" << std::endl;
+    //std::cout << "hello" << std::endl;
     PairHMM tiny;
+    tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\parameter_log.txt";
+    tiny.error_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\error_log.txt";
+    tiny.setPi(readPi("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\initProb\\piProb.txt"));
+    //std::cout << "hello" << std::endl;
+    //std::cout << tiny.pi.size() << tiny.pi[0].size() << std::endl;
+    //tiny.setInsertion();
+    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt");
     DataTool dt;
-    std::string dna = genDNA(300);
-    std::string pro = genPro(100);
-    proSeqType p = dt.encodePro(pro);
-    dnaSeqType d = dt.encodeDNA(dna);
-    //std::cout << LogSumExp(log(0), log(0)) << std::endl;
-    //std::cout << p.size() << " " << d.ori.size() << " " << std::endl;
+    //std::string dna = genDNA(100);
+    //std::string pro = genPro(100);
+    //std::cout << dna << " " << pro << std::endl;
+    //proSeqType p = dt.encodePro(pro);
+    //dnaSeqType d = dt.encodeDNA(dna);
+    //std::vector<proSeqType> testpro {p};
+    //std::vector<dnaSeqType> testdna {d};
     //tiny.BaumWelchSingleStep(p, d, 0);
-    //std::cout << tiny.finishFwd << std::endl;
+    //std::cout << tiny.finishFwd <<" "<<tiny.startBwd<< std::endl;
     //tiny.displayEmissionCnts();
     //tiny.displayTransitionCnts();
-    tiny.BaumWelchSingleStep(p, d, 1);
-    std::cout << tiny.logFinishFwd <<" "<<tiny.logStartBwd<< std::endl;
-    //std::cout << tiny.finishFwd <<" "<<tiny.startBwd<< std::endl;
-    tiny.displayEmissionCnts();
-    tiny.displayTransitionCnts();
-    tiny.insertionSolver();
+    //std::cout << tiny.omega_d << " " << tiny.omega_i << " " << std::endl;
+    //tiny.naiveBaumWelch(testpro, testdna, 1, 1);
+    //std::cout << tiny.omega_d << " " << tiny.omega_i << " " << std::endl;
+    //std::cout << tiny.logFinishFwd <<" "<<tiny.logStartBwd<< std::endl;
+    //tiny.displayEmissionCnts();
+    //tiny.displayTransitionCnts();
+    //tiny.checkEmissions();
+    //tiny.checkTransitionParameters();
+    //tiny.insertionSolver();
     /*for(double i = 0.1; i < 1.0; i += 0.1) {
         tiny.deltaItoObject(i);
     }*/
-    //std::cout << dna.size() << std::endl;
+    //std::cout << dna.size() << std::endl;*/
     return 0;
 }
 

@@ -67,8 +67,11 @@ public:
     void logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & dnaSeq);
     // function for updating emission counts in logarithm space.
 
-    void optimizedUpdatePossibilities();
+    void optimizedUpdateProbabilities();
     // TODO, update possibilities with equal frameshift cost
+
+    void updateAlignProbabilities();
+    // update align parameters, omega_i, omega_d, gamma, alpha_i, alpha_d
 
     void displayParameters(const std::string msg, const std::string & filename) const;
     // TODO, show the parameters
@@ -78,6 +81,12 @@ public:
 
     void checkforward(int i, int j);
     // used for debugging backward algorithm
+
+    void checkEmissions();
+    // used for debugging
+
+    void checkTransitionParameters();
+    // used for debugging
 
     NumType startFwd, startBwd, finishFwd, finishBwd, reversep;
     LogNumType logStartFwd, logStartBwd, logFinishFwd, logFinishBwd, logReversep;
@@ -98,11 +107,14 @@ public:
     std::vector<LogNumType> log_psi, log_phi, log_psi_cnt, log_phi_cnt;  //psi: insertion, phi: deletion
     std::vector<std::vector<LogNumType> > log_pi, log_pi_cnt;
     std::string default_filepath;
+    std::string error_filepath;
     void resetForward(int n, int m);
     void resetBackward(int n, int m);
-    void updatePossibilities(int option);
-    void naiveUpdatePossibilities();
-    void updateEmissionPossibilities();
+    void updateProbabilities(int option);
+    void naiveUpdateProbabilities();
+    void naiveUpdateInsertionProbabilities();
+    void naiveUpdateDeletionProbabilities();
+    void updateEmissionProbabilities();
     void emissionInitialize();
     void transitionInitialize();
     void parameterInitialize();
@@ -130,6 +142,10 @@ public:
     NumType deltaDtoObject(LogNumType DeltaD);
     void setInsertionParameters(NumType DeltaI);
     void setDeletionParameters(NumType DeltaD);
+    void setPi(std::vector<std::vector<NumType>> mat);
+    void testTraining(const std::string & filename);
+    void setInsertion(NumType epsilonI, NumType deltaI);
+    void setDeletion(NumType epsilonD, NumType deltaD);
 private:
 
 };

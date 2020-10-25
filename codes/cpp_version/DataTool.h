@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 #include "NumType.h"
+#include<ctype.h>
+
 //typedef double NumType; // To represent Probability numerically;
 typedef std::vector<int8_t> proSeqType; //Encoding the ProSeqType, index start from 1
 typedef std::pair<std::vector<int8_t>, std::vector<int8_t> > dnaSeqType;
@@ -27,6 +29,8 @@ std::string decodeTriplet(int num);
 std::vector<int8_t> check;
 std::vector<char> bases;
 std::vector<char> aas;
+bool checkDNA(std::string & dna);
+bool checkPro(std::string & pro);
 };
 
 #endif

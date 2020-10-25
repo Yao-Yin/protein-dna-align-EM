@@ -2,16 +2,19 @@
 #define ori first
 #define tripletSeq second
 DataTool::DataTool() {
-    check = std::vector<int8_t> (26, 0);
+    check = std::vector<int8_t> (26, -1);
     int curr = 0;
-    aas = std::vector<char> (20);
-    for (int i = 0; i < 26; i ++) {
+    aas = std::vector<char> {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V'};
+    /*for (int i = 0; i < 26; i ++) {
         if (i == ('B' - 'A') || i == ('J' - 'A') || i == ('O' - 'A') 
          || i == ('U' - 'A') || i == ('X' - 'A') || i == ('Z' - 'A')) check[i] = -1;
         else {
             aas[curr] = ('A' + i);
             check[i] = curr ++;
         }
+    }*/
+    for (int i = 0; i < aas.size(); i ++) {
+        check[aas[i] -'A'] = i;
     }
     bases = std::vector<char> {'T', 'C', 'A', 'G'};
     
@@ -39,14 +42,14 @@ int8_t DataTool::encodeTriplet(const std::string & dnaTriplet) {
     /* 
     Encode the dna triplets, regards them as 4-based.
     */
-    return (encodeBase(dnaTriplet[0]) << 4) & (encodeBase(dnaTriplet[1]) << 2) & (encodeBase(dnaTriplet[2]));
+    return (encodeBase(dnaTriplet[0]) << 4) | (encodeBase(dnaTriplet[1]) << 2) | (encodeBase(dnaTriplet[2]));
 }
 
 std::string DataTool::decodeTriplet(int num) {
     std::string res;
-    res.push_back(decodeAA((num << 4) & 3));
-    res.push_back(decodeAA((num << 2) & 3));
-    res.push_back(decodeAA((num) & 3));
+    res.push_back(decodeBase((num >> 4) & 3));
+    res.push_back(decodeBase((num >> 2) & 3));
+    res.push_back(decodeBase((num) & 3));
     return res;
 }
 
@@ -87,3 +90,22 @@ char DataTool::decodeBase (int8_t base) {
     return bases[base];
 }
 
+bool DataTool::checkDNA (std::string & str) {
+    for(auto & c: str) {
+        if(!isalpha(c)) return false;
+        c = toupper(c);
+        if(c != 'T' && c != 'A' && c != 'G' && c != 'C') return false;
+    }
+    return true;
+}
+
+bool DataTool::checkPro (std::string & str) {
+    for(auto & c: str) {
+        if(!isalpha(c)) return false;
+        c = toupper(c);
+        int i = c - 'A';
+        if (i == ('B' - 'A') || i == ('J' - 'A') || i == ('O' - 'A') 
+         || i == ('U' - 'A') || i == ('X' - 'A') || i == ('Z' - 'A'))  return false;
+    }
+    return true;
+}
