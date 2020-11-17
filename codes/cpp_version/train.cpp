@@ -20,7 +20,7 @@ bool testForDt(int n) {
     DataTool dt;
     for(int i = 0; i < n; i ++) {
         int currb = rand() % 4;
-        int curra = rand() % 20;
+        int curra = rand() % 21;
         if(dt.encodeAA(dt.decodeAA(curra)) != curra) return false;
         if(dt.encodeBase(dt.decodeBase(currb)) != currb) return false;
     }
@@ -44,9 +44,9 @@ std::string genDNA(int n) {
 std::string genPro(int n) {
     DataTool dt;
     std::string res;
-    std::vector<int> cnts(20, 0);
+    std::vector<int> cnts(21, 0);
     for (int i = 0; i < n; i ++) {
-        int curr = rand() % 20;
+        int curr = rand() % 21;
         res.push_back(dt.decodeAA(curr));
         cnts[curr] ++;
     }
@@ -57,9 +57,9 @@ std::string genPro(int n) {
 
 std::vector<std::vector<NumType>> readPi(const std::string & filePath) {
     std::ifstream in(filePath, std::ios::in);
-    std::vector<std::vector<NumType>> curr(20, std::vector<NumType>(64, 0));
-    std::vector<std::vector<NumType>> prob(20, std::vector<NumType>(64, 0));
-    for(int i = 0; i < 20; i ++) {
+    std::vector<std::vector<NumType>> curr(21, std::vector<NumType>(64, 0));
+    std::vector<std::vector<NumType>> prob(21, std::vector<NumType>(64, 0));
+    for(int i = 0; i < 21; i ++) {
         for (int j = 0; j < 64; j ++) {
             in >> curr[i][j];
         }
@@ -68,7 +68,7 @@ std::vector<std::vector<NumType>> readPi(const std::string & filePath) {
     for (auto i: curr) {
         for (auto j : i) total += exp(j);
     }
-    for(int i = 0; i < 20; i ++) {
+    for(int i = 0; i < 21; i ++) {
         for (int j = 0; j < 64; j ++) {
             prob[i][j] = exp(curr[i][j]) / total;
         }
@@ -77,27 +77,41 @@ std::vector<std::vector<NumType>> readPi(const std::string & filePath) {
     return prob;
 }
 
+std::vector<std::vector<NumType>> directReadPi(const std::string & filePath) {
+    std::ifstream in(filePath, std::ios::in);
+    std::vector<std::vector<NumType>> curr(21, std::vector<NumType>(64, 0));
+    for(int i = 0; i < 21; i ++) {
+        for (int j = 0; j < 64; j ++) {
+            in >> curr[i][j];
+        }
+    }
+    in.close();
+    return curr;
+}
+
 int main() 
 {
     //std::cout << "hello" << std::endl;
     PairHMM tiny;
     tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\parameter_log.txt";
     tiny.error_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\error_log.txt";
-    tiny.setPi(readPi("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\initProb\\piProb.txt"));
+    tiny.setPi(directReadPi("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\initProb\\piProb.txt"));
     //std::cout << "hello" << std::endl;
     //std::cout << tiny.pi.size() << tiny.pi[0].size() << std::endl;
     //tiny.setInsertion();
-    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt");
+    //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt");
+    //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\training_data_short30000.txt");
     DataTool dt;
-    //std::string dna = genDNA(100);
-    //std::string pro = genPro(100);
-    //std::cout << dna << " " << pro << std::endl;
-    //proSeqType p = dt.encodePro(pro);
-    //dnaSeqType d = dt.encodeDNA(dna);
-    //std::vector<proSeqType> testpro {p};
-    //std::vector<dnaSeqType> testdna {d};
-    //tiny.BaumWelchSingleStep(p, d, 0);
-    //std::cout << tiny.finishFwd <<" "<<tiny.startBwd<< std::endl;
+    std::string dna = genDNA(5);
+    std::string pro = genPro(0);
+    std::cout << dna << " " << pro << std::endl;
+    proSeqType p = dt.encodePro(pro);
+    dnaSeqType d = dt.encodeDNA(dna);
+    std::vector<proSeqType> testpro {p};
+    std::vector<dnaSeqType> testdna {d};
+    tiny.BaumWelchSingleStep(p, d, 0);
+    tiny.BaumWelchSingleStep(p, d, 1);
+    std::cout << tiny.finishFwd <<" "<<tiny.startBwd<< std::endl;
     //tiny.displayEmissionCnts();
     //tiny.displayTransitionCnts();
     //std::cout << tiny.omega_d << " " << tiny.omega_i << " " << std::endl;

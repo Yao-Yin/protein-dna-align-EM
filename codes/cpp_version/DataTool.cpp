@@ -2,9 +2,8 @@
 #define ori first
 #define tripletSeq second
 DataTool::DataTool() {
-    check = std::vector<int8_t> (26, -1);
     int curr = 0;
-    aas = std::vector<char> {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V'};
+    aas = std::vector<char> {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','*'};
     /*for (int i = 0; i < 26; i ++) {
         if (i == ('B' - 'A') || i == ('J' - 'A') || i == ('O' - 'A') 
          || i == ('U' - 'A') || i == ('X' - 'A') || i == ('Z' - 'A')) check[i] = -1;
@@ -14,7 +13,7 @@ DataTool::DataTool() {
         }
     }*/
     for (int i = 0; i < aas.size(); i ++) {
-        check[aas[i] -'A'] = i;
+        check[aas[i]] = i;
     }
     bases = std::vector<char> {'T', 'C', 'A', 'G'};
     
@@ -24,10 +23,11 @@ int8_t DataTool::encodeBase(const char & base) {
     /* 
     Encode the base, might be better to do sth to control invalid inputs.
     */
-    if (base == 'T') return 0;
-    else if (base == 'C') return 1;
-    else if (base == 'A') return 2;
-    else if (base == 'G') return 3;
+    char newbase = toupper(base); 
+    if (newbase == 'T') return 0;
+    else if (newbase == 'C') return 1;
+    else if (newbase == 'A') return 2;
+    else if (newbase == 'G') return 3;
     return -1;
 }
 
@@ -35,7 +35,7 @@ int8_t DataTool::encodeAA(const char & AA) {
     /* 
     Encode the amino acid, might be better to do sth to control invalid inputs.
     */
-    return check[AA - 'A'];
+    return check[AA];
 }
 
 int8_t DataTool::encodeTriplet(const std::string & dnaTriplet) {
@@ -101,6 +101,7 @@ bool DataTool::checkDNA (std::string & str) {
 
 bool DataTool::checkPro (std::string & str) {
     for(auto & c: str) {
+        if (c == '*') continue;
         if(!isalpha(c)) return false;
         c = toupper(c);
         int i = c - 'A';

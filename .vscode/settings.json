@@ -46,5 +46,6 @@
         "complex": "cpp",
         "sstream": "cpp",
         "fstream": "cpp"
-    }
+    },
+    "python.pythonPath": "C:\\Users\\InYuo\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe"
 }
