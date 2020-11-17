@@ -23,7 +23,8 @@ codon_table = {
     "Y":{"TAT", "TAC",},
     "V":{"GTT", "GTC", "GTA", "GTG"},
     "O":{"TAA", "TAG",},
-    "U":{"TGA",}
+    "U":{"TGA",},
+    "*":{"TAA", "TAG", "TGA"}
 }
 
 codon_table_reverse = {}
@@ -31,7 +32,7 @@ for key, value in codon_table.items():
     for codon in value:
         codon_table_reverse[codon] = key
 
-aa_list = ['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','O','U']
+aa_list = ['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','O','U','*']
 
 aa_order_dict = {}
 for i in range(len(aa_list)):
@@ -43,20 +44,20 @@ ori = []
 
 with open(r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\tiny.01.inp", "r") as f:
     curr_line = f.readline()
-    for i in range(20):
+    for i in range(21):
         curr_line = f.readline().rstrip().split(" ")
         curr_list = [int(x) for x in curr_line[1:] if x != '']
         ori.append(curr_list)
 
 print(ori)
 
-shaped_matrix = [[] for x in range(20)]
+shaped_matrix = [[] for x in range(21)]
 
-prob_matrix = [[] for x in range(20)]
+prob_matrix = [[] for x in range(21)]
 
 
 
-for i in range(20):
+for i in range(21):
     for j in range(64):
         shaped_matrix[i].append(ori[i][aa_order_dict[codon_table_reverse[triplet_list[j]]]])
 
@@ -67,12 +68,12 @@ for x in shaped_matrix:
     for y in x:
         sum += exp(y)
 
-for i in range(20):
+for i in range(21):
     for j in range(64):
         prob_matrix[i].append(exp(shaped_matrix[i][j]) / sum)
 
 with open(r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\initProb\piProb.txt", "w") as f:
-    for i in range(20):
+    for i in range(21):
         f.write(" ".join([str(x) for x in shaped_matrix[i]])+"\n")
 
 

@@ -31,6 +31,7 @@ std::string genDNA(int n) {
     DataTool dt;
     std::string res;
     std::vector<int> cnts(4, 0);
+    srand((unsigned)time(NULL)); 
     for (int i = 0; i < n; i ++) {
         int curr = rand()%4;
         res.push_back(dt.decodeBase(curr));
@@ -45,6 +46,7 @@ std::string genPro(int n) {
     DataTool dt;
     std::string res;
     std::vector<int> cnts(21, 0);
+    srand((unsigned)time(NULL)); 
     for (int i = 0; i < n; i ++) {
         int curr = rand() % 21;
         res.push_back(dt.decodeAA(curr));
@@ -102,20 +104,22 @@ int main()
     //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt");
     //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\training_data_short30000.txt");
     DataTool dt;
-    std::string dna = genDNA(5);
-    std::string pro = genPro(0);
+    std::string dna = genDNA(100);
+    std::string pro = genPro(300);
     std::cout << dna << " " << pro << std::endl;
     proSeqType p = dt.encodePro(pro);
     dnaSeqType d = dt.encodeDNA(dna);
     std::vector<proSeqType> testpro {p};
     std::vector<dnaSeqType> testdna {d};
-    tiny.BaumWelchSingleStep(p, d, 0);
-    tiny.BaumWelchSingleStep(p, d, 1);
-    std::cout << tiny.finishFwd <<" "<<tiny.startBwd<< std::endl;
-    //tiny.displayEmissionCnts();
+    //tiny.BaumWelchSingleStep(p, d, 0);
+    //tiny.BaumWelchSingleStep(p, d, 1);
+    //std::cout << tiny.logFinishFwd <<" "<<tiny.logStartBwd<< std::endl;
+    
     //tiny.displayTransitionCnts();
+    //tiny.get_total();
     //std::cout << tiny.omega_d << " " << tiny.omega_i << " " << std::endl;
-    //tiny.naiveBaumWelch(testpro, testdna, 1, 1);
+    tiny.naiveBaumWelch(testpro, testdna, 3, 1);
+    tiny.displayEmissionCnts();
     //std::cout << tiny.omega_d << " " << tiny.omega_i << " " << std::endl;
     //std::cout << tiny.logFinishFwd <<" "<<tiny.logStartBwd<< std::endl;
     //tiny.displayEmissionCnts();

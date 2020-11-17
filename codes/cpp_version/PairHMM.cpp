@@ -18,6 +18,7 @@ void PairHMM::initialize() {
     transitionInitialize();
     emissionInitialize();
     parameterInitialize();
+    naiveTolog();
 }
 
 void PairHMM::shapeInitialize() {
@@ -73,6 +74,7 @@ void PairHMM::transitionInitialize() {
 
 void PairHMM::emissionInitialize() {
     std::fill(psi.begin(), psi.end(), NumType(0.25));
+    //psi = std::vector<NumType> {0.1, 0.2, 0.3, 0.4};
     for (int i = 0; i < phi.size(); i ++) {
         phi[i] = NumType(1.0/21);
     }
@@ -86,14 +88,14 @@ void PairHMM::emissionInitialize() {
 void PairHMM::parameterInitialize() {
     omega_i = NumType(0.9);
     omega_d = NumType(0.9);
-    gamma = NumType(0.5);
+    gamma = NumType(0.7);
     //deletion
-    alpha_d = NumType(0.2);
+    alpha_d = NumType(0.1);
     delta_d = NumType(0.1);
     epsilon_d = NumType(0.1);
     beta_d = NumType(0.1);
     //insertion
-    alpha_i = NumType(0.2);
+    alpha_i = NumType(0.1);
     delta_i = NumType(0.1); 
     beta_i = NumType(0.1);
     epsilon_i = NumType(0.1);
@@ -207,7 +209,7 @@ void PairHMM::logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
             H_5->logf[i][j] = LogSumExp(H_4->logf[i][j]+Log1m(log_omega_d),I_7->logf[i][j]);
             //finish->f[i][j] = H_5->f[i][j]*(NumType(1)-omega_i);
             finish->logf[i][j] = H_5->logf[i][j]+Log1m(log_omega_i);
-            checkforward(i, j);
+            //checkforward(i, j);
         }
     }
     logFinishFwd = finish->logf[n][m];
@@ -350,7 +352,7 @@ void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) 
             start->logb[i][j] = H_1->logb[i][j];
             //std::cout << i << " " << j << " (logBack): " << I_1->logb[i][j]<<" "<<I_2->logb[i][j]<<" "<<I_3->logb[i][j]<<" "<<I_4->logb[i][j]<<" "<<I_5->logb[i][j]<<" "<<I_6->logb[i][j]<<" "<<I_7->logb[i][j]<<std::endl;
             //std::cout << i << " " << j << " (logBack): " << H_1->logb[i][j]<<" "<<H_2->logb[i][j]<<" "<<H_3->logb[i][j]<<" "<<H_4->logb[i][j]<<" "<<H_5->logb[i][j]<<" "<<H_6->logb[i][j]<<" "<<H_7->logb[i][j]<<std::endl;
-            checkback(i, j, n, m);
+            //checkback(i, j, n, m);
         }
     }
     logStartBwd = start->logb[0][0];
@@ -366,7 +368,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
             &F_d, &X_d, &B_d, &D_d, &E_d, &G_d, &H_d,
             &B_i, &E_i, &D_i, &F_i, &G_i, &H_i, &X_i
         };
-        for (auto ptr: vt) ptr->cnt = 0;
+        for (auto & ptr: vt) ptr->cnt = 0;
         for (int i = 0; i < phi_cnt.size(); i ++) phi_cnt[i] = 0;
         for (int i = 0; i < psi_cnt.size(); i ++) psi_cnt[i] = 0;
         for (int s = 0; s < pi_cnt.size(); s ++) {
@@ -376,8 +378,21 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
         for (int i = 0; i < nums; i ++) {
             BaumWelchSingleStep(proSeqs[i], dnaSeqs[i], 1);
         }
+        get_total();
+        int n = 1;
+        //pseudocount(n);
         updateProbabilities(option);
-        std::cout <<"check: "<< A.cnt << std::endl;
+        double tot_psi = 0;
+        for (int i = 0; i < psi.size(); i ++) tot_psi += psi[i];
+        double tot_phi = 0;
+        for (int i = 0; i < phi.size(); i ++) tot_phi += phi[i];
+        double tot_pi = 0;
+        for (int i = 0; i < pi.size(); i ++) {
+            for (int j = 0; j < pi[0].size(); j ++) {
+                tot_pi += pi[i][j];
+            }
+        }
+        std::cout <<"check: "<<tot_psi<<" "<<tot_phi<<" "<<tot_pi  << std::endl;
         displayParameters("This is the " + std::to_string(iter) + " epoch: ", default_filepath);
     }
 }
@@ -619,7 +634,7 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
     }
 
     for (int k = 0; k < 21; k ++) phi_cnt[k] += exp(log_sum_exp(curr_log_phi_cnt[k].begin(), curr_log_phi_cnt[k].end())-logProb);
-    DataTool dt;
+
     for (int i = 1; i <= n; i ++) {
         for (int j = 3; j <= m; j ++) {
             int s = proSeq[i];
@@ -627,9 +642,16 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
             curr_log_pi_cnt[s][t].push_back(Match->logf[i][j] + Match->logb[i-1][j-3]);
         }
     }
+    //std::cout << "value check: " << Match->logf[1][3] << " " <<Match->logb[0][0] << " " << logProb << std::endl;
     for (int s = 0; s < 21; s ++) {
         for (int t = 0; t < 64; t ++) {
-            pi_cnt[s][t] += exp(log_sum_exp(curr_log_pi_cnt[s][t].begin(), curr_log_pi_cnt[s][t].end())-logProb);
+            double curr = exp(log_sum_exp(curr_log_pi_cnt[s][t].begin(), curr_log_pi_cnt[s][t].end())-log_pi[s][t]+log_psi[t&3]+log_psi[(t>>2)&3]+log_psi[(t>>4)&3]+log_phi[s]-logProb); 
+            pi_cnt[s][t] += isnan(curr) ? 0 : curr;
+            if(isnan(pi_cnt[s][t])) {
+                std::cout << "NaN! " << s<<" " << t<<": "<<log_sum_exp(curr_log_pi_cnt[s][t].begin(), curr_log_pi_cnt[s][t].end()) <<" "
+                <<log_pi[s][t]<<" "<<log_psi[t&3]<<" "<< log_psi[(t>>2)&3]<<" "<< log_psi[(t>>4)&3]<<" "<<log_phi[s]<< std::endl;
+                exit(0);
+            }
         }
     }
 }
@@ -806,7 +828,7 @@ bool PairHMM::checkValidDeletionParameters(NumType DeltaD) const {
     if(DeltaD < 0 || DeltaD >= 1) return false;
     NumType EpsilonD = ((E_d.cnt + 3*X_d.cnt + 3*B_d.cnt))/((2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt)*DeltaD) - (D_d.cnt + E_d.cnt)/(2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
     NumType BetaD = pow(DeltaD, 2) * pow(1-EpsilonD, 3) / (EpsilonD*pow(1-DeltaD, 3));
-    return EpsilonD > 0 && EpsilonD < 1 && BetaD > 0 && BetaD < 1;
+    return EpsilonD >= 0 && EpsilonD <= 1 && BetaD >= 0 && BetaD <= 1;
 }
 
 NumType PairHMM::deltaDtoObject(LogNumType DeltaD) {    
@@ -1039,18 +1061,18 @@ void PairHMM::checkback(int i, int j, int n, int m) {
     double suffix = (n-i) *log_phi[0] + (m-j)*log_psi[0];
     std::vector<State*> veci {I_1, I_2, I_3, I_4, I_5, I_6, I_7};
     std::vector<State*> vech {H_1, H_2, H_3, H_4, H_5, H_6, H_7};
-    std::vector<State*> vecd {D_1, D_2, D_3};
+    std::vector<State*> vecd {D_1, D_2, D_3, Match};
     std::cout << "Backward check: "<<i<<" & "<< j << ": " << std::endl;
     for(auto & ptr: veci) {
-        std::cout << "ori: " << ptr->b[i][j] <<" log: "<<ptr->logb[i][i]<<", error: " <<exp(ptr->logb[i][j] + suffix) - ptr->b[i][j] << std::endl; 
+        std::cout << "ori: " << ptr->b[i][j] <<" log: "<<ptr->logb[i][j]<<", error: " <<exp(ptr->logb[i][j] + suffix) - ptr->b[i][j] << std::endl; 
     }
     std::cout << std::endl;
     for(auto & ptr: vech) {
-        std::cout << "ori: " << ptr->b[i][j] <<" log: "<<ptr->logb[i][i]<<", error: " <<exp(ptr->logb[i][j] + suffix) - ptr->b[i][j] << std::endl; 
+        std::cout << "ori: " << ptr->b[i][j] <<" log: "<<ptr->logb[i][j]<<", error: " <<exp(ptr->logb[i][j] + suffix) - ptr->b[i][j] << std::endl; 
     }
     std::cout << std::endl;
     for(auto & ptr: vecd) {
-        std::cout << "ori: " << ptr->b[i][j] <<" log: "<<ptr->logb[i][i]<<", error: " <<exp(ptr->logb[i][j] + suffix) - ptr->b[i][j] << std::endl; 
+        std::cout << "ori: " << ptr->b[i][j] <<" log: "<<ptr->logb[i][j]<<", error: " <<exp(ptr->logb[i][j] + suffix) - ptr->b[i][j] << std::endl; 
     }
     std::cout << std::endl;
 }
@@ -1059,18 +1081,18 @@ void PairHMM::checkforward(int i, int j) {
     double prefix = (i) *log_phi[0] + (j)*log_psi[0];
     std::vector<State*> veci {I_1, I_2, I_3, I_4, I_5, I_6, I_7};
     std::vector<State*> vech {H_1, H_2, H_3, H_4, H_5, H_6, H_7};
-    std::vector<State*> vecd {D_1, D_2, D_3};
+    std::vector<State*> vecd {D_1, D_2, D_3, Match};
     std::cout << "Forward check: "<<i<<" & "<< j << ": " << std::endl;
     for(auto & ptr: veci) {
-        std::cout << "ori: " << ptr->f[i][j] <<" log: "<<ptr->logf[i][i]<<", error: " <<exp(ptr->logf[i][j] + prefix) - ptr->f[i][j] << std::endl; 
+        std::cout << "ori: " << ptr->f[i][j] <<" log: "<<ptr->logf[i][j]<<", error: " <<exp(ptr->logf[i][j] + prefix) - ptr->f[i][j] << std::endl; 
     }
     std::cout << std::endl;
     for(auto & ptr: vech) {
-        std::cout << "ori: " << ptr->f[i][j] <<" log: "<<ptr->logf[i][i]<<", error: " <<exp(ptr->logf[i][j] + prefix) - ptr->f[i][j] << std::endl; 
+        std::cout << "ori: " << ptr->f[i][j] <<" log: "<<ptr->logf[i][j]<<", error: " <<exp(ptr->logf[i][j] + prefix) - ptr->f[i][j] << std::endl; 
     }
     std::cout << std::endl;
     for(auto & ptr: vecd) {
-        std::cout << "ori: " << ptr->f[i][j] <<" log: "<<ptr->logf[i][i]<<", error: " <<exp(ptr->logf[i][j] + prefix) - ptr->f[i][j] << std::endl; 
+        std::cout << "ori: " << ptr->f[i][j] <<" log: "<<ptr->logf[i][j]<<", error: " <<exp(ptr->logf[i][j] + prefix) - ptr->f[i][j] << std::endl; 
     }
     std::cout << std::endl;
 }
@@ -1133,4 +1155,40 @@ void PairHMM::testTraining(const std::string & filename) {
     in.close();
     std::cout << "loaded data: " << pros.size()<< " pro seqs and "<<dnas.size()<<" dna seqs."<<std::endl;
     naiveBaumWelch(pros, dnas, 4, 1);
+}
+
+void PairHMM::get_total() {
+    double deletionCnts = J_d.cnt + K_d.cnt + F_d.cnt + X_d.cnt + M.cnt;
+    double insertionCnts = J_i.cnt + K_i.cnt + F_i.cnt + G_i.cnt + H_i.cnt + X_i.cnt +2*D_d.cnt + E_d.cnt + 3*M.cnt;
+    double proCnts = 0;
+    double dnaCnts = 0;
+    for (int i = 0; i < 4; i ++) dnaCnts += psi_cnt[i];
+    for (int i = 0; i < 21; i ++) proCnts += phi_cnt[i];
+    double tot = 0;
+    for (int i = 0; i < 21; i ++) {
+        for (int j = 0; j < 64; j ++) tot += pi_cnt[i][j];
+    }
+    dnaCnts += 3*tot;
+    proCnts += tot;
+    std::cout << "total deletions: " << deletionCnts << " " << proCnts << std::endl;
+    std::cout << "total insertions: " << insertionCnts << " " << dnaCnts <<std::endl;
+}
+
+void PairHMM::pseudocount(int n) {
+    for (int i = 0; i < pi_cnt.size(); i ++) {
+        for (int j = 0; j < pi_cnt.size(); j ++) {
+            pi_cnt[i][j] += n;
+        }
+    }
+    for (int i = 0; i < phi_cnt.size(); i ++) {phi_cnt[i] += n; }
+    for (int i = 0; i < psi_cnt.size(); i ++) {psi_cnt[i] += n; }
+    std::vector<Transition*> vt {
+        &J_d, &J_i, &M, &A, &K_d, &K_i, 
+        &F_d, &X_d, &B_d, &D_d, &E_d, &G_d, &H_d,
+        &F_i, &X_i, &B_i, &D_i, &E_i, &G_i, &H_i
+    };
+    for (auto & ptr: vt) {
+        ptr->cnt += n;
+    }
+
 }

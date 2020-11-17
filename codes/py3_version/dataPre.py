@@ -66,14 +66,15 @@ def getSmallTestData(pseudogene_id, pseudogene_chr, pseudogene_start, pseudogene
     if not (proteinSeqRequest.ok and dnaSeqRequest.ok):
         errorfile.write (str(pseudogene_id)+" can not find protein.\n")
         return
-    datafile.write(">"+str(curr_dna_json["genome"]) + "_" + str(curr_dna_json["chrom"]) +"_"+ str(curr_dna_json["start"])+"_"+str(curr_dna_json["end"]) + "\n" + "".join(curr_dna_json["dna"].split("\n")) +"\n")
     datafile.write(curr_protein[0] + "\n"+curr_protein_seq +"\n")
+    datafile.write(">"+str(curr_dna_json["genome"]) + "_" + str(curr_dna_json["chrom"]) +"_"+ str(curr_dna_json["start"])+"_"+str(curr_dna_json["end"]) + "\n" + "".join(curr_dna_json["dna"].split("\n")) +"\n")
+    
 
 #PGOHUM00000250213	6	85967053	85967406	+	ENSP00000264258	0.95	0.75	3.0E-19	Processed	PF01198;
 #PGOHUM00000242041	X	135929543	135930187	+	ENSP00000328551	1.0	0.791	0.0	Processed	PF00071;PF08477;
 #getSequences("PGOHUM00000250213",6,85967053,85967406,"ENSP00000264258")
 for idx, data in df.iterrows():
-    if data["class"] == "Processed" and len(data["chr"]) <= 2:
+    if data["class"] == "Processed" and len(data["chr"]) <= 2 and data["strand"] == "+" and int(data["end"]) - int(data["start"]) <= 600:
         getSmallTestData(data["id"], data["chr"], data["start"], data["end"], data["parent"])
 
 datafile.close()
