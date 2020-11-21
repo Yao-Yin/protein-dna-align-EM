@@ -701,7 +701,7 @@ void PairHMM::naiveUpdateDeletionProbabilities() {
 }
 
 long double PairHMM::calculateOverallLogProb() const {
-    return M.cnt*log_gamma + A.cnt*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i)) + (B_d.cnt + D_d.cnt + E_d.cnt)*log_alpha_d 
+    return M.cnt*log_gamma + A.cnt*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i)) + (B_i.cnt + D_i.cnt + E_i.cnt)*log_alpha_i + (B_d.cnt + D_d.cnt + E_d.cnt)*log_alpha_d 
             + B_i.cnt*Log1m(log_beta_i) + X_i.cnt*log_beta_i + E_i.cnt*Log1m(log_epsilon_i) + (X_i.cnt + B_i.cnt) * log_epsilon_i 
             + D_i.cnt*(Log1m(log_beta_i)) + (X_i.cnt + B_i.cnt + E_i.cnt)*log_delta_i + B_d.cnt*(Log1m(log_beta_d)) + X_d.cnt*log_beta_d
             + E_d.cnt*Log1m(log_epsilon_d) + (X_d.cnt + D_d.cnt)*log_epsilon_d + D_d.cnt*Log1m(log_epsilon_d) + (X_d.cnt + B_d.cnt + E_d.cnt)*log_delta_d;

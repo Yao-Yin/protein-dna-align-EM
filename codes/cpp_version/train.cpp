@@ -106,9 +106,9 @@ int main()
     //std::cout << "hello" << std::endl;
     //std::cout << tiny.pi.size() << tiny.pi[0].size() << std::endl;
     //tiny.setInsertion();
-    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt", 100);
+    //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt", 100);
     tiny.get_total();
-    //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\training_data_short30000.txt", 30);
+    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\training_data_short30000.txt", 50);
     DataTool dt;
     /*std::string dna = genDNA(100);
     std::string pro = genPro(30);
