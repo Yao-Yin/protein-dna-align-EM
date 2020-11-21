@@ -95,31 +95,36 @@ int main()
 {
     //std::cout << "hello" << std::endl;
     PairHMM tiny;
+    tiny.eps = 1e-5;
+    //tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\test_for_set_output.txt";
+    //tiny.setParameters("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\test_for_set_input.txt");
+    tiny.reNormalize();
+    //tiny.naiveTolog();
     tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\parameter_log.txt";
     tiny.error_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\error_log.txt";
     tiny.setPi(directReadPi("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\initProb\\piProb.txt"));
     //std::cout << "hello" << std::endl;
     //std::cout << tiny.pi.size() << tiny.pi[0].size() << std::endl;
     //tiny.setInsertion();
-    //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt");
-    //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\training_data_short30000.txt");
+    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt", 100);
+    tiny.get_total();
+    //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\training_data_short30000.txt", 30);
     DataTool dt;
-    std::string dna = genDNA(100);
-    std::string pro = genPro(300);
+    /*std::string dna = genDNA(100);
+    std::string pro = genPro(30);
     std::cout << dna << " " << pro << std::endl;
     proSeqType p = dt.encodePro(pro);
-    dnaSeqType d = dt.encodeDNA(dna);
-    std::vector<proSeqType> testpro {p};
-    std::vector<dnaSeqType> testdna {d};
+    dnaSeqType d = dt.encodeDNA(dna);*/
+    //std::vector<proSeqType> testpro {p};
+    //std::vector<dnaSeqType> testdna {d};
     //tiny.BaumWelchSingleStep(p, d, 0);
     //tiny.BaumWelchSingleStep(p, d, 1);
     //std::cout << tiny.logFinishFwd <<" "<<tiny.logStartBwd<< std::endl;
-    
     //tiny.displayTransitionCnts();
     //tiny.get_total();
     //std::cout << tiny.omega_d << " " << tiny.omega_i << " " << std::endl;
-    tiny.naiveBaumWelch(testpro, testdna, 3, 1);
-    tiny.displayEmissionCnts();
+    //tiny.naiveBaumWelch(testpro, testdna, 3, 1);
+    //tiny.displayEmissionCnts();
     //std::cout << tiny.omega_d << " " << tiny.omega_i << " " << std::endl;
     //std::cout << tiny.logFinishFwd <<" "<<tiny.logStartBwd<< std::endl;
     //tiny.displayEmissionCnts();

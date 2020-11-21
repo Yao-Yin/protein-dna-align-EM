@@ -86,8 +86,8 @@ void PairHMM::emissionInitialize() {
 }
 
 void PairHMM::parameterInitialize() {
-    omega_i = NumType(0.9);
-    omega_d = NumType(0.9);
+    omega_i = NumType(0.8);
+    omega_d = NumType(0.8);
     gamma = NumType(0.7);
     //deletion
     alpha_d = NumType(0.1);
@@ -325,7 +325,7 @@ void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) 
             //D_2->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*(I_2->b[i+1][j]*(NumType(1)-delta_d) + H_7->b[i+1][j]*delta_d);
             D_2->logb[i][j] = (i == n) ? lzero : LogSumExp(I_2->logb[i+1][j]+Log1m(log_delta_d), H_7->logb[i+1][j]+log_delta_d);
             //I_4->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-delta_i)+I_5->b[i][j+1]*epsilon_i);
-            I_4->logb[i][j] = (j == m) ? lzero : LogSumExp(H_3->logb[i][j+1]+Log1m(log_delta_i), I_5->logb[i][j+1]+log_epsilon_i);
+            I_4->logb[i][j] = (j == m) ? lzero : LogSumExp(H_3->logb[i][j+1]+Log1m(log_delta_i), I_5->logb[i][j+1]+log_delta_i);
             //H_3->b[i][j] = Match->b[i][j]*gamma + H_4->b[i][j]*(NumType(1)-gamma-alpha_d-alpha_i)
             //            + D_2->b[i][j]*alpha_d + I_4->b[i][j]*alpha_i;
             H_3->logb[i][j] = LogSumExp(Match->logb[i][j]+log_gamma, H_4->logb[i][j]+log(1.0-gamma-alpha_d-alpha_i),/*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i))*/
@@ -341,7 +341,7 @@ void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) 
             //I_1->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*H_2->b[i][j+1];
             I_1->logb[i][j] = (j == m) ? lzero : H_2->logb[i][j+1];
             //I_6->b[i][j] = (j == m) ? NumType(0) : psi[dnaSeq.ori[j+1]]*(H_3->b[i][j+1]*(NumType(1)-beta_i)+I_4->b[i][j+1]*epsilon_i);
-            I_6->logb[i][j] = (j == m) ? lzero : LogSumExp(H_3->logb[i][j+1]+Log1m(log_beta_i), I_4->logb[i][j+1]+log_epsilon_i);
+            I_6->logb[i][j] = (j == m) ? lzero : LogSumExp(H_3->logb[i][j+1]+Log1m(log_beta_i), I_4->logb[i][j+1]+log_beta_i);
             //H_2->b[i][j] = I_1->b[i][j]*omega_i + H_3->b[i][j]*(NumType(1)-omega_i);
             H_2->logb[i][j] = LogSumExp(I_1->logb[i][j]+log_omega_i, H_3->logb[i][j]+Log1m(log_omega_i));
             //D_1->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_1->b[i+1][j];
@@ -374,15 +374,17 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
         for (int s = 0; s < pi_cnt.size(); s ++) {
             for (int t = 0; t < pi_cnt[0].size(); t ++) pi_cnt[s][t] = 0;
         }   
-        displayParameters("Before the " + std::to_string(iter) + " epoch: ", default_filepath);
+        //displayParameters("Before the " + std::to_string(iter) + " epoch: ", default_filepath);
+        get_total();
         for (int i = 0; i < nums; i ++) {
             BaumWelchSingleStep(proSeqs[i], dnaSeqs[i], 1);
         }
         get_total();
-        int n = 1;
-        //pseudocount(n);
+        double n = 0.01;
+        pseudocount(n);
         updateProbabilities(option);
-        double tot_psi = 0;
+        pseudocount(-n);
+        /*double tot_psi = 0;
         for (int i = 0; i < psi.size(); i ++) tot_psi += psi[i];
         double tot_phi = 0;
         for (int i = 0; i < phi.size(); i ++) tot_phi += phi[i];
@@ -392,7 +394,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
                 tot_pi += pi[i][j];
             }
         }
-        std::cout <<"check: "<<tot_psi<<" "<<tot_phi<<" "<<tot_pi  << std::endl;
+        std::cout <<"check "<<iter<<": "<< tot_psi<<" "<<tot_phi<<" "<<tot_pi  << std::endl;*/
         displayParameters("This is the " + std::to_string(iter) + " epoch: ", default_filepath);
     }
 }
@@ -647,11 +649,11 @@ void PairHMM::logUpdateEmissions(const proSeqType & proSeq, const dnaSeqType & d
         for (int t = 0; t < 64; t ++) {
             double curr = exp(log_sum_exp(curr_log_pi_cnt[s][t].begin(), curr_log_pi_cnt[s][t].end())-log_pi[s][t]+log_psi[t&3]+log_psi[(t>>2)&3]+log_psi[(t>>4)&3]+log_phi[s]-logProb); 
             pi_cnt[s][t] += isnan(curr) ? 0 : curr;
+            /*
             if(isnan(pi_cnt[s][t])) {
                 std::cout << "NaN! " << s<<" " << t<<": "<<log_sum_exp(curr_log_pi_cnt[s][t].begin(), curr_log_pi_cnt[s][t].end()) <<" "
                 <<log_pi[s][t]<<" "<<log_psi[t&3]<<" "<< log_psi[(t>>2)&3]<<" "<< log_psi[(t>>4)&3]<<" "<<log_phi[s]<< std::endl;
-                exit(0);
-            }
+            }*/
         }
     }
 }
@@ -698,20 +700,11 @@ void PairHMM::naiveUpdateDeletionProbabilities() {
     delta_d = (X_d.cnt + B_d.cnt + E_d.cnt) / (X_d.cnt + B_d.cnt + E_d.cnt + D_d.cnt);
 }
 
-LogNumType PairHMM::calculateOverallLogProb(const std::vector<LogNumType> & parameters) const {
-    LogNumType ln_gamma = parameters[0];
-    LogNumType ln_alpha_d = parameters[1];
-    LogNumType ln_alpha_i = parameters[2];
-    LogNumType ln_beta_i = parameters[3];
-    LogNumType ln_epsilon_i = parameters[4];
-    LogNumType ln_delta_i = parameters[5];
-    LogNumType ln_beta_d = parameters[6];
-    LogNumType ln_epsilon_d = parameters[7];
-    LogNumType ln_delta_d = parameters[8];
-    return M.cnt*ln_gamma + A.cnt*Log1m(LogSumExp(ln_gamma, ln_alpha_d, ln_alpha_i)) + (B_d.cnt + D_d.cnt + E_d.cnt)*ln_alpha_d 
-            + B_i.cnt*Log1m(ln_beta_i) + X_i.cnt*ln_beta_i + E_i.cnt*Log1m(ln_epsilon_i) + (X_i.cnt + B_i.cnt) * ln_epsilon_i 
-            + D_i.cnt*(Log1m(ln_beta_i)) + (X_i.cnt + B_i.cnt + E_i.cnt)*ln_delta_i + B_d.cnt*(Log1m(ln_beta_d)) + X_d.cnt*ln_beta_d
-            + E_d.cnt*Log1m(ln_epsilon_d) + (X_d.cnt + D_d.cnt)*ln_epsilon_d + D_d.cnt*Log1m(ln_epsilon_d) + (X_d.cnt + B_d.cnt + E_d.cnt)*ln_delta_d;
+long double PairHMM::calculateOverallLogProb() const {
+    return M.cnt*log_gamma + A.cnt*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i)) + (B_d.cnt + D_d.cnt + E_d.cnt)*log_alpha_d 
+            + B_i.cnt*Log1m(log_beta_i) + X_i.cnt*log_beta_i + E_i.cnt*Log1m(log_epsilon_i) + (X_i.cnt + B_i.cnt) * log_epsilon_i 
+            + D_i.cnt*(Log1m(log_beta_i)) + (X_i.cnt + B_i.cnt + E_i.cnt)*log_delta_i + B_d.cnt*(Log1m(log_beta_d)) + X_d.cnt*log_beta_d
+            + E_d.cnt*Log1m(log_epsilon_d) + (X_d.cnt + D_d.cnt)*log_epsilon_d + D_d.cnt*Log1m(log_epsilon_d) + (X_d.cnt + B_d.cnt + E_d.cnt)*log_delta_d;
 }
 
 std::vector<LogNumType> PairHMM::deltaItoParameters(const LogNumType & deltai) const {
@@ -918,6 +911,7 @@ void PairHMM::updateAlignProbabilities() {
 void PairHMM::displayParameters(const std::string msg, const std::string & filename) const{
     std::ofstream out;
     out.open(filename, std::ios::out|std::ios::app);
+    out << std::setprecision(15);
     std::vector<NumType> vt {
         J_d.cnt, J_i.cnt, M.cnt, A.cnt, K_d.cnt, K_i.cnt, 
         F_d.cnt, X_d.cnt, B_d.cnt, D_d.cnt, E_d.cnt, G_d.cnt, H_d.cnt,
@@ -937,7 +931,7 @@ void PairHMM::displayParameters(const std::string msg, const std::string & filen
     out << "cnts: ";
     for (auto num: vt) out << num << "\t";
     out << std::endl;
-    out << logProb << std::endl;
+    out << "Overall: "<<calculateOverallLogProb() << std::endl;
     for (int i = 0; i < tp.size(); i ++) {
         if(i) out << '\t';
         out << tp[i];
@@ -1140,21 +1134,26 @@ void PairHMM::setDeletion(NumType deltaD, NumType epsilonD) {
     setDeletion(BetaD, deltaD, epsilonD);
 }
 
-void PairHMM::testTraining(const std::string & filename) {
+void PairHMM::testTraining(const std::string & filename, int iter) {
     std::ifstream in(filename, std::ios::in);
     std::string dna_position, dna_seq, protein_id, protein_seq;
     std::vector<proSeqType> pros;
     std::vector<dnaSeqType> dnas;
     DataTool dt; 
+    int proSize = 0;
+    int dnaSize = 0;
     while(in >> protein_id >> protein_seq >> dna_position >> dna_seq) {
         if(dt.checkDNA(dna_seq) && dt.checkPro(protein_seq)) {
             pros.push_back(dt.encodePro(protein_seq+"*"));
             dnas.push_back(dt.encodeDNA(dna_seq));
+            proSize += (protein_seq.size() + 1);
+            dnaSize += dna_seq.size();
         }
     }
     in.close();
     std::cout << "loaded data: " << pros.size()<< " pro seqs and "<<dnas.size()<<" dna seqs."<<std::endl;
-    naiveBaumWelch(pros, dnas, 4, 1);
+    std::cout << "DNA seqs bases cnts: " << dnaSize << "Pro seqs aa cnts(include extra *): " << proSize << std::endl;
+    naiveBaumWelch(pros, dnas, iter, 1);
 }
 
 void PairHMM::get_total() {
@@ -1174,7 +1173,7 @@ void PairHMM::get_total() {
     std::cout << "total insertions: " << insertionCnts << " " << dnaCnts <<std::endl;
 }
 
-void PairHMM::pseudocount(int n) {
+void PairHMM::pseudocount(double n) {
     for (int i = 0; i < pi_cnt.size(); i ++) {
         for (int j = 0; j < pi_cnt.size(); j ++) {
             pi_cnt[i][j] += n;
@@ -1190,5 +1189,109 @@ void PairHMM::pseudocount(int n) {
     for (auto & ptr: vt) {
         ptr->cnt += n;
     }
+}
 
+void PairHMM::reNormalize() {
+    NumType psi_tot = std::accumulate(psi.begin(), psi.end(), NumType(0));
+    for (auto & p: psi) p = p / psi_tot;
+    NumType phi_tot = std::accumulate(phi.begin(), phi.end(), NumType(0));
+    for (auto & p: phi) p = p / phi_tot;
+    NumType pi_tot(0);
+    for (int i = 0; i < pi.size(); i ++) {
+        for (int j = 0; j < pi[0].size(); j ++) {
+            pi_tot += pi[i][j];
+        }
+    }
+    for (int i = 0; i < pi.size(); i ++) {
+        for (int j = 0; j < pi[0].size(); j ++) {
+            pi[i][j] = pi[i][j] / pi_tot;
+        }
+    }
+    naiveTolog();
+}
+
+bool PairHMM::setParameters(const std::string & filename) {
+    std::ifstream in(filename, std::ios::in);
+    /* first line: omega_i, omega_d, gamma, alpha_i, alpha_d, gamma, delta_i, beta_i, epsilon_i, delta_d, beta_d, epsilon_d;
+       second line: phi (pro);
+       third line: psi (dna);
+       fourth line: pi
+    */
+    std::string first_line, second_line, third_line, fourth_line;
+    std::string curr_num;
+    getline(in, first_line);
+    getline(in, second_line);
+    getline(in, third_line);
+    getline(in, fourth_line);
+    /*std::cout << first_line << std::endl;
+    std::cout << second_line << std::endl;
+    std::cout << third_line << std::endl;
+    std::cout << fourth_line << std::endl;*/
+    std::stringstream curr(first_line);
+    std::vector<NumType> tran_probs, curr_phi, curr_psi, curr_pi;
+    while (std::getline(curr, curr_num, '\t')) {
+        tran_probs.push_back(std::stod(curr_num));
+    } 
+    std::stringstream curr_2(second_line);
+    while (std::getline(curr_2, curr_num, '\t')) {
+        curr_phi.push_back(std::stod(curr_num));
+    }
+    std::stringstream curr_3(third_line);
+    while (std::getline(curr_3, curr_num, '\t')) {
+        curr_psi.push_back(std::stod(curr_num));
+    }
+    std::stringstream curr_4(fourth_line);
+    while (std::getline(curr_4, curr_num, '\t')) {
+        curr_pi.push_back(std::stod(curr_num));
+    }
+    //make several checks
+    for (auto & i : tran_probs) {
+        if(i < 0 || i > 1) return false;
+    }
+    std::cout << "trans checked" << std::endl;
+    NumType phi_tot = 0;
+    for (auto & i : curr_phi) {
+        if(i < 0 || i > 1) return false;
+        phi_tot += i;
+    }
+    if(phi_tot <= 1 - eps || phi_tot >= 1 + eps) return false;
+    std::cout << "phi checked" << std::endl;
+    NumType psi_tot = 0;
+    for (auto & i : curr_psi) {
+        if(i < 0 || i > 1) return false;
+        psi_tot += i;
+    }
+    if(psi_tot <= 1 - eps || psi_tot >= 1 + eps) {
+        std::cout << psi_tot << std::endl;
+        return false;
+    }
+    std::cout << "psi checked" << std::endl;
+    NumType pi_tot = 0;
+    for (auto & i : curr_pi) {
+        if(i < 0 || i > 1) return false;
+        pi_tot += i;
+    }
+    if(pi_tot <= 1 - eps || pi_tot >= 1 + eps) return false;
+    std::cout << "pi checked" << std::endl;
+    this->psi = curr_psi;
+    this->phi = curr_phi;
+    for (int i = 0; i < 21; i ++) {
+        for (int j = 0; j < 64; j ++) {
+            pi[i][j] = curr_pi[i*64+j];
+        }
+    }
+    //omega_i, omega_d, gamma, alpha_i, alpha_d, gamma, delta_i, beta_i, epsilon_i, delta_d, beta_d, epsilon_d;
+    omega_i = tran_probs[0];
+    omega_d = tran_probs[1];
+    gamma = tran_probs[2];
+    alpha_i = tran_probs[3];
+    alpha_d = tran_probs[4];
+    delta_i = tran_probs[6];
+    beta_i = tran_probs[7];
+    epsilon_i = tran_probs[8];
+    std::cout << delta_i << " " << beta_i << " " << epsilon_i << std::endl;
+    /*delta_d = tran_probs[9];
+    beta_d = tran_probs[10];
+    epsilon_d = tran_probs[11];*/
+    return true; 
 }

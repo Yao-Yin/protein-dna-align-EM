@@ -12,6 +12,8 @@
 #include <fstream>
 #include <time.h>
 #include <float.h>
+#include <numeric>
+#include <iomanip>
 //typedef double NumType; // To represent Probability numerically;
 //typedef double LogNumType;
 typedef std::vector<int8_t> proSeqType; //Encoding the ProSeqType, index start from 1
@@ -131,7 +133,7 @@ public:
     void setAlign(NumType omegaI, NumType omegaD, NumType Gamma, NumType alphaI, NumType alphaD);
     bool checkValidInsertionParameters(NumType DeltaI) const;
     bool checkValidDeletionParameters(NumType DeltaD) const;
-    LogNumType calculateOverallLogProb(const std::vector<LogNumType> & parameters) const ;
+    long double calculateOverallLogProb() const ;
     std::vector<LogNumType> deltaItoParameters(const LogNumType & deltai) const;
     int insertionSolver();
     int deletionSolver();
@@ -140,11 +142,14 @@ public:
     void setInsertionParameters(NumType DeltaI);
     void setDeletionParameters(NumType DeltaD);
     void setPi(std::vector<std::vector<NumType>> mat);
-    void testTraining(const std::string & filename);
+    void testTraining(const std::string & filename, int iter);
     void setInsertion(NumType epsilonI, NumType deltaI);
     void setDeletion(NumType epsilonD, NumType deltaD);
     void get_total();
-    void pseudocount(int n);
+    void pseudocount(double n);
+    bool setParameters(const std::string & filename);
+    void reNormalize();
+    NumType eps;
 private:
     State *start, *finish; 
     State *D_1, *D_2, *D_3;

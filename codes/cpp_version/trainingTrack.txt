@@ -1,0 +1,170 @@
+loaded data: 6629 pro seqs and 6629 dna seqs.
+DNA seqs bases cnts: 379134Pro seqs aa cnts(include extra *): 2284574
+This is the 0 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.28457e+006 2.28457e+006
+total insertions: 379134 379134
+check 0: 1 1 1
+This is the 1 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.30067e+006 2.30067e+006
+total insertions: 382295 382295
+check 1: 1 1 1
+
+[Done] exited with code=0 in 1839.877 seconds
+
+[Running] cd "c:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\" && g++ *.cpp -o train -fopenmp && train.exe -fopenmp
+loaded data: 6629 pro seqs and 6629 dna seqs.
+DNA seqs bases cnts: 379134Pro seqs aa cnts(include extra *): 2284574
+This is the 0 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.28457e+006 2.28457e+006
+total insertions: 379134 379134
+This is the 1 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.30068e+006 2.30068e+006
+total insertions: 382296 382296
+This is the 2 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.3162e+006 2.3162e+006
+total insertions: 385087 385087
+This is the 3 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.33425e+006 2.33425e+006
+total insertions: 388017 388017
+This is the 4 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.35789e+006 2.35789e+006
+total insertions: 391503 391503
+This is the 5 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.39313e+006 2.39313e+006
+total insertions: 396094 396094
+This is the 6 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.45201e+006 2.45201e+006
+total insertions: 402645 402645
+This is the 7 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.54752e+006 2.54752e+006
+total insertions: 412457 412457
+This is the 8 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.68317e+006 2.68317e+006
+total insertions: 427277 427277
+This is the 9 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.88989e+006 2.88989e+006
+total insertions: 450612 450612
+This is the 10 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 3.25689e+006 3.25689e+006
+total insertions: 491096 491096
+This is the 11 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 4.03619e+006 4.03619e+006
+total insertions: 572356 572356
+This is the 12 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 6.49617e+006 6.49617e+006
+total insertions: 806686 806686
+This is the 13 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.82355e+007 2.82355e+007
+total insertions: 2.89648e+006 2.89648e+006
+This is the 14 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 1.29061e+008 1.29061e+008
+total insertions: 1.01489e+007 1.01489e+007
+This is the 15 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 5.82275e+008 5.82275e+008
+total insertions: 4.45694e+007 4.45694e+007
+This is the 16 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 9.88563e+007 9.88563e+007
+total insertions: 1.64739e+007 1.64739e+007
+This is the 17 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.29411e+006 2.29411e+006
+total insertions: 380262 380262
+This is the 18 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.29935e+006 2.29935e+006
+total insertions: 381135 381135
+This is the 19 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.41831e+006 2.41831e+006
+total insertions: 395683 395683
+This is the 20 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 3.06767e+006 3.06767e+006
+total insertions: 499978 499978
+This is the 21 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 2.69739e+006 2.69739e+006
+total insertions: 420847 420847
+This is the 22 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 8.98885e+006 8.98885e+006
+total insertions: 878101 878101
+This is the 23 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 3.04595e+006 3.04595e+006
+total insertions: 470443 470443
+This is the 24 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 4.65483e+006 4.65483e+006
+total insertions: 548698 548698
+This is the 25 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 8.18878e+006 8.18878e+006
+total insertions: 831291 831291
+This is the 26 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 4.37457e+006 4.37457e+006
+total insertions: 572080 572080
+This is the 27 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 6.9172e+006 6.9172e+006
+total insertions: 707421 707421
+This is the 28 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 4.17565e+006 4.17565e+006
+total insertions: 530156 530156
+This is the 29 epoch. 
+total deletions: 0 0
+total insertions: 0 0
+total deletions: 1.26077e+007 1.26077e+007
+total insertions: 1.0756e+006 1.0756e+006
