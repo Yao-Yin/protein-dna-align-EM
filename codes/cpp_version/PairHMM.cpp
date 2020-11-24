@@ -87,16 +87,16 @@ void PairHMM::emissionInitialize() {
 }
 
 void PairHMM::parameterInitialize() {
-    omega_i = NumType(0.8);
-    omega_d = NumType(0.8);
-    gamma = NumType(0.7);
+    omega_i = NumType(0.9);
+    omega_d = NumType(0.9);
+    gamma = NumType(0.3);
     //deletion
-    alpha_d = NumType(0.1);
+    alpha_d = NumType(0.3);
     delta_d = NumType(0.1);
     epsilon_d = NumType(0.1);
     beta_d = NumType(0.1);
     //insertion
-    alpha_i = NumType(0.1);
+    alpha_i = NumType(0.3);
     delta_i = NumType(0.1); 
     beta_i = NumType(0.1);
     epsilon_i = NumType(0.1);
@@ -361,6 +361,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
     if (option) mode = true;
     else mode = false;
     for (int iter = 0; iter < iterTimes; iter ++) {
+        epoch_idx = iter;
         std::cout << "This is the " << iter <<" epoch. " << std::endl;
         naiveTolog();
         std::vector<Transition*> vt {
@@ -1167,7 +1168,7 @@ void PairHMM::setDeletion(NumType deltaD, NumType epsilonD) {
     setDeletion(BetaD, deltaD, epsilonD);
 }
 
-void PairHMM::testTraining(const std::string & filename, int iter) {
+void PairHMM::testTraining(const std::string & filename, int iter, int option) {
     std::ifstream in(filename, std::ios::in);
     std::string dna_position, dna_seq, protein_id, protein_seq;
     std::vector<proSeqType> pros;

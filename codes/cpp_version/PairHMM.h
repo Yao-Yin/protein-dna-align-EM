@@ -142,7 +142,7 @@ public:
     void setInsertionParameters(NumType DeltaI);
     void setDeletionParameters(NumType DeltaD);
     void setPi(std::vector<std::vector<NumType>> mat);
-    void testTraining(const std::string & filename, int iter);
+    void testTraining(const std::string & filename, int iter, int option);
     void setInsertion(NumType epsilonI, NumType deltaI);
     void setDeletion(NumType epsilonD, NumType deltaD);
     void get_total();
