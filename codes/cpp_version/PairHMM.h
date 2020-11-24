@@ -109,7 +109,7 @@ public:
     std::string error_filepath;
     void resetForward(int n, int m);
     void resetBackward(int n, int m);
-    void updateProbabilities(int option);
+    void updateProbabilities();
     void naiveUpdateProbabilities();
     void naiveUpdateInsertionProbabilities();
     void naiveUpdateDeletionProbabilities();
@@ -148,6 +148,8 @@ public:
     void get_total();
     void pseudocount(double n);
     bool setParameters(const std::string & filename);
+    bool insertionValid();
+    bool deletionValid();
     void reNormalize();
     NumType eps;
 private:
@@ -156,6 +158,8 @@ private:
     State *I_1, *I_2, *I_3, *I_4, *I_5, *I_6, *I_7;
     State *H_1, *H_2, *H_3, *H_4, *H_5, *H_6, *H_7; // H for central hidden node
     State *Match;
+    bool mode;
+    int epoch_idx;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "DataTool.h"
 #define ori first
 #define tripletSeq second
+
 DataTool::DataTool() {
     int curr = 0;
     aas = std::vector<char> {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','*'};
@@ -16,7 +17,6 @@ DataTool::DataTool() {
         check[aas[i]] = i;
     }
     bases = std::vector<char> {'T', 'C', 'A', 'G'};
-    
 }
 
 int8_t DataTool::encodeBase(const char & base) {

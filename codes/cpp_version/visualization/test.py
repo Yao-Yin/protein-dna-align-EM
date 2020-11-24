@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
+from math import log
 from pandas import *
 
 class DataTool:
@@ -102,8 +103,8 @@ def plot_table(row, col, vals):
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
     
-    the_table=plt.table(cellText=vals, rowLabels=df.index, colLabels=df.columns, colWidths = [0.005]*vals.shape[1], rowLoc='center', loc='center',cellLoc='center')
-    the_table.set_fontsize(10)
+    the_table=plt.table(cellText=vals, rowLabels=df.index, colLabels=df.columns, colWidths = [0.01]*vals.shape[1], rowLoc='center', loc='center',cellLoc='center')
+    the_table.set_fontsize(15)
     
     # 伸缩表格大小常数
     the_table.scale(figR/R*2 ,figC/C*1.5)
@@ -116,12 +117,13 @@ with open(PiInputFilePath, 'r') as f:
     # 21 * 64 matrix
     PiMatrix = []
     #for i in range(20):
-    PiMatrix.append([float(x) for x in f.readline().rstrip().split("\t")])
+    PiMatrix.append([log(float(x)) for x in f.readline().rstrip().split("\t")])
     #print(PiMatrix)
     row = dt.aaList
     col = dt.tripletList
     PiMatrixArray = np.array(PiMatrix)
-    PiMatrixArray.resize((20, 64))
+    PiMatrixArray.resize((21, 64))
+    print(PiMatrixArray)
     #print(PiMatrixArray)
     plot_table(np.array(row), np.array(col), PiMatrixArray)
 

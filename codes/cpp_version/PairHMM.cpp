@@ -2,6 +2,7 @@
 
 PairHMM::PairHMM() {
     initialize();
+    mode = false;
 }
 
 PairHMM::~PairHMM() {
@@ -284,10 +285,7 @@ void PairHMM::naiveBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq
             D_1->b[i][j] = (i == n) ? NumType(0) : phi[proSeq[i+1]]*H_1->b[i+1][j];
             H_1->b[i][j] = D_1->b[i][j]*omega_d + H_2->b[i][j]*(NumType(1)-omega_d);
             start->b[i][j] = H_1->b[i][j];
-            //std::cout << i << " " << j << " (naiveBack): " << I_1->b[i][j]<<" "<<I_2->b[i][j]<<" "<<I_3->b[i][j]<<" "<<I_4->b[i][j]<<" "<<I_5->b[i][j]<<" "<<I_6->b[i][j]<<" "<<I_7->b[i][j]<<std::endl;
-            //std::cout << i << " " << j << " (naiveBack): " << H_1->b[i][j]<<" "<<H_2->b[i][j]<<" "<<H_3->b[i][j]<<" "<<H_4->b[i][j]<<" "<<H_5->b[i][j]<<" "<<H_6->b[i][j]<<" "<<H_7->b[i][j]<<std::endl;
-            //std::cout << i << " " << j << ": " << I_1->b[i][j]<<" "<<I_2->b[i][j]<<" "<<I_3->b[i][j]<<" "<<I_4->b[i][j]<<" "<<I_5->b[i][j]<<" "<<I_6->b[i][j]<<" "<<I_7->b[i][j]<<std::endl;
-        }
+            }
     }
     startBwd = start->b[0][0];
 }
@@ -360,6 +358,8 @@ void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) 
 
 void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std::vector<dnaSeqType> & dnaSeqs, int iterTimes, int option) {
     int nums = proSeqs.size();
+    if (option) mode = true;
+    else mode = false;
     for (int iter = 0; iter < iterTimes; iter ++) {
         std::cout << "This is the " << iter <<" epoch. " << std::endl;
         naiveTolog();
@@ -382,7 +382,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
         get_total();
         double n = 0.01;
         pseudocount(n);
-        updateProbabilities(option);
+        updateProbabilities();
         pseudocount(-n);
         /*double tot_psi = 0;
         for (int i = 0; i < psi.size(); i ++) tot_psi += psi[i];
@@ -723,6 +723,40 @@ std::vector<LogNumType> PairHMM::deltaItoParameters(const LogNumType & deltai) c
     return parameters;
 }
 
+bool PairHMM::insertionValid() {
+    double a = (2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt);
+    a *= a;
+    double b = E_i.cnt + 3*X_i.cnt + B_i.cnt;
+    double c = D_i.cnt + E_i.cnt + B_i.cnt;
+    double d = 3*D_i.cnt + 4*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
+    double e = E_i.cnt + 3*X_i.cnt + 3*B_i.cnt;
+    DComplex* roots = solve_quartic((-a*b - 3*a*c - d)/(a*c), (3*a*b + 3*a*c +3*e*d)/(a*c), (-3*a*b-3*e*e*d-a*c)/(a*c), (a*b + e*e*e)/(a*c));
+    /*
+    1. check real number in [0, 1]
+    2. check other parameters in [0, 1]
+    3. check objects
+    4. check max
+    5. update parameters
+    6. what if failed => set error
+    */
+    std::vector<NumType> validDeltaI;
+    std::vector<std::pair<NumType,NumType>> objects ;
+    for (int i = 0; i < 4; i ++) {
+        //std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
+        if(roots[i].imag() || roots[i].real() >= 1.0 || roots[i].real() <= 0) continue;
+        //validDeltaI.push_back(roots[i].real());
+        if(checkValidInsertionParameters(roots[i].real())){
+            objects.push_back({deltaItoObject(roots[i].real()), roots[i].real()});
+        }
+    }
+    delete roots;
+    if(objects.size() == 0) {
+        displayParameters("can not find optimal insertion parameters at epoch " + std::to_string(epoch_idx), error_filepath);
+        return false;
+    }
+    return true;
+}
+
 int PairHMM::insertionSolver() {
     double a = (2*D_i.cnt + 3*E_i.cnt + 3*X_i.cnt + 3*B_i.cnt);
     a *= a;
@@ -751,8 +785,7 @@ int PairHMM::insertionSolver() {
     }
     delete roots;
     if(objects.size() == 0) {
-        displayParameters("can not find optimal insertion parameters: ", error_filepath);
-        return -1;
+        exit(0);
     }
     auto max_elem = max_element(objects.begin(), objects.end());
     setInsertionParameters(max_elem->second);
@@ -800,7 +833,7 @@ int PairHMM::deletionSolver() {
     std::vector<std::pair<NumType,NumType>> objects ;
     for (int i = 0; i < 4; i ++) {
         //std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
-        if(roots[i].imag() || roots[i].real() >= 1.0 || roots[i].real() <= 0) continue;
+        if(roots[i].imag() || roots[i].real() > 1.0 || roots[i].real() <= 0) continue;
         //validDeltaD.push_back(roots[i].real());
         if(checkValidDeletionParameters(roots[i].real())){
             objects.push_back({deltaDtoObject(roots[i].real()), roots[i].real()});
@@ -878,23 +911,23 @@ void PairHMM::setAlign(NumType omegaI, NumType omegaD, NumType Gamma, NumType al
     alpha_d = alphaD;
 }
 
-void PairHMM::updateProbabilities(int option){
-    switch (option)
-    {
-    case 0:
-        naiveUpdateProbabilities();
-        break;
-    
-    case 1:
+void PairHMM::updateProbabilities(){
+    if (mode) {
         optimizedUpdateProbabilities();
-        break;
+    } else {
+        naiveUpdateProbabilities();
     }
 }
 
 void PairHMM::optimizedUpdateProbabilities(){
     updateAlignProbabilities();
-    if (insertionSolver() == -1) naiveUpdateInsertionProbabilities();
-    if (deletionSolver() == -1) naiveUpdateDeletionProbabilities();
+    if (insertionValid() && deletionValid()) {
+        insertionSolver();
+        deletionSolver();
+    } else {
+        mode = false;
+        naiveUpdateInsertionProbabilities();
+    }
     updateEmissionProbabilities();
     naiveTolog();
 }
@@ -1289,9 +1322,9 @@ bool PairHMM::setParameters(const std::string & filename) {
     delta_i = tran_probs[6];
     beta_i = tran_probs[7];
     epsilon_i = tran_probs[8];
-    std::cout << delta_i << " " << beta_i << " " << epsilon_i << std::endl;
-    /*delta_d = tran_probs[9];
+    //std::cout << delta_i << " " << beta_i << " " << epsilon_i << std::endl;
+    delta_d = tran_probs[9];
     beta_d = tran_probs[10];
-    epsilon_d = tran_probs[11];*/
+    epsilon_d = tran_probs[11];
     return true; 
 }
