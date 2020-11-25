@@ -814,6 +814,39 @@ void PairHMM::setInsertionParameters(NumType DeltaI) {
     setInsertion(BetaI, EpsilonI, DeltaI);
 }
 
+bool PairHMM::deletionValid() {
+    double a = (2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
+    a *= a;
+    double b = E_d.cnt + 3*X_d.cnt + B_d.cnt;
+    double c = D_d.cnt + E_d.cnt + B_d.cnt;
+    double d = 3*D_d.cnt + 4*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt;
+    double e = E_d.cnt + 3*X_d.cnt + 3*B_d.cnt;
+    DComplex* roots = solve_quartic((-a*b - 3*a*c - d)/(a*c), (3*a*b + 3*a*c +3*e*d)/(a*c), (-3*a*b-3*e*e*d-a*c)/(a*c), (a*b + e*e*e)/(a*c));
+    /*
+    1. check real number in [0, 1]
+    2. check other parameters in [0, 1]
+    3. check objects
+    4. check max
+    5. update parameters
+    6. what if failed => set error
+    */
+    std::vector<NumType> validDeltaD;
+    std::vector<std::pair<NumType,NumType>> objects ;
+    for (int i = 0; i < 4; i ++) {
+        //std::cout << roots[i].real() << " + " << roots[i].imag() << "i" << std::endl;
+        if(roots[i].imag() || roots[i].real() > 1.0 || roots[i].real() <= 0) continue;
+        //validDeltaD.push_back(roots[i].real());
+        if(checkValidDeletionParameters(roots[i].real())){
+            objects.push_back({deltaDtoObject(roots[i].real()), roots[i].real()});
+        }
+    }
+    delete roots;
+    if(objects.size() == 0) {
+        displayParameters("can not find optimal deletion parameters from epoch " + std::to_string(epoch_idx), error_filepath);
+        return false;
+    } else return true;
+}
+
 int PairHMM::deletionSolver() {
     double a = (2*D_d.cnt + 3*E_d.cnt + 3*X_d.cnt + 3*B_d.cnt);
     a *= a;
@@ -1187,7 +1220,7 @@ void PairHMM::testTraining(const std::string & filename, int iter, int option) {
     in.close();
     std::cout << "loaded data: " << pros.size()<< " pro seqs and "<<dnas.size()<<" dna seqs."<<std::endl;
     std::cout << "DNA seqs bases cnts: " << dnaSize << "Pro seqs aa cnts(include extra *): " << proSize << std::endl;
-    naiveBaumWelch(pros, dnas, iter, 1);
+    naiveBaumWelch(pros, dnas, iter, option);
 }
 
 void PairHMM::get_total() {
