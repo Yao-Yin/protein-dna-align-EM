@@ -361,7 +361,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
     if (option) mode = true;
     else mode = false;
     for (int iter = 0; iter < iterTimes; iter ++) {
-        epoch_idx = iter;
+        epoch_idx = iter+50;
         std::cout << "This is the " << iter <<" epoch. " << std::endl;
         naiveTolog();
         std::vector<Transition*> vt {

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt 
 import pandas as pd 
 from math import log
-pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
-#pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
+#pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
+pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
 pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
 #pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log.txt"
 pg_data_df = pd.DataFrame(columns=["epoch", "prob", "updateMethod", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
@@ -91,7 +91,7 @@ with open(pg_parameters_file, "r") as f:
             pg_line_map["psi"] = curr
         elif i % 7 == 6:
             pg_line_map["pi"] = curr
-            pg_line_map["prob"] = reCalulate(pg_line_map["cnts"], pg_line_map["alpha_i"], pg_line_map["prob"])
+            #pg_line_map["prob"] = reCalulate(pg_line_map["cnts"], pg_line_map["alpha_i"], pg_line_map["prob"])
             pg_data_df = pg_data_df.append(pg_line_map, ignore_index = True)
 
 """
@@ -103,7 +103,7 @@ Overall: -139048.236760013
 0.323491356296386	0.175012882209597	0.31136515553601	0.190130605958007	
 blabla
 """
-
+"""
 with open(pg_error_file, "r") as f:
     # read 7 lines
     all_lines = f.readlines()
@@ -139,7 +139,7 @@ for idx, row in pg_data_df.iterrows():
     #print(idx, row["updateMethod"])
 
 
-
+"""
 def get_fig(df, epoch_start, epoch_end, col, name):
     x1 = [i for i in range(epoch_start, epoch_end + 1, 1)]
     y1 = []
@@ -149,4 +149,4 @@ def get_fig(df, epoch_start, epoch_end, col, name):
     plt.legend()
     plt.show()
 
-get_fig(pg_data_df, 0, 99, "alpha_i", "")
+get_fig(pg_data_df, 0, 59, "beta_", "")
