@@ -47,5 +47,8 @@
         "sstream": "cpp",
         "fstream": "cpp"
     },
-    "python.pythonPath": "C:\\Users\\InYuo\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe"
+    "python.pythonPath": "C:\\Users\\InYuo\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true
 }

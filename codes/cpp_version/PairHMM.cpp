@@ -376,7 +376,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
             for (int t = 0; t < pi_cnt[0].size(); t ++) pi_cnt[s][t] = 0;
         }   
         //displayParameters("Before the " + std::to_string(iter) + " epoch: ", default_filepath);
-        get_total();
+        //get_total();
         for (int i = 0; i < nums; i ++) {
             BaumWelchSingleStep(proSeqs[i], dnaSeqs[i], 1);
         }
@@ -961,6 +961,7 @@ void PairHMM::optimizedUpdateProbabilities(){
     } else {
         mode = false;
         naiveUpdateInsertionProbabilities();
+        naiveUpdateDeletionProbabilities();
     }
     updateEmissionProbabilities();
     naiveTolog();
@@ -973,8 +974,8 @@ void PairHMM::updateAlignProbabilities() {
     alpha_d = (B_d.cnt + D_d.cnt + E_d.cnt) / temp;
     //omega_d = gamma + alpha_i + alpha_d;
     //omega_i = omega_d;
-    //omega_d = (J_d.cnt + K_d.cnt) / (J_d.cnt + K_d.cnt + 2*A.cnt);
-    //omega_i = (J_i.cnt + K_i.cnt) / (J_i.cnt + K_i.cnt + 2*A.cnt);
+    omega_d = (J_d.cnt + K_d.cnt) / (J_d.cnt + K_d.cnt + 2*A.cnt);
+    omega_i = (J_i.cnt + K_i.cnt) / (J_i.cnt + K_i.cnt + 2*A.cnt);
 }
 
 void PairHMM::displayParameters(const std::string msg, const std::string & filename) const{

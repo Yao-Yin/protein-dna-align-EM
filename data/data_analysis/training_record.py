@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt 
 import pandas as pd 
 from math import log
-#pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
-pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
-pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
-#pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log.txt"
+# pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
+# pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
+pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
+# pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
+# pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log.txt"
 pg_data_df = pd.DataFrame(columns=["epoch", "prob", "updateMethod", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
 pg_error_df = pd.DataFrame(columns=["epoch", "prob", "type", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
 
@@ -22,16 +23,18 @@ Overall: -148014.366331961
 blabla
 """
 
+
 def strToCnts(s):
     cnts_mp = {}
     cnts_keys = ["J_d.cnt", "J_i.cnt", "M.cnt", "A.cnt", "K_d.cnt", "K_i.cnt", 
         "F_d.cnt", "X_d.cnt", "B_d.cnt", "D_d.cnt", "E_d.cnt", "G_d.cnt", "H_d.cnt",
         "B_i.cnt", "E_i.cnt", "D_i.cnt", "F_i.cnt", "G_i.cnt", "H_i.cnt", "X_i.cnt"]
     curr_list = s.rstrip().split("\t")
-    #print(curr_list)
+    # print(curr_list)
     for i in range(len(curr_list)):
         cnts_mp[cnts_keys[i]] = float(curr_list[i])
     return cnts_mp
+
 
 def strToPara(s):
     para_list = s.rstrip().split("\t")
@@ -41,20 +44,25 @@ def strToPara(s):
         para_mp[para_key_list[i]] = float(para_list[i])
     return para_mp
 
+
 def strToPi(s):
     pass
+
 
 def strToPsi(s):
     pass
 
+
 def strToPhi(s):
     pass
 
+
 def reCalulate(cnts, alpha_i, prob):
-    #(B_i.cnt + D_i.cnt + E_i.cnt)*log_alpha_i
+    # (B_i.cnt + D_i.cnt + E_i.cnt)*log_alpha_i
     cnts_mp = strToCnts(cnts)
     prob += log(alpha_i)*(cnts_mp["B_i.cnt"]+cnts_mp["D_i.cnt"]+cnts_mp["E_i.cnt"])
     return prob
+
 
 def handle(mmap):
     newmp = {}
@@ -72,7 +80,7 @@ with open(pg_parameters_file, "r") as f:
     for i in range(len(all_lines)):
         curr = all_lines[i].rstrip()
         if i % 7 == 0:
-            #epoch number
+            # epoch number
             ep = int(curr.split(" ")[3])
             pg_line_map["epoch"] = ep
         elif i % 7 == 1:
@@ -91,8 +99,8 @@ with open(pg_parameters_file, "r") as f:
             pg_line_map["psi"] = curr
         elif i % 7 == 6:
             pg_line_map["pi"] = curr
-            #pg_line_map["prob"] = reCalulate(pg_line_map["cnts"], pg_line_map["alpha_i"], pg_line_map["prob"])
-            pg_data_df = pg_data_df.append(pg_line_map, ignore_index = True)
+            # pg_line_map["prob"] = reCalulate(pg_line_map["cnts"], pg_line_map["alpha_i"], pg_line_map["prob"])
+            pg_data_df = pg_data_df.append(pg_line_map, ignore_index=True)
 
 """
 can not find optimal deletion parameters: 
@@ -145,7 +153,6 @@ def get_fig(df, epoch_start, epoch_end, col, name):
     y1 = []
     for idx, row in df.loc[epoch_start:epoch_end].iterrows():
         y1.append((row[col]))
-    l1=plt.plot(x1,y1,'r--',label='type1')
     plt.legend()
     plt.show()
 

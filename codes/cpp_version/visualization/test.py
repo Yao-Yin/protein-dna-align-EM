@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import numpy as np
 from math import log
-from pandas import *
+import pandas as pd
+
 
 class DataTool:
     def __init__(self):
@@ -11,7 +11,7 @@ class DataTool:
         for i in range(len(self.baseList)):
             self.baseMap[self.baseList[i]] = i
         
-        self.aaList = ['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V', '*']
+        self.aaList = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', '*']
         self.aaMap = {}
         for i in range(len(self.aaList)):
             self.aaMap[self.aaList[i]] = i
@@ -22,29 +22,29 @@ class DataTool:
             self.tripletMap[self.tripletList[i]] = i
         
         self.codonTable = {
-            "A":{"GCT", "GCC", "GCA", "GCG",},
-            "R":{"CGT", "CGC", "CGA", "CGG", "AGA", "AGG",},
-            "N":{"AAT", "AAC",},
-            "D":{"GAT", "GAC",},
-            "C":{"TGT", "TGC",},
-            "Q":{"CAA", "CAG",},
-            "E":{"GAA", "GAG",},
-            "G":{"GGT", "GGC", "GGA", "GGG",},
-            "H":{"CAT", "CAC"},
-            "I":{"ATT", "ATC", "ATA",},
-            "L":{"CTT", "CTC", "CTA", "CTG", "TTA", "TTG",},
-            "K":{"AAA", "AAG",},
-            "M":{"ATG",},
-            "F":{"TTT", "TTC",},
-            "P":{"CCT", "CCC", "CCA", "CCG",},
-            "S":{"TCT", "TCC", "TCA", "TCG", "AGT", "AGC",},
-            "T":{"ACT", "ACC", "ACA", "ACG"},
-            "W":{"TGG",},
-            "Y":{"TAT", "TAC",},
-            "V":{"GTT", "GTC", "GTA", "GTG"},
-            "O":{"TAA", "TAG",},
-            "U":{"TGA",},
-            "*":{"TAA", "TAG", "TGA"}
+            "A": {"GCT", "GCC", "GCA", "GCG", },
+            "R": {"CGT", "CGC", "CGA", "CGG", "AGA", "AGG", },
+            "N": {"AAT", "AAC", },
+            "D": {"GAT", "GAC", },
+            "C": {"TGT", "TGC", },
+            "Q": {"CAA", "CAG", },
+            "E": {"GAA", "GAG", },
+            "G": {"GGT", "GGC", "GGA", "GGG", },
+            "H": {"CAT", "CAC", },
+            "I": {"ATT", "ATC", "ATA", },
+            "L": {"CTT", "CTC", "CTA", "CTG", "TTA", "TTG", },
+            "K": {"AAA", "AAG", },
+            "M": {"ATG", },
+            "F": {"TTT", "TTC", },
+            "P": {"CCT", "CCC", "CCA", "CCG", },
+            "S": {"TCT", "TCC", "TCA", "TCG", "AGT", "AGC", },
+            "T": {"ACT", "ACC", "ACA", "ACG", },
+            "W": {"TGG", },
+            "Y": {"TAT", "TAC", },
+            "V": {"GTT", "GTC", "GTA", "GTG", },
+            "O": {"TAA", "TAG", },
+            "U": {"TGA", },
+            "*": {"TAA", "TAG", "TGA", }
         }
 
     def encodeAA(self, aaChr):
@@ -57,7 +57,7 @@ class DataTool:
         return self.baseMap[baseChr]
 
     def decodeBase(self, baseCode):
-        return self.baseList[base]
+        return self.baseList[baseCode]
 
     def encodeTriplet(self, TripletStr):
         return self.tripletMap[TripletStr]
@@ -89,8 +89,8 @@ def plot_table(row, col, vals):
     """
     
     R, C = len(row), len(col)
-    idx = Index(row)
-    df = DataFrame(np.random.randn(R, C), index=idx, columns=col)
+    idx = pd.Index(row)
+    df = pd.DataFrame(np.random.randn(R, C), index=idx, columns=col)
     
     # 根据行数列数设置表格大小
     figC, figR = 2.25*C, R
@@ -103,7 +103,7 @@ def plot_table(row, col, vals):
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
     
-    the_table=plt.table(cellText=vals, rowLabels=df.index, colLabels=df.columns, colWidths = [0.01]*vals.shape[1], rowLoc='center', loc='center',cellLoc='center')
+    the_table = plt.table(cellText=vals, rowLabels=df.index, colLabels=df.columns, colWidths=[0.01]*vals.shape[1], rowLoc='center', loc='center', cellLoc='center')
     the_table.set_fontsize(15)
     
     # 伸缩表格大小常数
