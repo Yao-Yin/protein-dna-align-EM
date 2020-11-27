@@ -106,7 +106,7 @@ int main()
     //std::cout << "hello" << std::endl;
     //std::cout << tiny.pi.size() << tiny.pi[0].size() << std::endl;
     //tiny.setInsertion();
-    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt", 10, 0);
+    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\small_test_pg.txt", 30, 0);
     //tiny.get_total();
     //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\py3_version\\training_data_short30000.txt", 30, 0);
     DataTool dt;
