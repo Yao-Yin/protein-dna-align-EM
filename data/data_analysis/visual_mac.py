@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from math import log, exp
 
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
-pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
+# pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
+pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para.txt"
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log.txt'
 # pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
@@ -120,7 +121,7 @@ def plot_table(row, col, vals):
     
     # 伸缩表格大小常数
     the_table.scale(figR/R*2, figC/C*1.5)
-    plt.savefig("testdoc.jpg")
+    plt.savefig("testdoc450.jpg")
 
 
 
@@ -215,7 +216,7 @@ with open(pg_parameters_file, "r") as f:
             cnts = curr[5:]
             pg_line_map["cnts"] = cnts
         elif i % 10 == 5:
-            prob = float(curr[9:])
+            prob = float(curr.rstrip().split()[2])
             pg_line_map["prob"] = prob
         elif i % 10 == 6:
             curr_para_map = strToPara(curr)
@@ -282,7 +283,7 @@ def get_fig(df, epoch_start, epoch_end, col, name):
     x1 = [i for i in range(epoch_start, epoch_end + 1, 1)]
     y1 = []
     for idx, row in df.loc[epoch_start:epoch_end].iterrows():
-        y1.append(log(row[col]))
+        y1.append(row[col])
     l1 = plt.plot(x1, y1, 'r--', label ='type1')
     plt.legend()
     plt.show()
@@ -407,7 +408,7 @@ with open(pg_parameters_file, "r") as f:
 #for idx, row in pg_data_df.iterrows():
     #print(idx, row['prob'])
 
-get_fig(pg_data_df, 0, 349, "alpha_d", "")
+get_fig(pg_data_df, 1, 499, "delta_i", "")
 dt = DataTool()
 row = dt.aaList
 col = dt.tripletList
@@ -441,7 +442,7 @@ for i in range(21):
     else:
         print("Match ", curr_t, curr_aa)
     # print(curr_t, dt.decodeAA(curr_idx))
-# plot_table(row, col, p.s)
+plot_table(row, col, p.s)
 
 def patternCollect(strList):
     stat = [0 for i in range(64)]
@@ -451,7 +452,8 @@ def patternCollect(strList):
             stat[dt.encodeTriplet(s[i:i+3])] += 1
     return [ x/sum(stat) for x in stat]
 
-seqFile = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\small_test_pg.txt"
+# seqFile = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\small_test_pg.txt"
+seqFile = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\test_pg.txt"
 
 with open(seqFile, "r") as f:
     tot = f.readlines()
@@ -488,5 +490,5 @@ with open(seqFile, "r") as f:
             print("Not match ", curr_t, curr_aa)
         else:
             print("Match ", curr_t, curr_aa)
-    plot_table(row, col, p.s)
+    #plot_table(row, col, p.s)
     
