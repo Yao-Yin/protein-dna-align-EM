@@ -1,0 +1,529 @@
+PGOHUM00000234897 can not find protein.
+PGOHUM00000234972; protein sequence is longer than 150
+PGOHUM00000235039 can not find protein.
+PGOHUM00000235050 can not find protein.
+PGOHUM00000235102; protein sequence is longer than 150
+PGOHUM00000248309 can not find protein.
+PGOHUM00000248313; protein sequence is longer than 150
+PGOHUM00000248324; protein sequence is longer than 150
+PGOHUM00000248333 can not find protein.
+PGOHUM00000248350 can not find protein.
+PGOHUM00000248361 can not find protein.
+PGOHUM00000248364; protein sequence is longer than 150
+PGOHUM00000248390 can not find protein.
+PGOHUM00000249948 can not find protein.
+PGOHUM00000248438; protein sequence is longer than 150
+PGOHUM00000248455; protein sequence is longer than 150
+PGOHUM00000248465; protein sequence is longer than 150
+PGOHUM00000248482; protein sequence is longer than 150
+PGOHUM00000248497 can not find protein.
+PGOHUM00000248534 can not find protein.
+PGOHUM00000248545; protein sequence is longer than 150
+PGOHUM00000248553; protein sequence is longer than 150
+PGOHUM00000248574 can not find protein.
+PGOHUM00000248584; protein sequence is longer than 150
+PGOHUM00000248615 can not find protein.
+PGOHUM00000248630; protein sequence is longer than 150
+PGOHUM00000248631; protein sequence is longer than 150
+PGOHUM00000248635; protein sequence is longer than 150
+PGOHUM00000248647; protein sequence is longer than 150
+PGOHUM00000248669; protein sequence is longer than 150
+PGOHUM00000249960; protein sequence is longer than 150
+PGOHUM00000248688 can not find protein.
+PGOHUM00000233669 can not find protein.
+PGOHUM00000233674 can not find protein.
+PGOHUM00000234103 can not find protein.
+PGOHUM00000249203 can not find protein.
+PGOHUM00000249266; protein sequence is longer than 150
+PGOHUM00000249351 can not find protein.
+PGOHUM00000249354; protein sequence is longer than 150
+PGOHUM00000249360; protein sequence is longer than 150
+PGOHUM00000249381; protein sequence is longer than 150
+PGOHUM00000249383 can not find protein.
+PGOHUM00000249404; protein sequence is longer than 150
+PGOHUM00000249479 can not find protein.
+PGOHUM00000249490 can not find protein.
+PGOHUM00000249501; protein sequence is longer than 150
+PGOHUM00000249511; protein sequence is longer than 150
+PGOHUM00000249531; protein sequence is longer than 150
+PGOHUM00000249536 can not find protein.
+PGOHUM00000249594 can not find protein.
+PGOHUM00000249604; protein sequence is longer than 150
+PGOHUM00000249615 can not find protein.
+PGOHUM00000249649; protein sequence is longer than 150
+PGOHUM00000249661; protein sequence is longer than 150
+PGOHUM00000250030 can not find protein.
+PGOHUM00000249713; protein sequence is longer than 150
+PGOHUM00000249715; protein sequence is longer than 150
+PGOHUM00000249811; protein sequence is longer than 150
+PGOHUM00000241409 can not find protein.
+PGOHUM00000241483; protein sequence is longer than 150
+PGOHUM00000241514; protein sequence is longer than 150
+PGOHUM00000241576 can not find protein.
+PGOHUM00000241632; protein sequence is longer than 150
+PGOHUM00000241665; protein sequence is longer than 150
+PGOHUM00000241668 can not find protein.
+PGOHUM00000241909; protein sequence is longer than 150
+PGOHUM00000241993; protein sequence is longer than 150
+PGOHUM00000242019 can not find protein.
+PGOHUM00000242062; protein sequence is longer than 150
+PGOHUM00000247745 can not find protein.
+PGOHUM00000247751; protein sequence is longer than 150
+PGOHUM00000247766 can not find protein.
+PGOHUM00000247778; protein sequence is longer than 150
+PGOHUM00000247806; protein sequence is longer than 150
+PGOHUM00000247867; protein sequence is longer than 150
+PGOHUM00000247874 can not find protein.
+PGOHUM00000247889 can not find protein.
+PGOHUM00000247919 can not find protein.
+PGOHUM00000247934 can not find protein.
+PGOHUM00000250118 can not find protein.
+PGOHUM00000247971 can not find protein.
+PGOHUM00000247975 can not find protein.
+PGOHUM00000247977 can not find protein.
+PGOHUM00000247979 can not find protein.
+PGOHUM00000247983 can not find protein.
+PGOHUM00000247986 can not find protein.
+PGOHUM00000247988 can not find protein.
+PGOHUM00000247989 can not find protein.
+PGOHUM00000247990 can not find protein.
+PGOHUM00000250119 can not find protein.
+PGOHUM00000247992 can not find protein.
+PGOHUM00000248115 can not find protein.
+PGOHUM00000248118; protein sequence is longer than 150
+PGOHUM00000248125 can not find protein.
+PGOHUM00000248150 can not find protein.
+PGOHUM00000248170; protein sequence is longer than 150
+PGOHUM00000248192 can not find protein.
+PGOHUM00000248243 can not find protein.
+PGOHUM00000248268 can not find protein.
+PGOHUM00000248274; protein sequence is longer than 150
+PGOHUM00000239075; protein sequence is longer than 150
+PGOHUM00000239089; protein sequence is longer than 150
+PGOHUM00000239125 can not find protein.
+PGOHUM00000239176 can not find protein.
+PGOHUM00000239182 can not find protein.
+PGOHUM00000243045 can not find protein.
+PGOHUM00000243080 can not find protein.
+PGOHUM00000243121 can not find protein.
+PGOHUM00000243126 can not find protein.
+PGOHUM00000243159 can not find protein.
+PGOHUM00000250177 can not find protein.
+PGOHUM00000243200; protein sequence is longer than 150
+PGOHUM00000243206 can not find protein.
+PGOHUM00000243347 can not find protein.
+PGOHUM00000243376 can not find protein.
+PGOHUM00000243382; protein sequence is longer than 150
+PGOHUM00000243411 can not find protein.
+PGOHUM00000243471; protein sequence is longer than 150
+PGOHUM00000243477; protein sequence is longer than 150
+PGOHUM00000243517 can not find protein.
+PGOHUM00000243518 can not find protein.
+PGOHUM00000243569; protein sequence is longer than 150
+PGOHUM00000243607 can not find protein.
+PGOHUM00000243615; protein sequence is longer than 150
+PGOHUM00000243649; protein sequence is longer than 150
+PGOHUM00000243677 can not find protein.
+PGOHUM00000243680 can not find protein.
+PGOHUM00000243703; protein sequence is longer than 150
+PGOHUM00000243730 can not find protein.
+PGOHUM00000243731 can not find protein.
+PGOHUM00000243758 can not find protein.
+PGOHUM00000243835; protein sequence is longer than 150
+PGOHUM00000243851; protein sequence is longer than 150
+PGOHUM00000243855 can not find protein.
+PGOHUM00000237520; protein sequence is longer than 150
+PGOHUM00000237543 can not find protein.
+PGOHUM00000237553 can not find protein.
+PGOHUM00000237562 can not find protein.
+PGOHUM00000237564; protein sequence is longer than 150
+PGOHUM00000237631 can not find protein.
+PGOHUM00000237636; protein sequence is longer than 150
+PGOHUM00000237663 can not find protein.
+PGOHUM00000237729 can not find protein.
+PGOHUM00000250260; protein sequence is longer than 150
+PGOHUM00000250262 can not find protein.
+PGOHUM00000237813 can not find protein.
+PGOHUM00000237820; protein sequence is longer than 150
+PGOHUM00000250269 can not find protein.
+PGOHUM00000237854 can not find protein.
+PGOHUM00000237861; protein sequence is longer than 150
+PGOHUM00000237922; protein sequence is longer than 150
+PGOHUM00000237971 can not find protein.
+PGOHUM00000237976 can not find protein.
+PGOHUM00000237986 can not find protein.
+PGOHUM00000238041 can not find protein.
+PGOHUM00000238042 can not find protein.
+PGOHUM00000238052; protein sequence is longer than 150
+PGOHUM00000238134; protein sequence is longer than 150
+PGOHUM00000238181 can not find protein.
+PGOHUM00000238186 can not find protein.
+PGOHUM00000238212; protein sequence is longer than 150
+PGOHUM00000238215 can not find protein.
+PGOHUM00000238283 can not find protein.
+PGOHUM00000238305 can not find protein.
+PGOHUM00000246210 can not find protein.
+PGOHUM00000246214; protein sequence is longer than 150
+PGOHUM00000246277 can not find protein.
+PGOHUM00000246319 can not find protein.
+PGOHUM00000246335 can not find protein.
+PGOHUM00000246601 can not find protein.
+PGOHUM00000246608 can not find protein.
+PGOHUM00000242115 can not find protein.
+PGOHUM00000242218; protein sequence is longer than 150
+PGOHUM00000242333; protein sequence is longer than 150
+PGOHUM00000242336 can not find protein.
+PGOHUM00000242347 can not find protein.
+PGOHUM00000242373; protein sequence is longer than 150
+PGOHUM00000242386; protein sequence is longer than 150
+PGOHUM00000242414 can not find protein.
+PGOHUM00000242427 can not find protein.
+PGOHUM00000250388 can not find protein.
+PGOHUM00000242439 can not find protein.
+PGOHUM00000242480 can not find protein.
+PGOHUM00000242490; protein sequence is longer than 150
+PGOHUM00000242503 can not find protein.
+PGOHUM00000242558 can not find protein.
+PGOHUM00000242589 can not find protein.
+PGOHUM00000242604; protein sequence is longer than 150
+PGOHUM00000242609 can not find protein.
+PGOHUM00000242653 can not find protein.
+PGOHUM00000242766; protein sequence is longer than 150
+PGOHUM00000242797; protein sequence is longer than 150
+PGOHUM00000242814 can not find protein.
+PGOHUM00000242847 can not find protein.
+PGOHUM00000250418 can not find protein.
+PGOHUM00000242928 can not find protein.
+PGOHUM00000239966 can not find protein.
+PGOHUM00000239974 can not find protein.
+PGOHUM00000239987 can not find protein.
+PGOHUM00000239999 can not find protein.
+PGOHUM00000240013; protein sequence is longer than 150
+PGOHUM00000240019 can not find protein.
+PGOHUM00000240031 can not find protein.
+PGOHUM00000240042; protein sequence is longer than 150
+PGOHUM00000240045; protein sequence is longer than 150
+PGOHUM00000240072 can not find protein.
+PGOHUM00000240100 can not find protein.
+PGOHUM00000240122 can not find protein.
+PGOHUM00000250433 can not find protein.
+PGOHUM00000240233 can not find protein.
+PGOHUM00000240234 can not find protein.
+PGOHUM00000240241 can not find protein.
+PGOHUM00000240243 can not find protein.
+PGOHUM00000240255; protein sequence is longer than 150
+PGOHUM00000240265 can not find protein.
+PGOHUM00000240346 can not find protein.
+PGOHUM00000240426 can not find protein.
+PGOHUM00000240436; protein sequence is longer than 150
+PGOHUM00000240439; protein sequence is longer than 150
+PGOHUM00000240450; protein sequence is longer than 150
+PGOHUM00000240490 can not find protein.
+PGOHUM00000240498; protein sequence is longer than 150
+PGOHUM00000240514 can not find protein.
+PGOHUM00000240529; protein sequence is longer than 150
+PGOHUM00000240609; protein sequence is longer than 150
+PGOHUM00000240612; protein sequence is longer than 150
+PGOHUM00000240647 can not find protein.
+PGOHUM00000240654 can not find protein.
+PGOHUM00000240668 can not find protein.
+PGOHUM00000240683 can not find protein.
+PGOHUM00000240703 can not find protein.
+PGOHUM00000240718; protein sequence is longer than 150
+PGOHUM00000250469 can not find protein.
+PGOHUM00000240848 can not find protein.
+PGOHUM00000240892 can not find protein.
+PGOHUM00000240976 can not find protein.
+PGOHUM00000240989; protein sequence is longer than 150
+PGOHUM00000241027; protein sequence is longer than 150
+PGOHUM00000241048 can not find protein.
+PGOHUM00000241050; protein sequence is longer than 150
+PGOHUM00000241073; protein sequence is longer than 150
+PGOHUM00000241108 can not find protein.
+PGOHUM00000241137 can not find protein.
+PGOHUM00000250485; protein sequence is longer than 150
+PGOHUM00000236009; protein sequence is longer than 150
+PGOHUM00000236210; protein sequence is longer than 150
+PGOHUM00000236262; protein sequence is longer than 150
+PGOHUM00000236308 can not find protein.
+PGOHUM00000236310; protein sequence is longer than 150
+PGOHUM00000236328 can not find protein.
+PGOHUM00000236334; protein sequence is longer than 150
+PGOHUM00000236405; protein sequence is longer than 150
+PGOHUM00000236792 can not find protein.
+PGOHUM00000247418 can not find protein.
+PGOHUM00000247434 can not find protein.
+PGOHUM00000247441; protein sequence is longer than 150
+PGOHUM00000247448; protein sequence is longer than 150
+PGOHUM00000247459; protein sequence is longer than 150
+PGOHUM00000247513; protein sequence is longer than 150
+PGOHUM00000247524 can not find protein.
+PGOHUM00000247642; protein sequence is longer than 150
+PGOHUM00000247651; protein sequence is longer than 150
+PGOHUM00000234113 can not find protein.
+PGOHUM00000234128; protein sequence is longer than 150
+PGOHUM00000234155 can not find protein.
+PGOHUM00000234214 can not find protein.
+PGOHUM00000234250 can not find protein.
+PGOHUM00000234252; protein sequence is longer than 150
+PGOHUM00000234253 can not find protein.
+PGOHUM00000234256 can not find protein.
+PGOHUM00000234293 can not find protein.
+PGOHUM00000234298 can not find protein.
+PGOHUM00000234306 can not find protein.
+PGOHUM00000234366 can not find protein.
+PGOHUM00000234384 can not find protein.
+PGOHUM00000234387 can not find protein.
+PGOHUM00000234390 can not find protein.
+PGOHUM00000234397 can not find protein.
+PGOHUM00000234467; protein sequence is longer than 150
+PGOHUM00000234494; protein sequence is longer than 150
+PGOHUM00000234550 can not find protein.
+PGOHUM00000234647 can not find protein.
+PGOHUM00000234662; protein sequence is longer than 150
+PGOHUM00000234712 can not find protein.
+PGOHUM00000234821 can not find protein.
+PGOHUM00000248734; protein sequence is longer than 150
+PGOHUM00000248750 can not find protein.
+PGOHUM00000248839 can not find protein.
+PGOHUM00000248845 can not find protein.
+PGOHUM00000248879 can not find protein.
+PGOHUM00000248932; protein sequence is longer than 150
+PGOHUM00000248938 can not find protein.
+PGOHUM00000249031 can not find protein.
+PGOHUM00000249033 can not find protein.
+PGOHUM00000249080 can not find protein.
+PGOHUM00000249084 can not find protein.
+PGOHUM00000249130; protein sequence is longer than 150
+PGOHUM00000249150; protein sequence is longer than 150
+PGOHUM00000245418 can not find protein.
+PGOHUM00000245473 can not find protein.
+PGOHUM00000245505 can not find protein.
+PGOHUM00000245565 can not find protein.
+PGOHUM00000245569 can not find protein.
+PGOHUM00000245570 can not find protein.
+PGOHUM00000245572 can not find protein.
+PGOHUM00000245574 can not find protein.
+PGOHUM00000245620; protein sequence is longer than 150
+PGOHUM00000245731; protein sequence is longer than 150
+PGOHUM00000245753 can not find protein.
+PGOHUM00000250771 can not find protein.
+PGOHUM00000250774 can not find protein.
+PGOHUM00000245951 can not find protein.
+PGOHUM00000245971 can not find protein.
+PGOHUM00000245975 can not find protein.
+PGOHUM00000246121; protein sequence is longer than 150
+PGOHUM00000250801 can not find protein.
+PGOHUM00000236907; protein sequence is longer than 150
+PGOHUM00000236916 can not find protein.
+PGOHUM00000236926; protein sequence is longer than 150
+PGOHUM00000237015; protein sequence is longer than 150
+PGOHUM00000237069; protein sequence is longer than 150
+PGOHUM00000237103 can not find protein.
+PGOHUM00000250820; protein sequence is longer than 150
+PGOHUM00000237138 can not find protein.
+PGOHUM00000237172; protein sequence is longer than 150
+PGOHUM00000237173 can not find protein.
+PGOHUM00000237183 can not find protein.
+PGOHUM00000237184 can not find protein.
+PGOHUM00000237212; protein sequence is longer than 150
+PGOHUM00000237217; protein sequence is longer than 150
+PGOHUM00000237239; protein sequence is longer than 150
+PGOHUM00000237250; protein sequence is longer than 150
+PGOHUM00000237351 can not find protein.
+PGOHUM00000237426 can not find protein.
+PGOHUM00000237462 can not find protein.
+PGOHUM00000237489; protein sequence is longer than 150
+PGOHUM00000237509; protein sequence is longer than 150
+PGOHUM00000232588; protein sequence is longer than 150
+PGOHUM00000232591; protein sequence is longer than 150
+PGOHUM00000232976; protein sequence is longer than 150
+PGOHUM00000232984 can not find protein.
+PGOHUM00000232993 can not find protein.
+PGOHUM00000233008 can not find protein.
+PGOHUM00000233011; protein sequence is longer than 150
+PGOHUM00000250911 can not find protein.
+PGOHUM00000250912 can not find protein.
+PGOHUM00000233045 can not find protein.
+PGOHUM00000233052 can not find protein.
+PGOHUM00000233086 can not find protein.
+PGOHUM00000233135 can not find protein.
+PGOHUM00000250929 can not find protein.
+PGOHUM00000233190 can not find protein.
+PGOHUM00000233207; protein sequence is longer than 150
+PGOHUM00000250930 can not find protein.
+PGOHUM00000233260 can not find protein.
+PGOHUM00000233362 can not find protein.
+PGOHUM00000233373 can not find protein.
+PGOHUM00000233424; protein sequence is longer than 150
+PGOHUM00000233437; protein sequence is longer than 150
+PGOHUM00000233480; protein sequence is longer than 150
+PGOHUM00000233548 can not find protein.
+PGOHUM00000233554 can not find protein.
+PGOHUM00000233572; protein sequence is longer than 150
+PGOHUM00000233579; protein sequence is longer than 150
+PGOHUM00000233594 can not find protein.
+PGOHUM00000233599; protein sequence is longer than 150
+PGOHUM00000233620 can not find protein.
+PGOHUM00000233640 can not find protein.
+PGOHUM00000233659; protein sequence is longer than 150
+PGOHUM00000239299 can not find protein.
+PGOHUM00000239314; protein sequence is longer than 150
+PGOHUM00000239342 can not find protein.
+PGOHUM00000239368; protein sequence is longer than 150
+PGOHUM00000239383; protein sequence is longer than 150
+PGOHUM00000239391; protein sequence is longer than 150
+PGOHUM00000239398 can not find protein.
+PGOHUM00000239423 can not find protein.
+PGOHUM00000239451; protein sequence is longer than 150
+PGOHUM00000239492 can not find protein.
+PGOHUM00000239523; protein sequence is longer than 150
+PGOHUM00000251004 can not find protein.
+PGOHUM00000239536 can not find protein.
+PGOHUM00000239578; protein sequence is longer than 150
+PGOHUM00000239591; protein sequence is longer than 150
+PGOHUM00000251010 can not find protein.
+PGOHUM00000239678 can not find protein.
+PGOHUM00000239690; protein sequence is longer than 150
+PGOHUM00000239744 can not find protein.
+PGOHUM00000239845; protein sequence is longer than 150
+PGOHUM00000239877; protein sequence is longer than 150
+PGOHUM00000239908; protein sequence is longer than 150
+PGOHUM00000239964; protein sequence is longer than 150
+PGOHUM00000243884; protein sequence is longer than 150
+PGOHUM00000243887 can not find protein.
+PGOHUM00000243888; protein sequence is longer than 150
+PGOHUM00000243889; protein sequence is longer than 150
+PGOHUM00000251057; protein sequence is longer than 150
+PGOHUM00000243984 can not find protein.
+PGOHUM00000244011; protein sequence is longer than 150
+PGOHUM00000244062; protein sequence is longer than 150
+PGOHUM00000244151; protein sequence is longer than 150
+PGOHUM00000244215 can not find protein.
+PGOHUM00000244216 can not find protein.
+PGOHUM00000244256 can not find protein.
+PGOHUM00000244257 can not find protein.
+PGOHUM00000244266 can not find protein.
+PGOHUM00000244317 can not find protein.
+PGOHUM00000244323 can not find protein.
+PGOHUM00000244382 can not find protein.
+PGOHUM00000244405; protein sequence is longer than 150
+PGOHUM00000244412 can not find protein.
+PGOHUM00000244443; protein sequence is longer than 150
+PGOHUM00000244445 can not find protein.
+PGOHUM00000244471 can not find protein.
+PGOHUM00000244472 can not find protein.
+PGOHUM00000244482; protein sequence is longer than 150
+PGOHUM00000244484 can not find protein.
+PGOHUM00000244504; protein sequence is longer than 150
+PGOHUM00000244562 can not find protein.
+PGOHUM00000244589 can not find protein.
+PGOHUM00000244592; protein sequence is longer than 150
+PGOHUM00000251111 can not find protein.
+PGOHUM00000244690 can not find protein.
+PGOHUM00000244696 can not find protein.
+PGOHUM00000244698 can not find protein.
+PGOHUM00000244702 can not find protein.
+PGOHUM00000244728 can not find protein.
+PGOHUM00000244733; protein sequence is longer than 150
+PGOHUM00000244745; protein sequence is longer than 150
+PGOHUM00000244751 can not find protein.
+PGOHUM00000244771 can not find protein.
+PGOHUM00000244806 can not find protein.
+PGOHUM00000244811; protein sequence is longer than 150
+PGOHUM00000251118; protein sequence is longer than 150
+PGOHUM00000244837 can not find protein.
+PGOHUM00000244849; protein sequence is longer than 150
+PGOHUM00000244855 can not find protein.
+PGOHUM00000244880 can not find protein.
+PGOHUM00000244938 can not find protein.
+PGOHUM00000244940 can not find protein.
+PGOHUM00000244941 can not find protein.
+PGOHUM00000244943 can not find protein.
+PGOHUM00000244944 can not find protein.
+PGOHUM00000244946 can not find protein.
+PGOHUM00000244947 can not find protein.
+PGOHUM00000244950 can not find protein.
+PGOHUM00000244951 can not find protein.
+PGOHUM00000244952 can not find protein.
+PGOHUM00000244995 can not find protein.
+PGOHUM00000245001; protein sequence is longer than 150
+PGOHUM00000245061 can not find protein.
+PGOHUM00000245085; protein sequence is longer than 150
+PGOHUM00000245086 can not find protein.
+PGOHUM00000251142 can not find protein.
+PGOHUM00000245089 can not find protein.
+PGOHUM00000245097; protein sequence is longer than 150
+PGOHUM00000245098 can not find protein.
+PGOHUM00000245107 can not find protein.
+PGOHUM00000245131; protein sequence is longer than 150
+PGOHUM00000245138; protein sequence is longer than 150
+PGOHUM00000245148 can not find protein.
+PGOHUM00000245196 can not find protein.
+PGOHUM00000245211; protein sequence is longer than 150
+PGOHUM00000245244; protein sequence is longer than 150
+PGOHUM00000251148; protein sequence is longer than 150
+PGOHUM00000245256 can not find protein.
+PGOHUM00000245276; protein sequence is longer than 150
+PGOHUM00000246622 can not find protein.
+PGOHUM00000246671 can not find protein.
+PGOHUM00000246677 can not find protein.
+PGOHUM00000246736 can not find protein.
+PGOHUM00000246787 can not find protein.
+PGOHUM00000246803; protein sequence is longer than 150
+PGOHUM00000246820; protein sequence is longer than 150
+PGOHUM00000247094 can not find protein.
+PGOHUM00000247109; protein sequence is longer than 150
+PGOHUM00000247131; protein sequence is longer than 150
+PGOHUM00000247140 can not find protein.
+PGOHUM00000247150 can not find protein.
+PGOHUM00000247160; protein sequence is longer than 150
+PGOHUM00000251224; protein sequence is longer than 150
+PGOHUM00000238339 can not find protein.
+PGOHUM00000238349; protein sequence is longer than 150
+PGOHUM00000238381 can not find protein.
+PGOHUM00000238385; protein sequence is longer than 150
+PGOHUM00000238476 can not find protein.
+PGOHUM00000238483 can not find protein.
+PGOHUM00000238504; protein sequence is longer than 150
+PGOHUM00000238506; protein sequence is longer than 150
+PGOHUM00000238523 can not find protein.
+PGOHUM00000238530 can not find protein.
+PGOHUM00000238535 can not find protein.
+PGOHUM00000238558; protein sequence is longer than 150
+PGOHUM00000238559; protein sequence is longer than 150
+PGOHUM00000238568; protein sequence is longer than 150
+PGOHUM00000238584; protein sequence is longer than 150
+PGOHUM00000238602; protein sequence is longer than 150
+PGOHUM00000238615 can not find protein.
+PGOHUM00000238646 can not find protein.
+PGOHUM00000238655 can not find protein.
+PGOHUM00000238784 can not find protein.
+PGOHUM00000238876; protein sequence is longer than 150
+PGOHUM00000238887 can not find protein.
+PGOHUM00000238911; protein sequence is longer than 150
+PGOHUM00000238926 can not find protein.
+PGOHUM00000238981 can not find protein.
+PGOHUM00000235190; protein sequence is longer than 150
+PGOHUM00000235193; protein sequence is longer than 150
+PGOHUM00000235228 can not find protein.
+PGOHUM00000235294; protein sequence is longer than 150
+PGOHUM00000235375 can not find protein.
+PGOHUM00000235386 can not find protein.
+PGOHUM00000235420; protein sequence is longer than 150
+PGOHUM00000235447 can not find protein.
+PGOHUM00000235558; protein sequence is longer than 150
+PGOHUM00000235571; protein sequence is longer than 150
+PGOHUM00000235581 can not find protein.
+PGOHUM00000235583 can not find protein.
+PGOHUM00000235585; protein sequence is longer than 150
+PGOHUM00000235612; protein sequence is longer than 150
+PGOHUM00000235617; protein sequence is longer than 150
+PGOHUM00000235619 can not find protein.
+PGOHUM00000235658 can not find protein.
+PGOHUM00000235670 can not find protein.
+PGOHUM00000235737; protein sequence is longer than 150
+PGOHUM00000251390 can not find protein.
+PGOHUM00000235821 can not find protein.
+PGOHUM00000235824 can not find protein.
+PGOHUM00000251396; protein sequence is longer than 150

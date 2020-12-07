@@ -21,8 +21,6 @@ codon_table = {
     "W":{"TGG",},
     "Y":{"TAT", "TAC",},
     "V":{"GTT", "GTC", "GTA", "GTG"},
-    "O":{"TAA", "TAG",},
-    "U":{"TGA",},
     "*":{"TAA", "TAG", "TGA"}
 }
 
@@ -31,21 +29,29 @@ for key, value in codon_table.items():
     for codon in value:
         codon_table_reverse[codon] = key
 
-aa_list = ['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','O','U','*']
+aa_list = ['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','*']
 
 aa_order_dict = {}
 for i in range(len(aa_list)):
     aa_order_dict[aa_list[i]] = i
 
 triplet_list = ["TTT", "TTC", "TTA", "TTG", "TCT", "TCC", "TCA", "TCG", "TAT", "TAC", "TAA", "TAG", "TGT", "TGC", "TGA", "TGG", "CTT", "CTC", "CTA", "CTG", "CCT", "CCC", "CCA", "CCG", "CAT", "CAC", "CAA", "CAG", "CGT", "CGC", "CGA", "CGG", "ATT", "ATC", "ATA", "ATG", "ACT", "ACC", "ACA", "ACG", "AAT", "AAC", "AAA", "AAG", "AGT", "AGC", "AGA", "AGG", "GTT", "GTC", "GTA", "GTG", "GCT", "GCC", "GCA", "GCG", "GAT", "GAC", "GAA", "GAG", "GGT", "GGC", "GGA", "GGG"]
-
+print(len(aa_list), len(triplet_list))
 outputFile = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\initProb\piProb.txt"
+
+def get_score(seq1, seq2):
+    cnt = 0
+    for i in range(len(seq1)):
+        if seq1[i] == seq2[i]:
+            cnt += 0.5
+    return cnt - 1
 
 scoreMat, probMat = [[] for x in range(21)], [[] for x in range(21)]
 for i in range(21):
     for j in range(64):
         curr_aa = aa_list[i]
         curr_tri = triplet_list[j]
+        scoreMat[i].append(max([get_score(curr_tri, x) for x in codon_table[curr_aa]]))
         if curr_tri in codon_table[curr_aa]:
             scoreMat[i].append(1)
         else:
@@ -59,7 +65,6 @@ for i in range(21):
 for i in range(21):
     for j in range(64):
         probMat[i].append(exp(scoreMat[i][j]) / tot)
-
 
 
 with open(outputFile, "w") as f:

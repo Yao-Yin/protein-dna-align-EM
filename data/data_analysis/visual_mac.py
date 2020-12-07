@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 from math import log, exp
 
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
-# pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
-pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
+pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
+# pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log.txt'
-pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
+# pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
 # pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log.txt"
 pg_data_df = pd.DataFrame(columns=["epoch", "prob", "updateMethod", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
-pg_error_df = pd.DataFrame(columns=["epoch", "prob", "type", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
+#pg_error_df = pd.DataFrame(columns=["epoch", "prob", "type", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
 
 pg_line_map = {}
 pg_error_map = {}
@@ -56,8 +56,6 @@ class DataTool:
             "W":{"TGG",},
             "Y":{"TAT", "TAC",},
             "V":{"GTT", "GTC", "GTA", "GTG"},
-            "O":{"TAA", "TAG",},
-            "U":{"TGA",},
             "*":{"TAA", "TAG", "TGA"}
         }
 
@@ -209,27 +207,27 @@ with open(pg_parameters_file, "r") as f:
     curr_list = []
     for i in range(len(all_lines)):
         curr = all_lines[i].rstrip()
-        if i % 7 == 0:
+        if i % 10 == 0:
             # epoch number
             ep = int(curr.split(" ")[3])
             pg_line_map["epoch"] = ep
-        elif i % 7 == 1:
+        elif i % 10 == 1:
             cnts = curr[5:]
             pg_line_map["cnts"] = cnts
-        elif i % 7 == 2:
+        elif i % 10 == 5:
             prob = float(curr[9:])
             pg_line_map["prob"] = prob
-        elif i % 7 == 3:
+        elif i % 10 == 6:
             curr_para_map = strToPara(curr)
             for k, v in curr_para_map.items():
                 pg_line_map[k] = v
-        elif i % 7 == 4:
+        elif i % 10 == 7:
             pg_line_map["phi"] = curr
-        elif i % 7 == 5:
+        elif i % 10 == 8:
             pg_line_map["psi"] = curr
-        elif i % 7 == 6:
+        elif i % 10 == 9:
             pg_line_map["pi"] = curr
-            pg_line_map["prob"] = reCalulate(pg_line_map["cnts"], pg_line_map["omega_i"],pg_line_map['omega_d'], pg_line_map["prob"])
+            #pg_line_map["prob"] = reCalulate(pg_line_map["cnts"], pg_line_map["omega_i"],pg_line_map['omega_d'], pg_line_map["prob"])
             pg_data_df = pg_data_df.append(pg_line_map, ignore_index=True)
 
 """
@@ -284,7 +282,7 @@ def get_fig(df, epoch_start, epoch_end, col, name):
     x1 = [i for i in range(epoch_start, epoch_end + 1, 1)]
     y1 = []
     for idx, row in df.loc[epoch_start:epoch_end].iterrows():
-        y1.append((row[col]))
+        y1.append(log(row[col]))
     l1 = plt.plot(x1, y1, 'r--', label ='type1')
     plt.legend()
     plt.show()
@@ -384,7 +382,12 @@ class Parameters:
         for x in range(21):
             for y in range(64):
                 self.s[x][y] = log(self.getSubstitionScore(x, y)*self.gamma/(self.omega_d*self.omega_i**3))
-    
+    def getNewScore(self, stat):
+        for x in range(21):
+            for y in range(64):
+                self.s[x][y] = log(self.getNewSub(x, y, stat)*self.gamma/(self.omega_d*self.omega_i**3))
+    def getNewSub(self, x, y, stat):
+        return self.pi[x][y]/(self.phi[x]*stat[y])
     def getSubstitionScore(self, x, y):
         # return SxY
         return self.pi[x][y]/(self.phi[x]*self.psi[y & 3]*self.psi[(y >> 2) & 3]*self.psi[(y >> 4) & 3])
@@ -401,11 +404,89 @@ with open(pg_parameters_file, "r") as f:
     p.getScore()
     # print(p.s[0][1])
 
-for idx, row in pg_data_df.iterrows():
-    print(idx, row['prob'])
+#for idx, row in pg_data_df.iterrows():
+    #print(idx, row['prob'])
 
-get_fig(pg_data_df, 0, 154, "prob", "")
+get_fig(pg_data_df, 0, 349, "alpha_d", "")
 dt = DataTool()
 row = dt.aaList
 col = dt.tripletList
+
+for i in range(64):
+    curr_t = dt.decodeTriplet(i)
+    curr_v = -10.0
+    curr_idx = -1
+    for j in range(21):
+        if p.s[j][i] > curr_v:
+            curr_v = p.s[j][i]
+            curr_idx = j
+    curr_aa = dt.decodeAA(curr_idx)
+    if curr_t not in dt.codonTable[curr_aa]:
+        print("Not match ", curr_t, curr_aa)
+    else:
+        print("Match ", curr_t, curr_aa)
+
+print("hello\n")
+for i in range(21):
+    curr_aa = dt.decodeAA(i)
+    curr_v = -10.0
+    curr_idx = -1
+    for j in range(64):
+        if p.s[i][j] > curr_v:
+            curr_v = p.s[i][j]
+            curr_idx = j
+    curr_t = dt.decodeTriplet(curr_idx)
+    if curr_t not in dt.codonTable[curr_aa]:
+        print("Not match ", curr_t, curr_aa)
+    else:
+        print("Match ", curr_t, curr_aa)
+    # print(curr_t, dt.decodeAA(curr_idx))
 # plot_table(row, col, p.s)
+
+def patternCollect(strList):
+    stat = [0 for i in range(64)]
+    dt = DataTool()
+    for s in strList:
+        for i in range(len(s)-2):
+            stat[dt.encodeTriplet(s[i:i+3])] += 1
+    return [ x/sum(stat) for x in stat]
+
+seqFile = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\small_test_pg.txt"
+
+with open(seqFile, "r") as f:
+    tot = f.readlines()
+    curr = []
+    for i in range(len(tot)):
+        if i % 4 == 3 and not tot[i].startswith("N"):
+            curr.append(tot[i].rstrip().upper())
+    stat = patternCollect(curr)
+    p.getNewScore(stat)
+    print("###")
+    for i in range(64):
+        curr_t = dt.decodeTriplet(i)
+        curr_v = -10.0
+        curr_idx = -1
+        for j in range(21):
+            if p.s[j][i] > curr_v:
+                curr_v = p.s[j][i]
+                curr_idx = j
+        curr_aa = dt.decodeAA(curr_idx)
+        if curr_t not in dt.codonTable[curr_aa]:
+            print("Not match ", curr_t, curr_aa)
+        else:
+            print("Match ", curr_t, curr_aa)
+    for i in range(21):
+        curr_aa = dt.decodeAA(i)
+        curr_v = -10.0
+        curr_idx = -1
+        for j in range(64):
+            if p.s[i][j] > curr_v:
+                curr_v = p.s[i][j]
+                curr_idx = j
+        curr_t = dt.decodeTriplet(curr_idx)
+        if curr_t not in dt.codonTable[curr_aa]:
+            print("Not match ", curr_t, curr_aa)
+        else:
+            print("Match ", curr_t, curr_aa)
+    plot_table(row, col, p.s)
+    

@@ -87,19 +87,20 @@ void PairHMM::emissionInitialize() {
 }
 
 void PairHMM::parameterInitialize() {
-    omega_i = NumType(0.9);
-    omega_d = NumType(0.9);
-    gamma = NumType(0.3);
+    omega_i = NumType(0.8);
+    omega_d = NumType(0.8);
+    gamma = NumType(0.9);
     //deletion
-    alpha_d = NumType(0.3);
-    delta_d = NumType(0.1);
-    epsilon_d = NumType(0.1);
-    beta_d = NumType(0.1);
+    alpha_d = NumType(0.04);
+    delta_d = NumType(0.5);
+    epsilon_d = NumType(0.5);
+    beta_d = NumType(0.5);
     //insertion
-    alpha_i = NumType(0.3);
-    delta_i = NumType(0.1); 
-    beta_i = NumType(0.1);
-    epsilon_i = NumType(0.1);
+    alpha_i = NumType(0.04);
+    delta_i = NumType(0.5); 
+    beta_i = NumType(0.5);
+    epsilon_i = NumType(0.5);
+    overAllProb = NumType(0.0);
 }
 
 void PairHMM::forward(const proSeqType & proSeq, const dnaSeqType & dnaSeq, int option) {
@@ -174,7 +175,7 @@ void PairHMM::logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
             H_1->logf[i][j] = LogSumExp(start->logf[i][j], D_1->logf[i][j]);
             //std::cout << i << " " << j << ":: " <<H_1->logf[i][j]<<" "<<D_1->logf[i][j] << std::endl;
             //I_1->f[i][j] = j ? psi[dnaSeq.ori[j]]*H_2->f[i][j-1]*omega_i : NumType(0);
-            I_1->logf[i][j] = j ? H_2->logf[i][j-1] + log_omega_i : lzero;
+            I_1->logf[i][j] = j ? H_2->logf[i][j-1]+log_omega_i : lzero;
             //H_2->f[i][j] = H_1->f[i][j]*(NumType(1)-omega_d) + I_1->f[i][j];
             H_2->logf[i][j] = LogSumExp(H_1->logf[i][j] + Log1m(log_omega_d), I_1->logf[i][j]);
             //Match->f[i][j] = (i > 0 && j > 2) ? pi[proSeq[i]][dnaSeq.triplet[j]]*H_3->f[i-1][j-3]*gamma : NumType(0); 
@@ -185,6 +186,7 @@ void PairHMM::logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
             //D_2->f[i][j] =  i ? phi[proSeq[i]]*(H_3->f[i-1][j]*alpha_d + H_6->f[i-1][j]*beta_d) : NumType(0);
             D_2->logf[i][j] = i ? LogSumExp(H_3->logf[i-1][j]+log_alpha_d, H_6->logf[i-1][j] + log_beta_d) : lzero;
             //I_2->f[i][j] = j ? psi[dnaSeq.ori[j]]*(D_2->f[i][j-1]*(NumType(1)-delta_d)) : NumType(0);
+
             I_2->logf[i][j] = j ? D_2->logf[i][j-1] + Log1m(log_delta_d) : lzero; 
             //I_3->f[i][j] = j ? psi[dnaSeq.ori[j]]*(I_2->f[i][j-1] + H_7->f[i][j-1]*(NumType(1)-epsilon_d)) : NumType(0);
             I_3->logf[i][j] = j ? LogSumExp(I_2->logf[i][j-1], H_7->logf[i][j-1]+Log1m(log_epsilon_d)) : lzero;
@@ -207,10 +209,11 @@ void PairHMM::logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
             //H_4->f[i][j] = H_3->f[i][j]*(NumType(1)-alpha_i-alpha_d-gamma) + D_3->f[i][j];
             H_4->logf[i][j] = LogSumExp(H_3->logf[i][j]+Log1m(LogSumExp(log_alpha_i, log_alpha_d, log_gamma)), D_3->logf[i][j]);
             //H_5->f[i][j] = H_4->f[i][j]*(NumType(1) - omega_d) + I_7->f[i][j];
-            H_5->logf[i][j] = LogSumExp(H_4->logf[i][j]+Log1m(log_omega_d),I_7->logf[i][j]);
+            H_5->logf[i][j] = LogSumExp(H_4->logf[i][j]+Log1m(log_omega_d), I_7->logf[i][j]);
             //finish->f[i][j] = H_5->f[i][j]*(NumType(1)-omega_i);
             finish->logf[i][j] = H_5->logf[i][j]+Log1m(log_omega_i);
             //checkforward(i, j);
+            //std::cout << i << " " << j << " (logForward): " << H_1->logf[i][j]<<" "<<H_2->logf[i][j]<<" "<<H_3->logf[i][j]<<" "<<H_4->logf[i][j]<<" "<<I_7->logf[i][j]<<" "<<H_5->logf[i][j]<<std::endl;
         }
     }
     logFinishFwd = finish->logf[n][m];
@@ -354,6 +357,13 @@ void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) 
         }
     }
     logStartBwd = start->logb[0][0];
+    //updateLogProb
+    LogNumType proPrefix(0.0);
+    LogNumType dnaPrefix(0.0);
+    for (int i = 1; i <= n; i ++) proPrefix += log_phi[proSeq[i]];
+    for (int i = 1; i <= m; i ++) dnaPrefix += log_psi[dnaSeq.ori[i]];
+    overAllProb += (proPrefix + dnaPrefix);
+    overAllProb += logStartBwd;
 }
 
 void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std::vector<dnaSeqType> & dnaSeqs, int iterTimes, int option) {
@@ -361,7 +371,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
     if (option) mode = true;
     else mode = false;
     for (int iter = 0; iter < iterTimes; iter ++) {
-        epoch_idx = iter+50;
+        epoch_idx = iter;
         std::cout << "This is the " << iter <<" epoch. " << std::endl;
         naiveTolog();
         std::vector<Transition*> vt {
@@ -375,13 +385,15 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
         for (int s = 0; s < pi_cnt.size(); s ++) {
             for (int t = 0; t < pi_cnt[0].size(); t ++) pi_cnt[s][t] = 0;
         }   
+        overAllProb = NumType(0.0);
         //displayParameters("Before the " + std::to_string(iter) + " epoch: ", default_filepath);
         //get_total();
         for (int i = 0; i < nums; i ++) {
             BaumWelchSingleStep(proSeqs[i], dnaSeqs[i], 1);
         }
         get_total();
-        double n = 0.01;
+        pOverAllProb = calculateOverallLogProb();
+        double n = 1;
         pseudocount(n);
         updateProbabilities();
         pseudocount(-n);
@@ -396,6 +408,9 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
             }
         }
         std::cout <<"check "<<iter<<": "<< tot_psi<<" "<<tot_phi<<" "<<tot_pi  << std::endl;*/
+        //std::cout << calculateOverallLogProb() << std::endl;
+        //std::cout << overAllProb << std::endl;
+        //std::cout << logProb << " " << logStartBwd << std::endl;
         displayParameters("This is the " + std::to_string(iter) + " epoch: ", default_filepath);
     }
 }
@@ -418,7 +433,7 @@ void PairHMM::BaumWelchSingleStep(const proSeqType & proSeq, const dnaSeqType & 
     //std::cout << "update transitions step takes " << (clock() - curr )/CLOCKS_PER_SEC << "sec"<<std::endl;
     //curr = clock();
     updateEmissions(proSeq, dnaSeq, option);
-    //std::cout << "updatee emissions step takes " << (clock() - curr )/CLOCKS_PER_SEC << "sec"<<std::endl;
+    //std::cout << "update emissions step takes " << (clock() - curr )/CLOCKS_PER_SEC << "sec"<<std::endl;
     //curr = clock();
 }
 
@@ -497,7 +512,7 @@ void PairHMM::updateTransitions(int option) {
         B_d.add_log_cnt(logProb, Log1m(log_beta_d));
         D_d.add_log_cnt(logProb, Log1m(log_delta_d));
         E_d.add_log_cnt(logProb, Log1m(log_epsilon_d));
-        G_d.add_log_cnt(logProb, Log1m(log_delta_d));
+        G_d.add_log_cnt(logProb, log_delta_d);
         H_d.add_log_cnt(logProb, log_epsilon_d);
         F_i.add_log_cnt(logProb, log_alpha_i);
         X_i.add_log_cnt(logProb, log_beta_i);
@@ -665,8 +680,8 @@ void PairHMM::updateEmissionProbabilities() {
     NumType total_match(0);
     for (int i = 0; i < phi_cnt.size(); i ++) { total_phi += phi_cnt[i]; }
     for (int i = 0; i < psi_cnt.size() ; i ++) { total_psi += psi_cnt[i]; }
-    for (int i = 0; i < phi_cnt.size(); i ++) { phi[i] = phi_cnt[i] / total_phi; }
-    for (int i = 0; i < psi_cnt.size() ; i ++) { psi[i] = psi_cnt[i] / total_psi; }
+    //for (int i = 0; i < phi_cnt.size(); i ++) { phi[i] = phi_cnt[i] / total_phi; }
+    //for (int i = 0; i < psi_cnt.size() ; i ++) { psi[i] = psi_cnt[i] / total_psi; }
     for (int i = 0; i < pi_cnt.size(); i ++) {
         for (int j = 0; j < pi_cnt[0].size(); j ++) {
             total_match += pi_cnt[i][j];
@@ -676,6 +691,26 @@ void PairHMM::updateEmissionProbabilities() {
         for (int j = 0; j < 64; j ++) {
             pi[i][j] = pi_cnt[i][j] / total_match;
         }
+    }
+    //phi: deletion, psi: insertion
+    for (int i = 0; i < 21; i ++) {
+        NumType tot = 0;
+        for (int j = 0; j < 64; j ++) {
+            tot += pi[i][j];
+        } 
+        phi[i] = tot;
+    }
+
+    for (int x = 0; x < 4; x ++) {
+        NumType tot = 0;
+        for (int y = 0; y < 21; y ++) {
+            for (int i = 0; i < 4; i ++) {
+                for (int j = 0; j < 4; j ++) {
+                    tot += (pi[y][(i<<4)+(j<<2)+x] + pi[y][(i<<4)+(x<<2)+j] + pi[y][(x<<4) + (i<<2) + j]);
+                }
+            }
+        }
+        psi[x] = tot / 3;
     }
 }
 
@@ -702,10 +737,29 @@ void PairHMM::naiveUpdateDeletionProbabilities() {
 }
 
 long double PairHMM::calculateOverallLogProb() const {
-    return M.cnt*log_gamma + A.cnt*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i)) + (B_i.cnt + D_i.cnt + E_i.cnt)*log_alpha_i + (B_d.cnt + D_d.cnt + E_d.cnt)*log_alpha_d 
+    NumType alignTransition1 = M.cnt*log_gamma + A.cnt*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i)) + (B_i.cnt + D_i.cnt + E_i.cnt)*log_alpha_i + (B_d.cnt + D_d.cnt + E_d.cnt)*log_alpha_d 
             + B_i.cnt*Log1m(log_beta_i) + X_i.cnt*log_beta_i + E_i.cnt*Log1m(log_epsilon_i) + (X_i.cnt + B_i.cnt) * log_epsilon_i 
-            + D_i.cnt*(Log1m(log_beta_i)) + (X_i.cnt + B_i.cnt + E_i.cnt)*log_delta_i + B_d.cnt*(Log1m(log_beta_d)) + X_d.cnt*log_beta_d
-            + E_d.cnt*Log1m(log_epsilon_d) + (X_d.cnt + D_d.cnt)*log_epsilon_d + D_d.cnt*Log1m(log_epsilon_d) + (X_d.cnt + B_d.cnt + E_d.cnt)*log_delta_d;
+            + D_i.cnt*(Log1m(log_delta_i)) + (X_i.cnt + B_i.cnt + E_i.cnt)*log_delta_i + B_d.cnt*(Log1m(log_beta_d)) + X_d.cnt*log_beta_d
+            + E_d.cnt*Log1m(log_epsilon_d) + (X_d.cnt + B_d.cnt)*log_epsilon_d + D_d.cnt*Log1m(log_delta_d) + (X_d.cnt + B_d.cnt + E_d.cnt)*log_delta_d;
+    
+    NumType alignTransition = M.cnt*log_gamma+A.cnt*Log1m(LogSumExp(log_gamma, log_alpha_d, log_alpha_i))+F_i.cnt*log_alpha_i+F_d.cnt*log_alpha_d
+                                +B_i.cnt*Log1m(log_beta_i)+X_i.cnt*log_beta_i+E_i.cnt*Log1m(log_epsilon_i)+H_i.cnt*log_epsilon_i
+                                +D_i.cnt*Log1m(log_delta_i)+G_i.cnt*log_delta_i+B_d.cnt*Log1m(log_beta_d)+X_d.cnt*log_beta_d
+                                +E_d.cnt*Log1m(log_epsilon_d)+H_d.cnt*log_epsilon_d+D_d.cnt*Log1m(log_delta_d)+G_d.cnt*log_delta_d;
+
+    NumType otherTransition = J_i.cnt*log_omega_i + J_d.cnt*log_omega_d + K_i.cnt*log_omega_i + K_d.cnt*log_omega_d + A.cnt*(2*Log1m(log_omega_i) + 2*Log1m(log_omega_d));
+    NumType totEmissions = 0;
+    for (int i = 0; i < psi.size(); i ++) {
+        totEmissions += log_psi[i]*psi_cnt[i];
+    }
+    for (int i = 0; i < phi.size(); i ++) totEmissions += log_phi[i]*phi_cnt[i];
+    for (int i = 0; i < pi.size(); i ++) {
+        for (int j = 0; j < pi[0].size(); j ++) {
+            totEmissions += log_pi[i][j]*pi_cnt[i][j];
+        }
+    }
+    //std::cout << alignTransition1 << " "<< alignTransition<<" "<< std::endl;
+    return alignTransition + otherTransition +  totEmissions;
 }
 
 std::vector<LogNumType> PairHMM::deltaItoParameters(const LogNumType & deltai) const {
@@ -1001,23 +1055,31 @@ void PairHMM::displayParameters(const std::string msg, const std::string & filen
     out << "cnts: ";
     for (auto num: vt) out << num << "\t";
     out << std::endl;
-    out << "Overall: "<<calculateOverallLogProb() << std::endl;
+    
+    for (int i = 0; i < phi_cnt.size(); i ++) {
+        if(i) out << '\t';
+        out << phi_cnt[i];
+    }
+    out << std::endl;
+    for (int i = 0; i < psi_cnt.size(); i ++) {
+        if(i) out << '\t';
+        out <<psi_cnt[i];
+    }
+    out << std::endl;
+    for (int i = 0; i < 21; i ++) {
+        for (int j = 0; j < 64; j ++) {
+            if(j) out << '\t';
+            out << pi_cnt[i][j];
+        }
+    }
+    out << std::endl;
+    out << "Overall: "<<pOverAllProb << " " << overAllProb <<std::endl;
     for (int i = 0; i < tp.size(); i ++) {
         if(i) out << '\t';
         out << tp[i];
     }
     out << std::endl;
-    /*
-    for (int i = 0; i < phi_cnt.size(); i ++) {
-        //if(i) out << '\t';
-        out <<'\t' << phi_cnt[i];
-    }
-    out << std::endl;
-    for (int i = 0; i < psi_cnt.size(); i ++) {
-        //if(i) out << '\t';
-        out << '\t'<<psi_cnt[i];
-    }
-    */
+    
     for (int i = 0; i < phi.size(); i ++) out << phi[i] << '\t';
     out << std::endl;
     for (int i = 0; i < psi.size(); i ++) out << psi[i] << '\t';
@@ -1245,7 +1307,7 @@ void PairHMM::get_total() {
 
 void PairHMM::pseudocount(double n) {
     for (int i = 0; i < pi_cnt.size(); i ++) {
-        for (int j = 0; j < pi_cnt.size(); j ++) {
+        for (int j = 0; j < pi_cnt[0].size(); j ++) {
             pi_cnt[i][j] += n;
         }
     }

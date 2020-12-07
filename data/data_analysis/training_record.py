@@ -79,25 +79,25 @@ with open(pg_parameters_file, "r") as f:
     curr_list = []
     for i in range(len(all_lines)):
         curr = all_lines[i].rstrip()
-        if i % 7 == 0:
+        if i % 10 == 0:
             # epoch number
             ep = int(curr.split(" ")[3])
             pg_line_map["epoch"] = ep
-        elif i % 7 == 1:
+        elif i % 10 == 1:
             cnts = curr[5:]
             pg_line_map["cnts"] = cnts
-        elif i % 7 == 2:
+        elif i % 10 == 5:
             prob = float(curr[9:])
             pg_line_map["prob"] = prob
-        elif i % 7 == 3:
+        elif i % 10 == 6:
             curr_para_map = strToPara(curr)
             for k, v in curr_para_map.items():
                 pg_line_map[k] = v
-        elif i % 7 == 4:
+        elif i % 10 == 7:
             pg_line_map["phi"] = curr
-        elif i % 7 == 5:
+        elif i % 10 == 8:
             pg_line_map["psi"] = curr
-        elif i % 7 == 6:
+        elif i % 10 == 9:
             pg_line_map["pi"] = curr
             # pg_line_map["prob"] = reCalulate(pg_line_map["cnts"], pg_line_map["alpha_i"], pg_line_map["prob"])
             pg_data_df = pg_data_df.append(pg_line_map, ignore_index=True)

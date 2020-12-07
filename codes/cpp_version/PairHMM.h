@@ -152,6 +152,8 @@ public:
     bool deletionValid();
     void reNormalize();
     NumType eps;
+    NumType overAllProb;
+    NumType pOverAllProb;
 private:
     State *start, *finish; 
     State *D_1, *D_2, *D_3;
