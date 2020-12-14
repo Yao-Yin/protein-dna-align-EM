@@ -393,7 +393,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
         }
         get_total();
         pOverAllProb = calculateOverallLogProb();
-        double n = 1;
+        double n = 0.001;
         pseudocount(n);
         updateProbabilities();
         pseudocount(-n);
@@ -714,13 +714,34 @@ void PairHMM::updateEmissionProbabilities() {
     }
 }
 
+void PairHMM::nonHomoUpdateEmissionProbabilities() {
+    NumType total_psi(0);
+    NumType total_phi(0);
+    NumType total_match(0);
+    for (int i = 0; i < phi_cnt.size(); i ++) { total_phi += phi_cnt[i]; }
+    for (int i = 0; i < psi_cnt.size() ; i ++) { total_psi += psi_cnt[i]; }
+    for (int i = 0; i < phi_cnt.size(); i ++) { phi[i] = phi_cnt[i] / total_phi; }
+    for (int i = 0; i < psi_cnt.size() ; i ++) { psi[i] = psi_cnt[i] / total_psi; }
+    for (int i = 0; i < pi_cnt.size(); i ++) {
+        for (int j = 0; j < pi_cnt[0].size(); j ++) {
+            total_match += pi_cnt[i][j];
+        }
+    }
+    for (int i = 0; i < 21; i ++) {
+        for (int j = 0; j < 64; j ++) {
+            pi[i][j] = pi_cnt[i][j] / total_match;
+        }
+    }
+    //phi: deletion, psi: insertion
+}
+
 void PairHMM::naiveUpdateProbabilities() {
     // transition part
     updateAlignProbabilities();
     naiveUpdateInsertionProbabilities();
     naiveUpdateDeletionProbabilities();
     // emmission part
-    updateEmissionProbabilities();
+    nonHomoUpdateEmissionProbabilities();
     naiveTolog();
 }
 

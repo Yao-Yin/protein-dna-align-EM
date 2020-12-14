@@ -24,6 +24,15 @@ codon_table = {
     "*":{"TAA", "TAG", "TGA"}
 }
 
+"""
+A & GAC
+3 => 1
+2 => 0.5
+1 => 0
+0 => -0.5
+exp(s)/sum(exp(s) for s in 21*64)
+"""
+
 codon_table_reverse = {}
 for key, value in codon_table.items():
     for codon in value:

@@ -7,7 +7,7 @@ from math import log, exp
 
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
-pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para.txt"
+pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_pg_450_nocon.txt"
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log.txt'
 # pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
@@ -121,7 +121,7 @@ def plot_table(row, col, vals):
     
     # 伸缩表格大小常数
     the_table.scale(figR/R*2, figC/C*1.5)
-    plt.savefig("testdoc450.jpg")
+    plt.savefig("testdoc450_nocon.jpg")
 
 
 
@@ -408,7 +408,7 @@ with open(pg_parameters_file, "r") as f:
 #for idx, row in pg_data_df.iterrows():
     #print(idx, row['prob'])
 
-get_fig(pg_data_df, 1, 499, "delta_i", "")
+get_fig(pg_data_df, 1, 603, "prob", "")
 dt = DataTool()
 row = dt.aaList
 col = dt.tripletList

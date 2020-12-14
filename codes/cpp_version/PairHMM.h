@@ -114,6 +114,7 @@ public:
     void naiveUpdateInsertionProbabilities();
     void naiveUpdateDeletionProbabilities();
     void updateEmissionProbabilities();
+    void nonHomoUpdateEmissionProbabilities();
     void emissionInitialize();
     void transitionInitialize();
     void parameterInitialize();
