@@ -8,6 +8,7 @@ from math import log, exp
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
 pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_pg_450_nocon.txt"
+# pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_450_pg_homo.txt"
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log.txt'
 # pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
@@ -121,7 +122,7 @@ def plot_table(row, col, vals):
     
     # 伸缩表格大小常数
     the_table.scale(figR/R*2, figC/C*1.5)
-    plt.savefig("testdoc450_nocon.jpg")
+    plt.savefig("testdoc450_nocon60.jpg")
 
 
 
@@ -408,14 +409,14 @@ with open(pg_parameters_file, "r") as f:
 #for idx, row in pg_data_df.iterrows():
     #print(idx, row['prob'])
 
-get_fig(pg_data_df, 1, 603, "prob", "")
+get_fig(pg_data_df, 450, 753, "gamma", "")
 dt = DataTool()
 row = dt.aaList
 col = dt.tripletList
 
 for i in range(64):
     curr_t = dt.decodeTriplet(i)
-    curr_v = -10.0
+    curr_v = -100.0
     curr_idx = -1
     for j in range(21):
         if p.s[j][i] > curr_v:
@@ -427,10 +428,10 @@ for i in range(64):
     else:
         print("Match ", curr_t, curr_aa)
 
-print("hello\n")
+print("###\n")
 for i in range(21):
     curr_aa = dt.decodeAA(i)
-    curr_v = -10.0
+    curr_v = -100.0
     curr_idx = -1
     for j in range(64):
         if p.s[i][j] > curr_v:
@@ -442,7 +443,7 @@ for i in range(21):
     else:
         print("Match ", curr_t, curr_aa)
     # print(curr_t, dt.decodeAA(curr_idx))
-plot_table(row, col, p.s)
+# plot_table(row, col, p.s)
 
 def patternCollect(strList):
     stat = [0 for i in range(64)]
@@ -463,10 +464,10 @@ with open(seqFile, "r") as f:
             curr.append(tot[i].rstrip().upper())
     stat = patternCollect(curr)
     p.getNewScore(stat)
-    print("###")
+    print("fixed: ")
     for i in range(64):
         curr_t = dt.decodeTriplet(i)
-        curr_v = -10.0
+        curr_v = -100.0
         curr_idx = -1
         for j in range(21):
             if p.s[j][i] > curr_v:
@@ -477,9 +478,10 @@ with open(seqFile, "r") as f:
             print("Not match ", curr_t, curr_aa)
         else:
             print("Match ", curr_t, curr_aa)
+    print("###\n")
     for i in range(21):
         curr_aa = dt.decodeAA(i)
-        curr_v = -10.0
+        curr_v = -100.0
         curr_idx = -1
         for j in range(64):
             if p.s[i][j] > curr_v:

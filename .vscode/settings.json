@@ -45,7 +45,11 @@
         "random": "cpp",
         "complex": "cpp",
         "sstream": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "ctime": "cpp",
+        "iomanip": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp"
     },
     "python.pythonPath": "C:\\Users\\InYuo\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
     "python.linting.flake8Enabled": true,

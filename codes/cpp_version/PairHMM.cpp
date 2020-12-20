@@ -3,6 +3,7 @@
 PairHMM::PairHMM() {
     initialize();
     mode = false;
+    validcheck = false;
 }
 
 PairHMM::~PairHMM() {
@@ -79,6 +80,7 @@ void PairHMM::emissionInitialize() {
     for (int i = 0; i < phi.size(); i ++) {
         phi[i] = NumType(1.0/21);
     }
+
     for (int i = 0; i < 21; i ++) {
         for (int j = 0; j < 64; j ++) {
             pi[i][j] = NumType(1.0/21/64);
@@ -87,9 +89,9 @@ void PairHMM::emissionInitialize() {
 }
 
 void PairHMM::parameterInitialize() {
-    omega_i = NumType(0.8);
-    omega_d = NumType(0.8);
-    gamma = NumType(0.9);
+    omega_i = NumType(0.94);
+    omega_d = NumType(0.94);
+    gamma = NumType(0.86);
     //deletion
     alpha_d = NumType(0.04);
     delta_d = NumType(0.5);
@@ -218,6 +220,13 @@ void PairHMM::logForward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) {
     }
     logFinishFwd = finish->logf[n][m];
     logProb = logFinishFwd;
+    LogNumType proPrefix(0.0);
+    LogNumType dnaPrefix(0.0);
+    for (int i = 1; i <= n; i ++) proPrefix += log_phi[proSeq[i]];
+    for (int i = 1; i <= m; i ++) dnaPrefix += log_psi[dnaSeq.ori[i]];
+    overAllProb += (proPrefix + dnaPrefix);
+    overAllProb += logFinishFwd;
+    if (validcheck) validProb += (proPrefix + dnaPrefix + logFinishFwd);
     //std::cout << logProb <<std::endl;
 }
 
@@ -358,12 +367,6 @@ void PairHMM::logBackward(const proSeqType & proSeq, const dnaSeqType & dnaSeq) 
     }
     logStartBwd = start->logb[0][0];
     //updateLogProb
-    LogNumType proPrefix(0.0);
-    LogNumType dnaPrefix(0.0);
-    for (int i = 1; i <= n; i ++) proPrefix += log_phi[proSeq[i]];
-    for (int i = 1; i <= m; i ++) dnaPrefix += log_psi[dnaSeq.ori[i]];
-    overAllProb += (proPrefix + dnaPrefix);
-    overAllProb += logStartBwd;
 }
 
 void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std::vector<dnaSeqType> & dnaSeqs, int iterTimes, int option) {
@@ -372,6 +375,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
     else mode = false;
     for (int iter = 0; iter < iterTimes; iter ++) {
         epoch_idx = iter;
+        if(epoch_idx % 5 == 0) validationCheck(this->validpro, this->validdna);
         std::cout << "This is the " << iter <<" epoch. " << std::endl;
         naiveTolog();
         std::vector<Transition*> vt {
@@ -392,7 +396,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
             BaumWelchSingleStep(proSeqs[i], dnaSeqs[i], 1);
         }
         get_total();
-        pOverAllProb = calculateOverallLogProb();
+        //pOverAllProb = calculateOverallLogProb();
         double n = 0.001;
         pseudocount(n);
         updateProbabilities();
@@ -1094,7 +1098,7 @@ void PairHMM::displayParameters(const std::string msg, const std::string & filen
         }
     }
     out << std::endl;
-    out << "Overall: "<<pOverAllProb << " " << overAllProb <<std::endl;
+    out << "Overall: "<<validProb << " " << overAllProb <<std::endl;
     for (int i = 0; i < tp.size(); i ++) {
         if(i) out << '\t';
         out << tp[i];
@@ -1332,16 +1336,16 @@ void PairHMM::pseudocount(double n) {
             pi_cnt[i][j] += n;
         }
     }
-    for (int i = 0; i < phi_cnt.size(); i ++) {phi_cnt[i] += n; }
-    for (int i = 0; i < psi_cnt.size(); i ++) {psi_cnt[i] += n; }
-    std::vector<Transition*> vt {
+    //for (int i = 0; i < phi_cnt.size(); i ++) {phi_cnt[i] += n; }
+    //for (int i = 0; i < psi_cnt.size(); i ++) {psi_cnt[i] += n; }
+    /*std::vector<Transition*> vt {
         &J_d, &J_i, &M, &A, &K_d, &K_i, 
         &F_d, &X_d, &B_d, &D_d, &E_d, &G_d, &H_d,
         &F_i, &X_i, &B_i, &D_i, &E_i, &G_i, &H_i
     };
     for (auto & ptr: vt) {
         ptr->cnt += n;
-    }
+    }*/
 }
 
 void PairHMM::reNormalize() {
@@ -1447,4 +1451,31 @@ bool PairHMM::setParameters(const std::string & filename) {
     beta_d = tran_probs[10];
     epsilon_d = tran_probs[11];
     return true; 
+}
+void PairHMM::validationCheck(std::vector<proSeqType> & vp, std::vector<dnaSeqType> & vd){
+    std::cout << "valid: " << epoch_idx << std::endl;
+    validProb = NumType(0.0);
+    validcheck = true;
+    for (int i = 0; i < vp.size(); i ++) {
+        int n = vp[i].size();
+        int m = vd[i].ori.size();
+    //std::cout << "Start !" << std::endl;
+    //time_t curr = clock();
+        BaumWelchSingleStepInitialize(n, m, 1);
+        logForward(vp[i], vd[i]);
+    }
+    validcheck = false;
+}
+
+void PairHMM::setValid(const std::string & filename){
+    std::ifstream in(filename, std::ios::in);
+    std::string dna_position, dna_seq, protein_id, protein_seq;
+    DataTool dt; 
+    while(in >> protein_id >> protein_seq >> dna_position >> dna_seq) {
+        if(dt.checkDNA(dna_seq) && dt.checkPro(protein_seq)) {
+            validpro.push_back(dt.encodePro(protein_seq+"*"));
+            validdna.push_back(dt.encodeDNA(dna_seq));
+        }
+    }
+    in.close();
 }

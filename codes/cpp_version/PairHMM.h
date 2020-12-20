@@ -152,6 +152,9 @@ public:
     bool insertionValid();
     bool deletionValid();
     void reNormalize();
+    void validationCheck(std::vector<proSeqType> & vp, std::vector<dnaSeqType> & vd);
+    void setValid(const std::string & filename);
+    NumType validProb;
     NumType eps;
     NumType overAllProb;
     NumType pOverAllProb;
@@ -161,7 +164,10 @@ private:
     State *I_1, *I_2, *I_3, *I_4, *I_5, *I_6, *I_7;
     State *H_1, *H_2, *H_3, *H_4, *H_5, *H_6, *H_7; // H for central hidden node
     State *Match;
+    std::vector<proSeqType> validpro;
+    std::vector<dnaSeqType> validdna;
     bool mode;
+    bool validcheck;
     int epoch_idx;
 };
 
