@@ -109,12 +109,12 @@ int main()
     //for(int i = 0; i < 20; i ++) tiny.phi[i] = 0.995/20.0;
     //tiny.phi[20] = 0.005;
     //tiny.reNormalize();
-    tiny.setValid("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\data\\pg_500_10_valid.txt");
+    tiny.setValid("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\data\\pg_500_hg19_presuf10_valid.txt");
     //std::cout << "hello" << std::endl;
     //std::cout << tiny.pi.size() << tiny.pi[0].size() << std::endl;
     //tiny.setInsertion();
     //tiny.displayParameters("start", tiny.default_filepath);
-    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\data\\pg_500_10_train.txt", 200, 0);
+    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\data\\pg_500_hg19_presuf10_train.txt", 200, 0);
     //tiny.get_total();
     //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\test_cnt.txt", 1, 0);
     //DataTool dt;

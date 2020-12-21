@@ -8,6 +8,7 @@ from math import log, exp
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
 pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_pg_450_nocon.txt"
+pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\pg500_normal.txt"
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_450_pg_homo.txt"
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log.txt'
@@ -122,7 +123,7 @@ def plot_table(row, col, vals):
     
     # 伸缩表格大小常数
     the_table.scale(figR/R*2, figC/C*1.5)
-    plt.savefig("testdoc450_nocon60.jpg")
+    plt.savefig("pg500normal.jpg")
 
 
 
@@ -409,7 +410,7 @@ with open(pg_parameters_file, "r") as f:
 #for idx, row in pg_data_df.iterrows():
     #print(idx, row['prob'])
 
-get_fig(pg_data_df, 450, 753, "gamma", "")
+get_fig(pg_data_df, 0, 15, "gamma", "")
 dt = DataTool()
 row = dt.aaList
 col = dt.tripletList
@@ -443,7 +444,7 @@ for i in range(21):
     else:
         print("Match ", curr_t, curr_aa)
     # print(curr_t, dt.decodeAA(curr_idx))
-# plot_table(row, col, p.s)
+plot_table(row, col, p.s)
 
 def patternCollect(strList):
     stat = [0 for i in range(64)]

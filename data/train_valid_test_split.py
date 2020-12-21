@@ -5,15 +5,20 @@ test_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_h
 ori_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_hg19_presuf10.txt"
 
 rd.seed(10)
+removeRepeats = set()
 
 def write_data(idxs, seq, filename):
     with open(filename, "w") as f:
         #get 4 seqs
         for i in idxs:
-            f.write(seq[4*i])
-            f.write(seq[4*i+1])
-            f.write(seq[4*i+2])
-            f.write(seq[4*i+3])
+            curr_dna = seq[4*i+3].rstrip()
+            curr_pro = seq[4*i+1].rstrip()
+            if (curr_pro, curr_dna) not in removeRepeats:
+                f.write(seq[4*i])
+                f.write(seq[4*i+1])
+                f.write(seq[4*i+2])
+                f.write(seq[4*i+3].rstrip() + "\n")
+                removeRepeats.add((curr_pro, curr_dna))
 
 
 
