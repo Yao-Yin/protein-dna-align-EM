@@ -6,7 +6,9 @@ import pandas as pd
 df = pd.read_csv(r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\9606_pseudogenes.txt", sep="\t", header=0)
 # dataPath = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\test_pg.txt"
 # dataPath = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_450_pre_suf.txt"
-dataPath = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_pre_suf_10.txt"
+# dataPath = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_pre_suf_10.txt"
+# dataPath = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\blabla.txt"
+dataPath = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_hg19_presuf10.txt"
 errorPath = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\test_pg_error.txt"
 datafile = open(dataPath, "a+")
 errorfile = open(errorPath, "a+")
@@ -46,7 +48,7 @@ def ucscJsonToFasta(originalText):
 def getSequences(pseudogene_id, pseudogene_chr, pseudogene_start, pseudogene_end, strand, protein_id):
     ensemblServer = "https://rest.ensembl.org"
     proteinext = "/sequence/id/"+str(protein_id)+"?type=protein"
-    ucscServer = "https://api.genome.ucsc.edu/getData/sequence?genome=hg38;"
+    ucscServer = "https://api.genome.ucsc.edu/getData/sequence?genome=hg19;"
     dna_start_ext = "start="+str(pseudogene_start)+";"
     dna_end_ext = "end="+str(pseudogene_end)
     dna_chrom = "chrom=chr" + str(pseudogene_chr) + ";"
@@ -64,7 +66,7 @@ def getSequences(pseudogene_id, pseudogene_chr, pseudogene_start, pseudogene_end
 def getSmallTestData(pseudogene_id, pseudogene_chr, pseudogene_start, pseudogene_end, protein_id, strand, maxProLength = 200):
     ensemblServer = "https://rest.ensembl.org"
     proteinext = "/sequence/id/"+str(protein_id)+"?type=protein"
-    ucscServer = "https://api.genome.ucsc.edu/getData/sequence?genome=hg38;"
+    ucscServer = "https://api.genome.ucsc.edu/getData/sequence?genome=hg19;"
     dna_start_ext = "start="+str(pseudogene_start)+";"
     dna_end_ext = "end="+str(pseudogene_end)
     dna_chrom = "chrom=chr" + str(pseudogene_chr) + ";"
@@ -99,6 +101,7 @@ def getSmallTestData(pseudogene_id, pseudogene_chr, pseudogene_start, pseudogene
 #PGOHUM00000250213	6	85967053	85967406	+	ENSP00000264258	0.95	0.75	3.0E-19	Processed	PF01198;
 #PGOHUM00000242041	X	135929543	135930187	+	ENSP00000328551	1.0	0.791	0.0	Processed	PF00071;PF08477;
 #getSequences("PGOHUM00000250213",6,85967053,85967406,"ENSP00000264258")
+
 for idx, data in df.iterrows():
     if data["class"] == "Processed" and len(data["chr"]) <= 2 and int(data["end"]) - int(data["start"]) <= 500:
         getSmallTestData(data["id"], data["chr"], int(data["start"])-10, int(data["end"])+10, data["parent"], data["strand"], 300)

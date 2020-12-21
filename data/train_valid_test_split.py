@@ -1,8 +1,8 @@
 import random as rd
-valid_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_10_valid.txt"
-training_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_10_train.txt"
-test_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_10_test.txt"
-ori_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_pre_suf_10.txt"
+valid_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_hg19_presuf10_valid.txt"
+training_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_hg19_presuf10_train.txt"
+test_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_hg19_presuf10_test.txt"
+ori_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_hg19_presuf10.txt"
 
 rd.seed(10)
 
@@ -19,6 +19,7 @@ def write_data(idxs, seq, filename):
 
 with open(ori_file, "r") as f:
     all_seqs = f.readlines()
+    all_seqs[-1] += "\n"
     tot = len(all_seqs) // 4
     print(tot)
     idx = [i for i in range(tot)]
@@ -32,9 +33,9 @@ with open(ori_file, "r") as f:
     print(len(train_idx))
     print(len(valid_idx))
     print(len(test_idx))
-    # write_data(train_idx, all_seqs, training_file)
-    # write_data(valid_idx, all_seqs, valid_file)
-    # write_data(test_idx, all_seqs, test_file)
+    write_data(train_idx, all_seqs, training_file)
+    write_data(valid_idx, all_seqs, valid_file)
+    write_data(test_idx, all_seqs, test_file)
     train_idx.extend(valid_idx)
     train_idx.extend(test_idx)
     train_idx.sort()
