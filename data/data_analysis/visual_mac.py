@@ -3,23 +3,31 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from math import log, exp
+from scipy.interpolate import make_interp_spline as spline
 
+font = {
+        'size'   : 12}
+
+mpl.rc('font', **font)
+
+img_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\data\\img\\"
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log_SMALL_PG100.txt"
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\parameter_log.txt"
-pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_pg_450_nocon.txt"
+# pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_pg_450_nocon.txt"
 pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\pg500_normal.txt"
 # pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\test_para_450_pg_homo.txt"
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log_pg_nopt.txt'
 # pg_parameters_file = r'/Users/yinyao/mt/protein-dna-align-EM/codes/cpp_version/parameter_log.txt'
 # pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log_SMALL_PG100.txt"
 # pg_error_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\cpp_version\error_log.txt"
-pg_data_df = pd.DataFrame(columns=["epoch", "prob", "updateMethod", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
+pg_data_df = pd.DataFrame(columns=["epoch", "prob", "valid", "updateMethod", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
 #pg_error_df = pd.DataFrame(columns=["epoch", "prob", "type", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"])
 
 pg_line_map = {}
 pg_error_map = {}
-pg_line_key = ["epoch", "prob", "omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "gamma", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"]
+pg_line_key = ["epoch", "prob","valid","omega_i", "omega_d", "gamma", "alpha_i", "alpha_d", "gamma", "delta_i", "beta_i", "epsilon_i", "delta_d", "beta_d", "epsilon_d", "cnts", "psi", "phi", "pi"]
 
 class DataTool:
     def __init__(self):
@@ -102,7 +110,7 @@ def plot_table(row, col, vals):
         col:string,(M)           #['col1', 'col2']
         vals:np, (N,M)          
     """
-    vals = np.round(np.array(vals), 5)
+    vals = np.round(np.array(vals), 2)
     R, C = len(row), len(col)
     idx = pd.Index(row)
     df = pd.DataFrame(np.random.randn(R, C), index=idx, columns=col)
@@ -118,12 +126,13 @@ def plot_table(row, col, vals):
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
     
-    the_table=plt.table(cellText=vals, rowLabels=df.index, colLabels=df.columns, colWidths=[0.005]*vals.shape[1], rowLoc='center', loc='center',cellLoc='center')
-    the_table.set_fontsize(15)
+    the_table=plt.table(cellText=vals, rowLabels=df.index, colLabels=df.columns, colWidths=[0.01]*vals.shape[1], rowLoc='center', loc='center',cellLoc='center')
+    the_table.set_fontsize(30)
     
     # 伸缩表格大小常数
-    the_table.scale(figR/R*2, figC/C*1.5)
-    plt.savefig("pg500normal.jpg")
+    the_table.scale(figR/R*6, figC/C*3)
+    # plt.show()
+    plt.savefig("substitutionMatrix(part 4).pdf",bbox_inches='tight')
 
 
 
@@ -220,6 +229,7 @@ with open(pg_parameters_file, "r") as f:
         elif i % 10 == 5:
             prob = float(curr.rstrip().split()[2])
             pg_line_map["prob"] = prob
+            pg_line_map["valid"] = float(curr.rstrip().split()[1])
         elif i % 10 == 6:
             curr_para_map = strToPara(curr)
             for k, v in curr_para_map.items():
@@ -286,9 +296,17 @@ def get_fig(df, epoch_start, epoch_end, col, name):
     y1 = []
     for idx, row in df.loc[epoch_start:epoch_end].iterrows():
         y1.append(row[col])
-    l1 = plt.plot(x1, y1, 'r--', label ='type1')
+    l1 = plt.plot(x1, y1, 'o-', label ='type1')
     plt.legend()
     plt.show()
+
+def get_line(df, epoch_start, epoch_end, col):
+    x = [i for i in range(epoch_start+1, epoch_end + 2, 1)]
+    y = []
+    for idx, row in df.loc[epoch_start:epoch_end].iterrows():
+        y.append(row[col])
+    print(y)
+    return x, y
 
 class Parameters:
     def __init__(self):
@@ -318,7 +336,8 @@ class Parameters:
         self.psi = [0.0 for x in range(4)]
         self.pi = [[0.0 for x in range(64)] for y in range(21)]
         self.prob = 0.0
-        self.s = [[0.0 for x in range(64)] for y in range(21)]
+        self.s = np.zeros((21, 64))
+        # [[0.0 for x in range(64)] for y in range(21)]
         self.a_i = 0.0
         self.b_i = 0.0
         self.a_d = 0.0
@@ -370,6 +389,20 @@ class Parameters:
         for i in range(21):
             for j in range(64):
                 self.pi[i][j] /= tot_pi
+    def display(self):
+        print("a_i:", self.a_i)
+        print("b_i:", self.b_i)
+        print("a_d:", self.a_d)
+        print("b_d:", self.b_d)
+        print("f_i:", self.f_i)
+        print("f_d:", self.f_d)
+        print("g_i:", self.g_i)
+        print("g_d:", self.g_d)
+
+    def balanced(self):
+        res = self.gamma/(self.omega_d*self.omega_i**3) + self.alpha_i*((1-self.delta_i)*self.omega_i**2 + self.delta_i*(1-self.epsilon_i)*self.omega_i + self.delta_i*self.epsilon_i*(1-self.beta_i))/(self.omega_i**3-self.delta_i*self.epsilon_i*self.beta_i)
+        res2 = self.alpha_d*((1-self.delta_d)/self.omega_i**2 + self.delta_d*(1-self.epsilon_d)/self.omega_i + self.delta_d*self.epsilon_d*(1-self.beta_d))/(self.omega_d - self.delta_d*self.epsilon_d*self.beta_d)
+        return res + res2
 
     def getScore(self):
         # different Scores:
@@ -385,6 +418,14 @@ class Parameters:
         for x in range(21):
             for y in range(64):
                 self.s[x][y] = log(self.getSubstitionScore(x, y)*self.gamma/(self.omega_d*self.omega_i**3))
+    def get_new_score(self, x, y):
+        return self.pi[x][y]/(sum([i for i in self.pi[x]])*sum([self.pi[i][y] for i in range(21)]))
+
+    def fixTest(self):
+        for x in range(21):
+            for y in range(64):
+                self.s[x][y] = log(self.get_new_score(x, y)*self.gamma/(self.omega_d*self.omega_i**3))
+
     def getNewScore(self, stat):
         for x in range(21):
             for y in range(64):
@@ -396,7 +437,11 @@ class Parameters:
         return self.pi[x][y]/(self.phi[x]*self.psi[y & 3]*self.psi[(y >> 2) & 3]*self.psi[(y >> 4) & 3])
 
 p = Parameters()
+dt = DataTool()
+row = dt.aaList
+col = dt.tripletList
 
+pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\data_analysis\final.txt"
 with open(pg_parameters_file, "r") as f:
     all_lines = f.readlines()
     p.setTransitions(all_lines[-4])
@@ -404,13 +449,146 @@ with open(pg_parameters_file, "r") as f:
     p.setPsi(all_lines[-2])
     p.setPi(all_lines[-1])
     p.reNormalize()
+    #p.omega_d = 0.999
+    #p.omega_i =0.999
     p.getScore()
+    p.fixTest()
+    # plot_table(row, col[48:], np.hsplit(p.s, 4)[3])
+    p.display()
+    print(p.balanced())
     # print(p.s[0][1])
-
+# exit(0)
 #for idx, row in pg_data_df.iterrows():
     #print(idx, row['prob'])
 
-get_fig(pg_data_df, 0, 15, "gamma", "")
+def get_smooth_fig(x_label, y_label, x, y, type_name, title):
+    xnew = np.linspace(min(x), max(x), 300)
+    after_spline = spline(x, y)
+    ynew = after_spline(xnew)
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    l = plt.plot(x, y, "-", color = "red", label = type_name)
+    plt.legend()
+    plt.savefig(img_filepath + title + ".pdf",dpi = 400)
+
+def get_smooth_line(x, y):
+    xnew = np.linspace(min(x), max(x), 500)
+    after_spline = spline(x, y)
+    ynew = after_spline(xnew)
+    return xnew, ynew
+
+x0, y0 = get_line(pg_data_df, 20, 99, "prob")
+# get_smooth_fig("Epoch", "performance", x0, y0, "Sum of logarithm probabilities", "Performance on training set")
+# x1, y1 = get_line(pg_data_df, 0, 100, "omega_i")
+# x2, y2 = get_line(pg_data_df, 0, 100, "omega_d")
+# x3, y3 = get_line(pg_data_df, 0, 100, "gamma")
+# x1new, y1new = get_smooth_line(x1, y1)
+# x2new, y2new = get_smooth_line(x2, y2)
+# x3new, y3new = get_smooth_line(x3, y3)
+
+#l1 = plt.plot(x1new, y1new, "-", color = "red", label = "omega_I")
+#l2 = plt.plot(x2new, y2new, "-", color = "darkblue", label = "omega_D")
+#l3 = plt.plot(x3new, y3new, "-", color = "grey", label = "Gamma")
+#plt.title("Transition probabilities")
+#plt.xlabel("Epoch")
+#plt.ylabel("Value")
+#plt.legend()
+#plt.savefig("Transition probabilities(omega_I, omega_D, Gamma).pdf", dpi = 400)
+
+#x1, y1 = get_line(pg_data_df, 0, 100, "alpha_i")
+#x2, y2 = get_line(pg_data_df, 0, 100, "beta_i")
+#x3, y3 = get_line(pg_data_df, 0, 100, "delta_i")
+#x4, y4 = get_line(pg_data_df, 0, 100, "epsilon_i")
+#x1new, y1new = get_smooth_line(x1, y1)
+#x2new, y2new = get_smooth_line(x2, y2)
+#x3new, y3new = get_smooth_line(x3, y3)
+#x4new, y4new = get_smooth_line(x4, y4)
+
+# l1 = plt.plot(x1new, y1new, "-", color = "red", label = "omega_I")
+#l2 = plt.plot(x2new, y2new, "-", color = "darkblue", label = "beta_I")
+#l3 = plt.plot(x3new, y3new, "-", color = "grey", label = "delta_I")
+#l4 = plt.plot(x4new, y4new, "-", color = "purple", label = "epsilon_I")
+#plt.title("Transition probabilities")
+#plt.xlabel("Epoch")
+#plt.ylabel("Value")
+#plt.legend()
+# plt.show()
+#plt.savefig(img_filepath + "Transition probabilities(beta_I, delta_I, epsilon_I).pdf", dpi = 400)
+
+#x1, y1 = get_line(pg_data_df, 0, 100, "alpha_i")
+#x2, y2 = get_line(pg_data_df, 0, 100, "beta_i")
+#x3, y3 = get_line(pg_data_df, 0, 100, "delta_i")
+#x4, y4 = get_line(pg_data_df, 0, 100, "epsilon_i")
+#x1new, y1new = get_smooth_line(x1, y1)
+#x2new, y2new = get_smooth_line(x2, y2)
+#x3new, y3new = get_smooth_line(x3, y3)
+#x4new, y4new = get_smooth_line(x4, y4)
+
+# x1, y1 = get_line(pg_data_df, 0, 100, "alpha_i")
+#x2, y2 = get_line(pg_data_df, 0, 100, "beta_d")
+#x3, y3 = get_line(pg_data_df, 0, 100, "delta_d")
+#x4, y4 = get_line(pg_data_df, 0, 100, "epsilon_d")
+#x1new, y1new = get_smooth_line(x1, y1)
+#x2new, y2new = get_smooth_line(x2, y2)
+#x3new, y3new = get_smooth_line(x3, y3)
+#x4new, y4new = get_smooth_line(x4, y4)
+
+
+# l1 = plt.plot(x1new, y1new, "-", color = "red", label = "omega_I")
+#l2 = plt.plot(x2new, y2new, "-", color = "darkblue", label = "beta_D")
+#l3 = plt.plot(x3new, y3new, "-", color = "grey", label = "delta_D")
+#l4 = plt.plot(x4new, y4new, "-", color = "purple", label = "epsilon_D")
+#plt.title("Transition probabilities")
+#plt.xlabel("Epoch")
+#plt.ylabel("Value")
+#plt.legend()
+#plt.show()
+#plt.savefig(img_filepath + "Transition probabilities(beta_D, delta_D, epsilon_D).pdf", dpi = 400)
+
+
+
+#x1, y1 = get_line(pg_data_df, 0, 100, "alpha_i")
+#x2, y2 = get_line(pg_data_df, 0, 100, "alpha_d")
+#x3, y3 = get_line(pg_data_df, 0, 100, "delta_d")
+#x4, y4 = get_line(pg_data_df, 0, 100, "epsilon_d")
+#x1new, y1new = get_smooth_line(x1, y1)
+#x2new, y2new = get_smooth_line(x2, y2)
+#x3new, y3new = get_smooth_line(x3, y3)
+#x4new, y4new = get_smooth_line(x4, y4)
+
+
+#l1 = plt.plot(x1new, y1new, "-", color = "red", label = "alpha_I")
+#l2 = plt.plot(x2new, y2new, "-", color = "darkblue", label = "alpha_D")
+#l3 = plt.plot(x3new, y3new, "-", color = "grey", label = "delta_D")
+#l4 = plt.plot(x4new, y4new, "-", color = "purple", label = "epsilon_D")
+#plt.title("Transition probabilities")
+#plt.xlabel("Epoch")
+#plt.ylabel("Value")
+#plt.legend()
+#plt.show()
+#plt.savefig(img_filepath + "Transition probabilities(alpha_I, alpha_D).pdf", dpi = 400)
+
+#exit(0)
+#n = len(x3)
+#x4 = [x3[i] for i in range(0, n, 5)]
+#y4 = np.array([y3[i] for i in range(0, n, 5)])
+#xnew = np.linspace(min(x4), max(x4), 300)
+#a_BSpline = spline(x4, y4)
+#ynew = a_BSpline(xnew)
+
+
+#exit(0)
+#l0 = plt.plot(xnew, ynew, "r--", label = "valid")
+#plt.legend()
+#plt.show()
+#l1 = plt.plot(x1, y1, '-', color = "skyblue",label = 'epsilon_i', marker = '.')
+#l2 = plt.plot(x2, y2, '-', color = "red", label = 'epsilon_d', marker = '.')
+#plt.legend()
+
+#plt.show()
+
+
 dt = DataTool()
 row = dt.aaList
 col = dt.tripletList
@@ -429,7 +607,7 @@ for i in range(64):
     else:
         print("Match ", curr_t, curr_aa)
 
-print("###\n")
+print("\n###\n")
 for i in range(21):
     curr_aa = dt.decodeAA(i)
     curr_v = -100.0
@@ -444,8 +622,8 @@ for i in range(21):
     else:
         print("Match ", curr_t, curr_aa)
     # print(curr_t, dt.decodeAA(curr_idx))
-plot_table(row, col, p.s)
-
+# plot_table(row, col, p.s)
+exit(0)
 def patternCollect(strList):
     stat = [0 for i in range(64)]
     dt = DataTool()
@@ -494,4 +672,3 @@ with open(seqFile, "r") as f:
         else:
             print("Match ", curr_t, curr_aa)
     #plot_table(row, col, p.s)
-    

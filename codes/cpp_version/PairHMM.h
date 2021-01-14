@@ -14,6 +14,7 @@
 #include <float.h>
 #include <numeric>
 #include <iomanip>
+#include "Optimizer.h"
 //typedef double NumType; // To represent Probability numerically;
 //typedef double LogNumType;
 typedef std::vector<int8_t> proSeqType; //Encoding the ProSeqType, index start from 1
@@ -94,6 +95,7 @@ public:
     NumType startFwd, startBwd, finishFwd, finishBwd, reversep;
     LogNumType logStartFwd, logStartBwd, logFinishFwd, logFinishBwd, logReversep;
     NumType Prob; // To measure the convergence of BW algorithm
+    NumType balanceCheck;
     LogNumType logProb, objectLogProb;
 
     NumType omega_d, omega_i, gamma, alpha_d, beta_d, epsilon_d, delta_d, alpha_i, beta_i, epsilon_i, delta_i;

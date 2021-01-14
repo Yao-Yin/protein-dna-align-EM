@@ -6,8 +6,8 @@
 #include <vector>
 #include <iostream>
 
-typedef long double NumType; // To represent Probability numerically;
-typedef long double LogNumType;
+typedef double NumType; // To represent Probability numerically;
+typedef double LogNumType;
 /*template <typename Iter>
 typename std::iterator_traits<Iter>::value_type
 _log_sum_exp(Iter begin, Iter end);

@@ -91,7 +91,7 @@ std::vector<std::vector<NumType>> directReadPi(const std::string & filePath) {
     return curr;
 }
 
-int main() 
+int main1() 
 {
     //std::cout << "hello" << std::endl;
     PairHMM tiny;
@@ -99,7 +99,8 @@ int main()
     //tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\test_para_pg_450_nocon.txt";
     //tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\test_for_set_output.txt";
     //tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\pg500_500_training.txt";
-    tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\pg500_normal.txt";
+    //tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\pg500_377.txt";
+    tiny.default_filepath = "C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\balanced.txt";
     //tiny.setParameters("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\test_for_set_input.txt");
     //tiny.reNormalize();
     //tiny.naiveTolog();
@@ -114,7 +115,7 @@ int main()
     //std::cout << tiny.pi.size() << tiny.pi[0].size() << std::endl;
     //tiny.setInsertion();
     //tiny.displayParameters("start", tiny.default_filepath);
-    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\data\\pg_500_hg19_presuf10_train.txt", 200, 0);
+    tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\data\\pg_500_hg19_presuf10_train.txt", 30, 1);
     //tiny.get_total();
     //tiny.testTraining("C:\\Users\\InYuo\\Documents\\GitHub\\protein-dna-align-EM\\codes\\cpp_version\\test_cnt.txt", 1, 0);
     //DataTool dt;

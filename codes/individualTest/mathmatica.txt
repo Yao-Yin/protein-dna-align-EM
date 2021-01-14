@@ -1,0 +1,50 @@
+J_d= 12868.0365843772
+J_c= 31085.6461251031
+M= 128868.861587414
+A= 1232
+K_d= 12868.0365843772
+K_c= 31085.6461251031
+F_d= 5726.9888229679
+X_d= 793.076420863528
+B_d= 786.899273318932
+D_d= 3322.85247813292
+Z_d= 1617.23707151605
+G_d= 3197.21276569851
+H_d=1579.97569418246
+B_c=885.765314250953
+Z_c=1726.92943881095
+D_c=3365.82219152276
+F_c=5978.51694458466
+G_c=3544.09606901925
+H_c=1817.1666302083
+X_c=931.401315957345
+
+balance = Gaamma*(omega_c^3 - delta_c * epsilon_c * beta_c)*(omega_d - delta_d*epsilon_d*beta_d) + alpha_c * ((1-beta_c)*omega_c^2 + delta_c*(1-epsilon_c)*omega_c + delta_c*epsilon_c*(1-beta_c))*omega_d*omega_c^3*(omega_d-delta_d*epsilon_d*beta_d) + alpha_d*((1-beta_d)+delta_d*omega_c*(1-epsilon_d)+omega_c^2*epsilon_d*delta_d*(1-beta_d))*omega_d*omega_c*(omega_c^3 - epsilon_c*delta_c*beta_c) - omega_d*omega_c^3*(omega_c^3 - delta_c *epsilon_c*beta_c)*(omega_d - delta_d*epsilon_d*beta_d)
+    
+Q = A*Log[-(alpha_d) - (alpha_c) + 1 - Gaamma] + Log[alpha_d]*((B_d) + (D_d) + (Z_d)) + 
+   Log[alpha_c]*((B_c) + (D_c) + (Z_c)) + (B_d)*Log[1 - (beta_d)] + 
+   Log[delta_d]*((B_d) + (X_d) + (Z_d)) + ((B_d) + (X_d))*Log[epsilon_d] + 
+   (X_d)*Log[beta_d] + (B_c)*Log[1 - (beta_c)] + (X_c)*Log[beta_c] + 
+   Log[delta_c]*((B_c) + (X_c) + (Z_c)) + ((B_c) + (X_c))*Log[epsilon_c] + 
+   (D_d)*Log[1 - (delta_d)] + (D_c)*Log[1 - (delta_c)] + 
+   (Z_d)*Log[1 - (epsilon_d)] + (Z_c)*Log[1 - (epsilon_c)] + 
+   (J_d)*Log[omega_d] + (J_c)*Log[omega_c] + (K_d)*Log[omega_d] + 
+   (K_c)*Log[omega_c] + M*Log[Gaamma] + 
+   2*A*Log[1 - (omega_c)] + 2*A*Log[1 - (omega_d)]
+
+
+
+NMaximize[{Q, balance == 0}, {omega_c, omega_d, Gaamma, alpha_c, alpha_d, delta_c, delta_d, epsilon_c, epsilon_d, beta_c, beta_d, lambda}]
+
+balance[omega_c_, omega_d_, Gaamma_, alpha_c_, alpha_d_, delta_c_, delta_d_, epsilon_c_, epsilon_d_, beta_c_, beta_d_, lambda_] := Gaamma*(omega_c^3 - delta_c * epsilon_c * beta_c)*(omega_d - delta_d*epsilon_d*beta_d) + alpha_c * ((1-beta_c)*omega_c^2 + delta_c*(1-epsilon_c)*omega_c + delta_c*epsilon_c*(1-beta_c))*omega_d*omega_c^3*(omega_d-delta_d*epsilon_d*beta_d) + alpha_d*((1-beta_d)+delta_d*omega_c*(1-epsilon_d)+omega_c^2*epsilon_d*delta_d*(1-beta_d))*omega_d*omega_c*(omega_c^3 - epsilon_c*delta_c*beta_c) - omega_d*omega_c^3*(omega_c^3 - delta_c *epsilon_c*beta_c)*(omega_d - delta_d*epsilon_d*beta_d)
+    
+Q[omega_c_, omega_d_, Gaamma_, alpha_c_, alpha_d_, delta_c_, delta_d_, epsilon_c_, epsilon_d_, beta_c_, beta_d_, lambda_] : = A*Log[-(alpha_d) - (alpha_c) + 1 - Gaamma] + Log[alpha_d]*((B_d) + (D_d) + (Z_d)) + 
+   Log[alpha_c]*((B_c) + (D_c) + (Z_c)) + (B_d)*Log[1 - (beta_d)] + 
+   Log[delta_d]*((B_d) + (X_d) + (Z_d)) + ((B_d) + (X_d))*Log[epsilon_d] + 
+   (X_d)*Log[beta_d] + (B_c)*Log[1 - (beta_c)] + (X_c)*Log[beta_c] + 
+   Log[delta_c]*((B_c) + (X_c) + (Z_c)) + ((B_c) + (X_c))*Log[epsilon_c] + 
+   (D_d)*Log[1 - (delta_d)] + (D_c)*Log[1 - (delta_c)] + 
+   (Z_d)*Log[1 - (epsilon_d)] + (Z_c)*Log[1 - (epsilon_c)] + 
+   (J_d)*Log[omega_d] + (J_c)*Log[omega_c] + (K_d)*Log[omega_d] + 
+   (K_c)*Log[omega_c] + M*Log[Gaamma] + 
+   2*A*Log[1 - (omega_c)] + 2*A*Log[1 - (omega_d)]

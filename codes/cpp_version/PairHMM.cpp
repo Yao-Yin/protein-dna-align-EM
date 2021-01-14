@@ -401,6 +401,7 @@ void PairHMM::naiveBaumWelch(const std::vector<proSeqType> & proSeqs, const std:
         pseudocount(n);
         updateProbabilities();
         pseudocount(-n);
+        //std::cout << calculateOverallLogProb() << std::endl;
         /*double tot_psi = 0;
         for (int i = 0; i < psi.size(); i ++) tot_psi += psi[i];
         double tot_phi = 0;
@@ -784,7 +785,7 @@ long double PairHMM::calculateOverallLogProb() const {
         }
     }
     //std::cout << alignTransition1 << " "<< alignTransition<<" "<< std::endl;
-    return alignTransition + otherTransition +  totEmissions;
+    return alignTransition + otherTransition;
 }
 
 std::vector<LogNumType> PairHMM::deltaItoParameters(const LogNumType & deltai) const {
@@ -1033,14 +1034,29 @@ void PairHMM::updateProbabilities(){
 }
 
 void PairHMM::optimizedUpdateProbabilities(){
-    updateAlignProbabilities();
-    if (insertionValid() && deletionValid()) {
-        insertionSolver();
-        deletionSolver();
+    Optimizer opt;
+    std::vector<double> init{ omega_i, omega_d, gamma, alpha_i, alpha_d, 
+    delta_i, delta_d, epsilon_i, epsilon_d, beta_i, beta_d, 0.0};
+    opt.setValue(init);
+    opt.setCnts(J_d.cnt, J_i.cnt, M.cnt, A.cnt, K_d.cnt, K_i.cnt, F_d.cnt,  X_d.cnt,  B_d.cnt,  D_d.cnt,  E_d.cnt,  G_d.cnt,  H_d.cnt, 
+        B_i.cnt,  E_i.cnt,  D_i.cnt,  F_i.cnt,  G_i.cnt,  H_i.cnt,  X_i.cnt);
+    std::vector<double> paras = opt.gradientDescent(0.001);
+    if(opt.checkValid()) {
+            omega_i = paras[0];
+            omega_d = paras[1];
+            gamma = paras[2];
+            alpha_i = paras[3];
+            alpha_d = paras[4]; 
+            delta_i = paras[5];
+            delta_d = paras[6];
+            epsilon_i = paras[7];
+            epsilon_d = paras[8];
+            beta_i = paras[9];
+            beta_d = paras[10];
+            balanceCheck = opt.check();
     } else {
-        mode = false;
-        naiveUpdateInsertionProbabilities();
-        naiveUpdateDeletionProbabilities();
+        std::cout << "false update, rangeError: " << (int) opt.checkValid() <<std::endl;
+        exit(0);
     }
     updateEmissionProbabilities();
     naiveTolog();
@@ -1098,7 +1114,7 @@ void PairHMM::displayParameters(const std::string msg, const std::string & filen
         }
     }
     out << std::endl;
-    out << "Overall: "<<validProb << " " << overAllProb <<std::endl;
+    out << "Overall: "<<validProb << " " << overAllProb << " " << balanceCheck <<std::endl;
     for (int i = 0; i < tp.size(); i ++) {
         if(i) out << '\t';
         out << tp[i];
