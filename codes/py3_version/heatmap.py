@@ -1,6 +1,129 @@
 import numpy as np
-from math import log, exp
-import random as rd
+import matplotlib
+import matplotlib.pyplot as plt
+from math import exp, log
+
+def heatmap(data, row_labels, col_labels, ax=None,
+            cbar_kw={}, cbarlabel="", **kwargs):
+    """
+    Create a heatmap from a numpy array and two lists of labels.
+
+    Parameters
+    ----------
+    data
+        A 2D numpy array of shape (N, M).
+    row_labels
+        A list or array of length N with the labels for the rows.
+    col_labels
+        A list or array of length M with the labels for the columns.
+    ax
+        A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
+        not provided, use current axes or create a new one.  Optional.
+    cbar_kw
+        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
+    cbarlabel
+        The label for the colorbar.  Optional.
+    **kwargs
+        All other arguments are forwarded to `imshow`.
+    """
+
+    if not ax:
+        ax = plt.gca()
+
+    # Plot the heatmap
+    im = ax.imshow(data, cmap="viridis", interpolation='none')
+
+    # Create colorbar
+    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+    
+    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
+
+    # We want to show all ticks...
+    ax.set_xticks(np.arange(data.shape[1]))
+    ax.set_yticks(np.arange(data.shape[0]))
+    # ... and label them with the respective list entries.
+    ax.set_xticklabels(col_labels)
+    ax.set_yticklabels(row_labels)
+
+    # Let the horizontal axes labeling appear on top.
+    ax.tick_params(top=True, bottom=False,
+                   labeltop=True, labelbottom=False)
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
+             rotation_mode="anchor")
+
+    # Turn spines off and create white grid.
+    for edge, spine in ax.spines.items():
+        spine.set_visible(False)
+
+    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
+    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
+    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+    ax.tick_params(which="minor", bottom=False, left=False)
+
+    return im, cbar
+
+
+def annotate_heatmap(im, data=None, valfmt="{x:.2f}",
+                     textcolors=["black", "white"],
+                     threshold=None, **textkw):
+    """
+    A function to annotate a heatmap.
+
+    Parameters
+    ----------
+    im
+        The AxesImage to be labeled.
+    data
+        Data used to annotate.  If None, the image's data is used.  Optional.
+    valfmt
+        The format of the annotations inside the heatmap.  This should either
+        use the string format method, e.g. "$ {x:.2f}", or be a
+        `matplotlib.ticker.Formatter`.  Optional.
+    textcolors
+        A list or array of two color specifications.  The first is used for
+        values below a threshold, the second for those above.  Optional.
+    threshold
+        Value in data units according to which the colors from textcolors are
+        applied.  If None (the default) uses the middle of the colormap as
+        separation.  Optional.
+    **kwargs
+        All other arguments are forwarded to each call to `text` used to create
+        the text labels.
+    """
+
+    if not isinstance(data, (list, np.ndarray)):
+        data = im.get_array()
+
+    # Normalize the threshold to the images color range.
+    if threshold is not None:
+        threshold = im.norm(threshold)
+    else:
+        threshold = im.norm(data.max())/2.
+
+    # Set default alignment to center, but allow it to be
+    # overwritten by textkw.
+    kw = dict(horizontalalignment="center",
+              verticalalignment="center", color="black")
+    kw.update(textkw)
+
+    # Get the formatter in case a string is supplied
+    if isinstance(valfmt, str):
+        valfmt = matplotlib.ticker.StrMethodFormatter(valfmt)
+
+    # Loop over the data and create a `Text` for each "pixel".
+    # Change the text's color depending on the data.
+    texts = []
+    ddt = DataTool()
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            #kw.update(color=textcolors[int(im.norm(data[i, j]) > threshold)])
+            text = im.axes.text(j, i, "#" if dt.tripletList[j] in dt.codonTable[dt.aaList[i]] else "",**kw)
+            texts.append(text)
+
+    return texts
+
 class DataTool:
     def __init__(self):
         self.baseList = ['T', 'C', 'A', 'G']
@@ -63,52 +186,6 @@ class DataTool:
         second = (TripletCode >> 2) & 3
         third = (TripletCode) & 3  
         return self.baseList[first] + self.baseList[second] + self.baseList[third]
-    def genRandDNA(self, seq_len):
-        d_code = [x for x in range(4)]
-        dna = [ self.genRndnum(d_code, self.basedistribution) for x in range(seq_len)]
-        return "".join([self.decodeBase(x) for x in dna])
-    def genRndnum(self, num_list, pro_list):
-        x = rd.uniform(0, 1)
-        # 累积概率
-        cum_pro = 0.0
-        # 将可迭代对象打包成元组列表
-        for number, number_pro in zip(num_list, pro_list):
-            cum_pro += number_pro
-            if x < cum_pro:
-                # 返回值
-                return number
-    def genRandPro(self, seq_len):
-        p_code = [x for x in range(20)]
-        pro = [ self.genRndnum(p_code, self.aadistribution) for x in range(seq_len)]
-        return "".join([self.decodeAA(x) for x in pro])
-
-class Tracer():
-    def __init__(self, prevx, prevy, prevMat, value):
-        self.x = prevx
-        self.y = prevy
-        self.prevMat = prevMat
-        self.nx = -1
-        self.ny = -1
-        self.val = value
-        self.nextMat = None
-    def setnext(self, nx, ny, nextMat):
-        self.nx = nx
-        self.ny = ny
-        self.nextMat = nextMat
-    
-    def setprev(self, prevx, prevy, prevMat):
-        self.x = prevx
-        self.y = prevy
-        self.prevMat = prevMat
-    
-    def setValue(self, v):
-        self.val = v
-
-ws = [[0 for i in range(1000)] for j in range(1000)]
-wp = [[0 for i in range(1000)] for j in range(1000)]
-#dt = DataTool()
-#print(sum(dt.aadistribution))
-#exit(0)
 
 class Parameters:
     def __init__(self):
@@ -192,14 +269,15 @@ class Parameters:
             for j in range(64):
                 self.pi[i][j] /= tot_pi
     def display(self):
-        print("a_i:", self.a_i)
-        print("b_i:", self.b_i)
-        print("a_d:", self.a_d)
-        print("b_d:", self.b_d)
-        print("f_i:", self.f_i)
-        print("f_d:", self.f_d)
-        print("g_i:", self.g_i)
-        print("g_d:", self.g_d)
+        t = 3/log(2)
+        print("a_i: %.3f" % (self.a_i*t))
+        print("b_i: %.3f" % (self.b_i*t))
+        print("a_d: %.3f" % (self.a_d*t))
+        print("b_d: %.3f" % (self.b_d*t))
+        print("f_i: %.3f" % (self.f_i*t))
+        print("f_d: %.3f" % (self.f_d*t))
+        print("g_i: %.3f" % (self.g_i*t))
+        print("g_d: %.3f" % (self.g_d*t))
     def get_new_score(self, x, y):
         return self.pi[x][y]/(sum([i for i in self.pi[x]])*sum([self.pi[i][y] for i in range(21)]))
 
@@ -718,7 +796,6 @@ class Parameters:
         head_dna = dna_seq[:curr_j-1]
         return head_pro , head_dna , align_pro, align_dna, tail_pro, tail_dna, res
 
-
 p = Parameters()
 pg_parameters_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\data_analysis\final.txt"
 with open(pg_parameters_file, "r") as f:
@@ -729,85 +806,42 @@ with open(pg_parameters_file, "r") as f:
     p.setPi(all_lines[-1])
     p.reNormalize()
     p.getScore()
+    p.display()
     #p.fixTest()
-total = []
-total_fix = []
+
 dt = DataTool()
-for i in range(64):
-    curr = 0
-    for j in range(21):
-        curr += p.s[j][i]
-    total.append(curr)
-p.fixTest()
-for i in range(64):
-    curr = 0
-    for j in range(21):
-        curr += p.s[j][i]
-    total_fix.append(curr)
-for i in range(64):
-    print(dt.tripletList[i], "%.2f" % total[i], "%.2f" % total_fix[i])
+row = dt.aaList
+col = dt.tripletList
+score = np.array(p.s)
+fig, ax = plt.subplots()
 
+im, cbar = heatmap(score, row, col, ax=ax,
+                   cmap="YlGn", cbarlabel="score")
+texts = annotate_heatmap(im, valfmt="{x:.1f} t")
 
-
-
-
-
-
-
-exit(0)
-test_pro = "VHFTAEEKSVITGLWGKVNVEETGGEAVGRLLVVYPWTQRFFDSFGNMSSPSAIMGNPKVKAHGKKVLTSFGDAVKNMDNLKGTFAKLSELHCDKLHVDPENFRLLGNMIVIILASHFGGEFTPEVQAAWQKLVAGVATALAHKYH"
-test_dna = "tgcccccgcgccccaagcataaaccctggcgcgctcgcggcccggcactcttctggtccccacagactcagagagaacccaccatggtgctgtctcctgccgacaagaccaacgtcaaggccgcctggggtaaggtcggcgcgcacgctggcgagtatggtgcggaggccctggagaggtgaggctccctcccctgctccgacccgggctcctcgcccgcccggacccacaggccaccctcaaccgtcctggccccggacccaaaccccacccctcactctgcttctccccgcaggatgttcctgtccttccccaccaccaagacctacttcccgcacttcgacctgagccacggctctgcccaggttaagggccacggcaagaaggtggccgacgcgctgaccaacgccgtggcgcacgtggacgacatgcccaacgcgctgtccgccctgagcgacctgcacgcgcacaagcttcgggtggacccggtcaacttcaaggtgagcggcgggccgggagcgatctgggtcgaggggcgagatggcgccttcctcgcagggcagaggatcacgcgggttgcgggaggtgtagcgcaggcggcggctgcggacctgggccctcggccccactgaccctcttctctgcacagctcctaagccactgcctgctggtgaccctggccgcccacctccccgccgagttcacccctgcggtgcacgcctccctggacaagttcctggcttctgtgagcaccgtgctgacctccaaataccgttaagctggagcctcggtggccatgcttcttgccccttgggcctccccccagcccctcctccccttcctgcacccgtacccccgtggtctttgaataaagtctgagtgggcggcagcctgtgtgtg"
-
-tp = "MYATMLWDQL"
-td = "atgctatacggctctggatcagctta".upper()
-#t = p.alignScore2(test_pro, test_dna)
-# p.fixTest()
-s = p.alignPattern(test_pro, test_dna.upper())
-print(s)
-exit(0)
-
-rd_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\5000random_seq.txt"
-rd.seed(10)
-dt = DataTool()
-with open(rd_file, "w+") as f:
-    for i in range(5000):
-        dna_seq_head = ">rd_dna_" + str(i) + "\n"
-        pro_seq_head = ">rd_pro_" + str(i) + "\n"
-        rd_pro = dt.genRandPro(200)
-        rd_dna = dt.genRandDNA(500)
-        f.write(pro_seq_head)
-        f.write(rd_pro+"\n")
-        f.write(dna_seq_head)
-        f.write(rd_dna+"\n")
+fig.tight_layout()
+plt.show()
 
 exit(0)
 
-print(s)
+vegetables = ["cucumber", "tomato", "lettuce", "asparagus",
+              "potato", "wheat", "barley"]
+farmers = ["Farmer Joe", "Upland Bros.", "Smith Gardening",
+           "Agrifun", "Organiculture", "BioGoods Ltd.", "Cornylee Corp."]
 
-#test_dna = test_dna[::-1]
-seq_file = r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\data\pg_500_hg19_presuf10_test.txt"
+harvest = np.array([[0.8, 2.4, 2.5, 3.9, 0.0, 4.0, 0.0],
+                    [2.4, 0.0, 4.0, 1.0, 2.7, 0.0, 0.0],
+                    [1.1, 2.4, 0.8, 4.3, 1.9, 4.4, 0.0],
+                    [0.6, 0.0, 0.3, 0.0, 3.1, 0.0, 0.0],
+                    [0.7, 1.7, 0.6, 2.6, 2.2, 6.2, 0.0],
+                    [1.3, 1.2, 0.0, 0.0, 0.0, 3.2, 5.1],
+                    [0.1, 2.0, 0.0, 1.4, 0.0, 1.9, 6.3]])
 
-#exit(0)
+fig, ax = plt.subplots()
 
-dt = DataTool()
-rd.seed(10)
-with open(r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\gen_score1.txt", "w") as f:
-    for i in range(5000):
-        rd_pro = dt.genRandPro(200)
-        rd_dna = dt.genRandDNA(500)
-        k = p.alignScore(rd_pro, rd_dna)
-        print(i, k)
-        f.write(str(k)+"\n")
+im, cbar = heatmap(harvest, vegetables, farmers, ax=ax,
+                   cmap="YlGn", cbarlabel="harvest [t/year]")
+#texts = annotate_heatmap(im, valfmt="{x:.1f} t")
 
-#with open(seq_file, "r") as f:
-#    all_seqs = f.readlines()
-#    tot = len(all_seqs)
-#    with open(r"C:\Users\InYuo\Documents\GitHub\protein-dna-align-EM\codes\py3_version\test_score1.txt", "w") as g:
-#        for i in range(tot//4):
-#            pro_seq = all_seqs[4*i+1].rstrip()
-#            dna_seq = all_seqs[4*i+3].rstrip().upper()
-#            #s = p.alignPattern2(pro_seq, dna_seq)
-#           t = p.alignScore(pro_seq, dna_seq)
-#            u = p.alignScore(pro_seq[::-1], dna_seq)
-#            # g.write(str(u) + " "+str(t)+"\n")
-#            print(i, u, t)
+fig.tight_layout()
+plt.show()
